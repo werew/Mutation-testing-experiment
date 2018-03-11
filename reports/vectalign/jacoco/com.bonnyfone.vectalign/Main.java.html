@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Main.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">vectalign</a> &gt; <a href="index.source.html" class="el_package">com.bonnyfone.vectalign</a> &gt; <span class="el_source">Main.java</span></div><h1>Main.java</h1><pre class="source lang-java linenums">package com.bonnyfone.vectalign;
+
+
+import com.bonnyfone.vectalign.viewer.VectAlignViewer;
+import org.apache.commons.cli.*;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Comparator;
+
+/**
+ * VectorCompatAlign tool (MAIN)
+ */
+<span class="nc" id="L14">public class Main {</span>
+
+    //Commandline Options
+    private static final String OPTION_FROM = &quot;s&quot;;
+    private static final String OPTION_TO = &quot;e&quot;;
+    private static final String OPTION_HELP = &quot;h&quot;;
+    private static final String OPTION_VERSION = &quot;v&quot;;
+    private static final String OPTION_MODE = &quot;m&quot;;
+    private static final String OPTION_GUI = &quot;g&quot;;
+
+    //Application infos
+    public static final String VERSION = &quot;0.2&quot;;
+    public static final String NAME = &quot;VectAlign&quot;;
+
+    /**
+     * VectAlign commandLine main
+     * @param args
+     * @throws IOException
+     */
+    public static void main(String args[]) throws IOException {
+        /*TEST input args */
+<span class="nc" id="L35">            String star = &quot;M 48,54 L 31,42 15,54 21,35 6,23 25,23 25,23 25,23 25,23 32,4 40,23 58,23 42,35 z&quot;;</span>
+<span class="nc" id="L36">            String arrow = &quot;M 12, 4 L 10.59,5.41 L 16.17,11 L 18.99,11 L 12,4 z M 4, 11 L 4, 13 L 18.99, 13 L 20, 12 L 18.99, 11 L 4, 11 z M 12,20 L 10.59, 18.59 L 16.17, 13 L 18.99, 13 L 12, 20z&quot;;</span>
+<span class="nc" id="L37">            String triangle = &quot;M 91.095527,384.35546 L 254.23312,110.62095 L 405.71803,386.1926 z&quot;;</span>
+<span class="nc" id="L38">            String polystar = &quot;M 177.11729,247.88609 L 256.31153,96.745452 L 217.85024,262.98609 L 388.33899,255.99999 L 225.13973,305.81185 L 316.43424,449.96639 L 191.69628,333.53762 L 112.50204,484.67825 L 150.96333,318.43762 L -19.525418,325.42372 L 143.67384,275.61186 L 52.379325,131.45732 z&quot;;</span>
+            //args = new String[]{&quot;-s&quot;, triangle, &quot;--end&quot;, polystar, &quot;-m&quot;, &quot;linear&quot;};
+            //args = new String[]{&quot;-h&quot;};
+
+<span class="nc" id="L42">        String fromSequence = null;</span>
+<span class="nc" id="L43">        String toSequence = null;</span>
+<span class="nc" id="L44">        VectAlign.Mode mode = VectAlign.Mode.BASE;</span>
+<span class="nc" id="L45">        Options options = initCommandLineOptions();</span>
+
+        try {
+<span class="nc" id="L48">            CommandLineParser parser = new DefaultParser();</span>
+<span class="nc" id="L49">            CommandLine commandLine = parser.parse(options, args);</span>
+
+<span class="nc bnc" id="L51" title="All 6 branches missed.">            if(commandLine.getOptions()== null || commandLine.getOptions().length == 0 || commandLine.hasOption(OPTION_GUI)){</span>
+<span class="nc" id="L52">                VectAlignViewer.startVectAlignGUI();</span>
+<span class="nc" id="L53">                return;</span>
+            }
+<span class="nc bnc" id="L55" title="All 2 branches missed.">            else if(commandLine.hasOption(OPTION_VERSION)){</span>
+<span class="nc" id="L56">                System.out.println(NAME + &quot; v&quot;+VERSION);</span>
+<span class="nc" id="L57">                return;</span>
+            }
+<span class="nc bnc" id="L59" title="All 2 branches missed.">            else if(commandLine.hasOption(OPTION_HELP)){</span>
+<span class="nc" id="L60">                printHelp(options);</span>
+<span class="nc" id="L61">                return;</span>
+            }
+
+<span class="nc bnc" id="L64" title="All 2 branches missed.">            if(commandLine.hasOption(OPTION_MODE)){</span>
+<span class="nc" id="L65">                mode = VectAlign.Mode.valueOf(commandLine.getOptionValue(OPTION_MODE).toUpperCase());</span>
+            }
+
+            File tmpFile;
+<span class="nc bnc" id="L69" title="All 2 branches missed.">            if(commandLine.hasOption(OPTION_FROM)){</span>
+<span class="nc" id="L70">                fromSequence = commandLine.getOptionValue(OPTION_FROM);</span>
+
+<span class="nc" id="L72">                tmpFile = new File(fromSequence);</span>
+<span class="nc bnc" id="L73" title="All 4 branches missed.">                if(tmpFile.isFile() &amp;&amp; tmpFile.exists()){</span>
+<span class="nc bnc" id="L74" title="All 2 branches missed.">                    if(SVGParser.isSVGImage(tmpFile))</span>
+<span class="nc" id="L75">                        fromSequence = SVGParser.getPathDataFromSVGFile(tmpFile);</span>
+                    else
+<span class="nc" id="L77">                        fromSequence = Utils.readSequenceFromFile(tmpFile);</span>
+                }
+            }
+
+<span class="nc bnc" id="L81" title="All 2 branches missed.">            if(commandLine.hasOption(OPTION_TO)){</span>
+<span class="nc" id="L82">                toSequence = commandLine.getOptionValue(OPTION_TO);</span>
+
+<span class="nc" id="L84">                tmpFile = new File(toSequence);</span>
+<span class="nc bnc" id="L85" title="All 4 branches missed.">                if(tmpFile.isFile() &amp;&amp; tmpFile.exists()){</span>
+<span class="nc bnc" id="L86" title="All 2 branches missed.">                    if(SVGParser.isSVGImage(tmpFile))</span>
+<span class="nc" id="L87">                        toSequence = SVGParser.getPathDataFromSVGFile(tmpFile);</span>
+                    else
+<span class="nc" id="L89">                        toSequence = Utils.readSequenceFromFile(tmpFile);</span>
+                }
+            }
+
+<span class="nc bnc" id="L93" title="All 4 branches missed.">            if(fromSequence == null || toSequence == null){</span>
+<span class="nc bnc" id="L94" title="All 2 branches missed.">                if(fromSequence == null)</span>
+<span class="nc" id="L95">                    System.out.println(&quot;Missing START path sequence. Specify the starting path using -s (or --start)&quot;);</span>
+                else
+<span class="nc" id="L97">                    System.out.println(&quot;Missing END path sequence. Specify the ending path using -e (or --end)&quot;);</span>
+
+<span class="nc" id="L99">                return;</span>
+            }
+
+<span class="nc" id="L102">            String[] align = null;</span>
+            try{
+<span class="nc" id="L104">                align = VectAlign.align(fromSequence, toSequence, mode);</span>
+            }
+<span class="nc" id="L106">            catch (Exception e){</span>
+<span class="nc" id="L107">                System.out.println(&quot;###################### EXCEPTION #####################&quot;);</span>
+<span class="nc" id="L108">                e.printStackTrace();</span>
+<span class="nc" id="L109">                System.out.println(&quot;######################################################&quot;);</span>
+<span class="nc" id="L110">                System.out.println(&quot;\nFor contributions or issues reporting, please visit &quot; + Utils.ANSI_CYAN + &quot;https://github.com/bonnyfone/vectalign \n &quot;+ Utils.ANSI_RESET);</span>
+<span class="nc" id="L111">            }</span>
+
+<span class="nc bnc" id="L113" title="All 2 branches missed.">            if(align == null){</span>
+                //Something went wrong, read exceptions!
+<span class="nc" id="L115">                return;</span>
+            }
+
+<span class="nc" id="L118">            System.out.println(&quot;\n--------------------&quot;);</span>
+<span class="nc" id="L119">            System.out.println(&quot;  ALIGNMENT RESULT  &quot;);</span>
+<span class="nc" id="L120">            System.out.println(&quot;-------------------- &quot;);</span>
+<span class="nc" id="L121">            System.out.println(&quot;\n# new START path:  \n&quot; + Utils.ANSI_GREEN + align[0] + Utils.ANSI_RESET);</span>
+<span class="nc" id="L122">            System.out.println(&quot;\n# new END path:  \n&quot; + Utils.ANSI_YELLOW +align[1] + Utils.ANSI_RESET);</span>
+<span class="nc" id="L123">            System.out.println(&quot;\nThese sequences are morphable and can be used as 'pathData' attributes inside of VectorDrawable files.\n&quot;);</span>
+
+<span class="nc" id="L125">        } catch (ParseException e) {</span>
+<span class="nc" id="L126">            System.out.println(&quot;Wrong parameters!\n&quot;);</span>
+<span class="nc" id="L127">            printHelp(options);</span>
+<span class="nc" id="L128">        }</span>
+
+<span class="nc" id="L130">    }</span>
+
+
+    /**
+     * Print the help message
+     * @param options
+     */
+    private static void printHelp(Options options){
+<span class="nc" id="L138">        String header = &quot;\nAlign two VectorDrawable paths in order to allow morphing animations between them.\n\n&quot;;</span>
+<span class="nc" id="L139">        String footer = &quot;\nFor contributions or issues reporting, please visit&quot;+ Utils.ANSI_CYAN + &quot; https://github.com/bonnyfone/vectalign \n &quot;+ Utils.ANSI_RESET;</span>
+<span class="nc" id="L140">        HelpFormatter formatter = new HelpFormatter();</span>
+<span class="nc" id="L141">        formatter.setOptionComparator(new Comparator&lt;Option&gt;() {</span>
+            @Override
+            public int compare(Option o1, Option o2) {
+<span class="nc bnc" id="L144" title="All 2 branches missed.">                if(o1.hasArgs())</span>
+<span class="nc" id="L145">                    return 1;</span>
+<span class="nc bnc" id="L146" title="All 2 branches missed.">                else if(o2.hasArgs())</span>
+<span class="nc" id="L147">                    return -1;</span>
+
+<span class="nc" id="L149">                return 0;</span>
+            }
+        });
+<span class="nc" id="L152">        formatter.printHelp(&quot;java -jar vectalign.jar &quot;, header, options, footer, true);</span>
+<span class="nc" id="L153">    }</span>
+
+
+    /**
+     * Create commandLine options
+     * @return
+     */
+    private static Options initCommandLineOptions(){
+<span class="nc" id="L161">        Options options = new Options();</span>
+
+<span class="nc" id="L163">        options.addOption(OptionBuilder.withLongOpt(&quot;gui&quot;)</span>
+<span class="nc" id="L164">                .withDescription(&quot;Start VectAlign GUI&quot;)</span>
+<span class="nc" id="L165">                .create(OPTION_GUI));</span>
+
+<span class="nc" id="L167">        options.addOption(OptionBuilder.withLongOpt(&quot;start&quot;)</span>
+<span class="nc" id="L168">                .withDescription(&quot;Starting VectorDrawable path (\&quot;string\&quot;, txt file or SVG file)&quot;)</span>
+<span class="nc" id="L169">                .hasArg()</span>
+<span class="nc" id="L170">                .withArgName(&quot;\&quot;string\&quot;|txt_file|svg_file&quot;)</span>
+<span class="nc" id="L171">                .create(OPTION_FROM));</span>
+
+<span class="nc" id="L173">        options.addOption(OptionBuilder.withLongOpt(&quot;end&quot;)</span>
+<span class="nc" id="L174">                .withDescription(&quot;Ending VectorDrawable path (\&quot;string\&quot;, txt file or SVG file)&quot;)</span>
+<span class="nc" id="L175">                .hasArg()</span>
+<span class="nc" id="L176">                .withArgName(&quot;\&quot;string\&quot;|txt_file|svg_file&quot;)</span>
+<span class="nc" id="L177">                .create(OPTION_TO));</span>
+
+<span class="nc" id="L179">        options.addOption(OptionBuilder.withLongOpt(&quot;mode&quot;)</span>
+<span class="nc" id="L180">                .withDescription(&quot;Aligning technique (default is BASE)&quot;)</span>
+<span class="nc" id="L181">                .hasArg()</span>
+<span class="nc" id="L182">                .withArgName(&quot;BASE|LINEAR|SUB_BASE|SUB_LINEAR&quot;)</span>
+<span class="nc" id="L183">                .create(OPTION_MODE));</span>
+
+<span class="nc" id="L185">        options.addOption(OptionBuilder.withLongOpt(&quot;version&quot;)</span>
+<span class="nc" id="L186">                .withDescription(&quot;Print the version of the application&quot;)</span>
+<span class="nc" id="L187">                .create(OPTION_VERSION));</span>
+
+<span class="nc" id="L189">        options.addOption(OptionBuilder.withLongOpt(&quot;help&quot;).create(OPTION_HELP));</span>
+
+
+<span class="nc" id="L192">        return options;</span>
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

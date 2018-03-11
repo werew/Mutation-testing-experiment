@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SVGDrawingPanel.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">vectalign</a> &gt; <a href="index.source.html" class="el_package">com.bonnyfone.vectalign.viewer</a> &gt; <span class="el_source">SVGDrawingPanel.java</span></div><h1>SVGDrawingPanel.java</h1><pre class="source lang-java linenums">package com.bonnyfone.vectalign.viewer;
+
+import android.support.v7.graphics.drawable.PathParser;
+import com.bonnyfone.vectalign.PathNodeUtils;
+import com.kitfox.svg.SVGCache;
+import com.kitfox.svg.app.beans.SVGIcon;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.io.*;
+import java.net.URI;
+import java.util.ArrayList;
+
+/**
+ * Created by ziby on 20/09/15.
+ */
+public class SVGDrawingPanel extends RoundedJPanel implements ComponentListener {
+
+<span class="nc" id="L21">    public static String TRANSPARENT_COLOR = &quot;none&quot;;</span>
+
+    private SVGDrawingPanelListener listener;
+
+    //SVG preview
+    private SVGIcon svg;
+    private Thread animator;
+
+    //Data
+    private String startPath;
+    private String endPath;
+    private PathParser.PathDataNode[] startPathNode;
+    private PathParser.PathDataNode[] endPathNode;
+<span class="nc" id="L34">    private float currentStep = 0.0f;</span>
+
+    //Color, stroke
+    private String strokeColor;
+    private String fillColor;
+<span class="nc" id="L39">    private float strokeSize = 2;</span>
+
+<span class="nc" id="L41">    private int width = 512;</span>
+<span class="nc" id="L42">    private int height = 522;</span>
+<span class="nc" id="L43">    private int viewBoxWidth = width;</span>
+<span class="nc" id="L44">    private int viewBoxHeight = height;</span>
+<span class="nc" id="L45">    private float courtesyNegativeSlop = -0.01f;</span>
+<span class="nc" id="L46">    private float courtesyScaleUp = 1.2f;</span>
+<span class="nc" id="L47">    private int viewBoxNegativeSlop = (int) (courtesyNegativeSlop * viewBoxWidth);</span>
+
+    private long frameSeed;
+
+    public SVGDrawingPanel() {
+<span class="nc" id="L52">        super();</span>
+<span class="nc" id="L53">        svg = new SVGIcon();</span>
+<span class="nc" id="L54">        svg.setScaleToFit(true);</span>
+<span class="nc" id="L55">        addComponentListener(this);</span>
+<span class="nc" id="L56">    }</span>
+
+    @Override
+    public void paintComponent(Graphics g) {
+        try{
+<span class="nc" id="L61">            super.paintComponent(g);</span>
+        }
+<span class="nc" id="L63">        catch (Exception e){}</span>
+
+<span class="nc" id="L65">        final int width = getWidth();</span>
+<span class="nc" id="L66">        final int height = getHeight();</span>
+<span class="nc" id="L67">        g.setColor(getBackground());</span>
+        //g.fillRect(0, 0, width, height);
+
+<span class="nc" id="L70">        svg.setAntiAlias(true);</span>
+<span class="nc" id="L71">        svg.paintIcon(this, g, 0, 0);</span>
+<span class="nc" id="L72">    }</span>
+
+    @Override
+    public void componentResized(ComponentEvent e) {
+<span class="nc" id="L76">        adaptSizeWithoutStretch(e.getComponent().getSize());</span>
+<span class="nc" id="L77">    }</span>
+
+    private void adaptSizeWithoutStretch(Dimension newSize){
+<span class="nc" id="L80">        int newW = (int) newSize.getWidth();</span>
+<span class="nc" id="L81">        int newH = (int) newSize.getHeight();</span>
+
+<span class="nc" id="L83">        float ratio = ((float)width)/height;</span>
+<span class="nc" id="L84">        float newRatio = ((float)newW)/newH;</span>
+
+<span class="nc bnc" id="L86" title="All 2 branches missed.">        if(newRatio &gt; ratio)</span>
+<span class="nc" id="L87">            newW = (int) (newH*ratio);</span>
+        else
+<span class="nc" id="L89">            newH = (int) (newW/ratio);</span>
+
+<span class="nc" id="L91">        svg.setPreferredSize(new Dimension(newW, newH));</span>
+<span class="nc" id="L92">    }</span>
+
+    @Override
+<span class="nc" id="L95">    public void componentMoved(ComponentEvent e) {}</span>
+
+    @Override
+<span class="nc" id="L98">    public void componentShown(ComponentEvent e) {}</span>
+
+    @Override
+<span class="nc" id="L101">    public void componentHidden(ComponentEvent e) {}</span>
+
+    public void setPaths(String start, String end){
+<span class="nc" id="L104">        setupPaths(start, end);</span>
+<span class="nc" id="L105">    }</span>
+
+    public void setPath(String path){
+<span class="nc" id="L108">        setupPaths(path, null);</span>
+<span class="nc" id="L109">    }</span>
+
+    private void setupPaths(String start, String end){
+<span class="nc" id="L112">        frameSeed = System.currentTimeMillis();</span>
+<span class="nc bnc" id="L113" title="All 2 branches missed.">        if(start != null){</span>
+<span class="nc" id="L114">            startPath = start;</span>
+<span class="nc" id="L115">            startPathNode = PathParser.createNodesFromPathData(startPath);</span>
+        }
+<span class="nc bnc" id="L117" title="All 2 branches missed.">        if(end != null){</span>
+<span class="nc" id="L118">            endPath = end;</span>
+<span class="nc" id="L119">            endPathNode = PathParser.createNodesFromPathData(endPath);</span>
+        }
+
+        //adapt svg size and viewport
+<span class="nc" id="L123">        float maxX = 0;</span>
+<span class="nc" id="L124">        float maxY = 0;</span>
+<span class="nc" id="L125">        float maxValuesStartPath[] = PathNodeUtils.getMaxValues(startPathNode);</span>
+<span class="nc" id="L126">        float maxValuesEndPath[] = PathNodeUtils.getMaxValues(endPathNode);</span>
+<span class="nc bnc" id="L127" title="All 2 branches missed.">        if(maxValuesStartPath != null){</span>
+<span class="nc" id="L128">            maxX = Math.max(maxValuesStartPath[0], maxX);</span>
+<span class="nc" id="L129">            maxY = Math.max(maxValuesStartPath[1], maxY);</span>
+        }
+<span class="nc bnc" id="L131" title="All 2 branches missed.">        if(maxValuesEndPath != null){</span>
+<span class="nc" id="L132">            maxX = Math.max(maxValuesEndPath[0], maxX);</span>
+<span class="nc" id="L133">            maxY = Math.max(maxValuesEndPath[1], maxY);</span>
+        }
+
+        //FIXME for now, we keep a squared aspect ratio
+<span class="nc" id="L137">        int newViewBox = (int) (courtesyScaleUp * Math.max(maxX, maxY));</span>
+
+<span class="nc" id="L139">        viewBoxWidth = newViewBox;</span>
+<span class="nc" id="L140">        viewBoxHeight = newViewBox;</span>
+<span class="nc" id="L141">        viewBoxNegativeSlop = (int) (courtesyNegativeSlop * newViewBox);</span>
+
+<span class="nc" id="L143">        System.out.println(&quot;SVG Viewport: &quot; +viewBoxWidth + &quot; x &quot;+viewBoxHeight);</span>
+<span class="nc" id="L144">    }</span>
+
+    public void redraw(){
+<span class="nc" id="L147">        renderStep(currentStep);</span>
+<span class="nc" id="L148">    }</span>
+
+    public void reset(){
+<span class="nc" id="L151">        currentStep = 0;</span>
+<span class="nc" id="L152">        redraw();</span>
+<span class="nc" id="L153">    }</span>
+
+    public void renderStep(float step){
+        //Interpolate morphing
+<span class="nc" id="L157">        currentStep = step;</span>
+<span class="nc" id="L158">        String svgFrame = null;</span>
+<span class="nc bnc" id="L159" title="All 2 branches missed.">        if(endPathNode != null){</span>
+<span class="nc" id="L160">            ArrayList&lt;PathParser.PathDataNode&gt; interp = new ArrayList&lt;&gt;();</span>
+            PathParser.PathDataNode n;
+<span class="nc bnc" id="L162" title="All 2 branches missed.">            for(int i=0; i&lt;startPathNode.length; i++){</span>
+<span class="nc" id="L163">                n = startPathNode[i];</span>
+<span class="nc" id="L164">                PathParser.PathDataNode newNode = new PathParser.PathDataNode(n.mType, new float[n.mParams.length]);</span>
+<span class="nc" id="L165">                newNode.interpolatePathDataNode(n, endPathNode[i], step);</span>
+<span class="nc" id="L166">                interp.add(newNode);</span>
+            }
+<span class="nc" id="L168">            svgFrame = makeDynamicSVG(PathNodeUtils.pathNodesToString(interp));</span>
+<span class="nc" id="L169">        }else{</span>
+<span class="nc" id="L170">            svgFrame = makeDynamicSVG(startPath);</span>
+        }
+
+        //Rendering step using SVGSalamander...a bit tricky, need to be improved
+<span class="nc" id="L174">        StringReader reader = new StringReader(svgFrame);</span>
+<span class="nc" id="L175">        URI uri = SVGCache.getSVGUniverse().loadSVG(reader, frameSeed + &quot;_&quot; + strokeSize + &quot;_&quot; + strokeColor + &quot;_&quot; + fillColor + &quot;_&quot; + this.hashCode() + &quot;_svg_frame&quot;+step);</span>
+<span class="nc" id="L176">        svg.setSvgURI(uri);</span>
+
+<span class="nc bnc" id="L178" title="All 2 branches missed.">        if(getListener() != null)</span>
+<span class="nc" id="L179">            getListener().onMorphingChanges(currentStep);</span>
+
+        //refresh
+<span class="nc bnc" id="L182" title="All 2 branches missed.">        if (SwingUtilities.isEventDispatchThread()){</span>
+<span class="nc" id="L183">            updateUI();</span>
+        } else {
+<span class="nc" id="L185">            SwingUtilities.invokeLater(new Runnable(){</span>
+                public void run(){
+<span class="nc" id="L187">                    updateUI();</span>
+<span class="nc" id="L188">                }</span>
+            });
+        }
+<span class="nc" id="L191">    }</span>
+
+    public synchronized void toggleAnimation(){
+<span class="nc bnc" id="L194" title="All 4 branches missed.">        if(animator != null &amp;&amp; animator.isAlive())</span>
+<span class="nc" id="L195">            stopAnimation();</span>
+        else
+<span class="nc" id="L197">            startAnimation();</span>
+<span class="nc" id="L198">    }</span>
+
+    public boolean isAnimating(){
+<span class="nc bnc" id="L201" title="All 4 branches missed.">        return (animator != null &amp;&amp; animator.isAlive());</span>
+    }
+
+    public float getCurrentStep(){
+<span class="nc" id="L205">        return currentStep;</span>
+    }
+
+    public synchronized void startAnimation(){
+<span class="nc" id="L209">        animator = new Thread() {</span>
+            @Override
+            public void run() {
+                try {
+<span class="nc bnc" id="L213" title="All 2 branches missed.">                    if(currentStep&gt;1)</span>
+<span class="nc" id="L214">                        currentStep = 1;</span>
+<span class="nc bnc" id="L215" title="All 2 branches missed.">                    else if(currentStep &lt; 0)</span>
+<span class="nc" id="L216">                        currentStep = 0;</span>
+
+<span class="nc" id="L218">                    float f=currentStep;</span>
+<span class="nc" id="L219">                    int baseWaitTime = 16;</span>
+<span class="nc" id="L220">                    int longWaitTime = 256;</span>
+<span class="nc" id="L221">                    float step = 0.005f;</span>
+<span class="nc bnc" id="L222" title="All 2 branches missed.">                    while(!isInterrupted()){</span>
+<span class="nc" id="L223">                        renderStep(f);</span>
+<span class="nc bnc" id="L224" title="All 4 branches missed.">                        sleep(f &lt;= 0 || f &gt;= 1 ? longWaitTime : baseWaitTime);</span>
+<span class="nc" id="L225">                        f+=step;</span>
+<span class="nc bnc" id="L226" title="All 4 branches missed.">                        if(f &gt; 1 || f &lt; 0){</span>
+<span class="nc" id="L227">                            step = -step;</span>
+                        }
+                    }
+
+<span class="nc" id="L231">                } catch (InterruptedException e) {</span>
+                }
+                finally{
+<span class="nc" id="L234">                    System.out.println(&quot;Animation interrupted.&quot;);</span>
+                }
+
+<span class="nc" id="L237">            }</span>
+        };
+<span class="nc" id="L239">        animator.start();</span>
+<span class="nc" id="L240">    }</span>
+
+
+    public synchronized void stopAnimation(){
+<span class="nc bnc" id="L244" title="All 4 branches missed.">        if(animator != null &amp;&amp; animator.isAlive())</span>
+<span class="nc" id="L245">            animator.interrupt();</span>
+
+<span class="nc" id="L247">        animator = null;</span>
+<span class="nc" id="L248">    }</span>
+
+    private String makeDynamicSVG(String data) {
+<span class="nc" id="L251">        StringWriter sw = new StringWriter();</span>
+<span class="nc" id="L252">        PrintWriter pw = new PrintWriter(sw);</span>
+
+<span class="nc" id="L254">        pw.println(&quot;&lt;svg version=\&quot;1.1\&quot; xmlns=\&quot;http://www.w3.org/2000/svg\&quot; xmlns:xlink=\&quot;http://www.w3.org/1999/xlink\&quot;&quot; +</span>
+                &quot;\t width=\&quot;&quot; + width + &quot;px\&quot; height=\&quot;&quot; + height + &quot;px\&quot; viewBox=\&quot;&quot; + viewBoxNegativeSlop*3 + &quot; &quot; + viewBoxNegativeSlop + &quot; &quot;+ viewBoxWidth + &quot; &quot; + viewBoxHeight + &quot;\&quot; &gt;\n&quot; +
+<span class="nc" id="L256">                &quot;\t\t&lt;path fill=\&quot;&quot; + getFillColor() + &quot;\&quot; stroke=\&quot;&quot; + getStrokeColor() + &quot;\&quot; stroke-width=\&quot;&quot; + getStrokeSize() + &quot;\&quot; d=\&quot;&quot; + data + &quot;\&quot;/&gt;\n&quot; + //TODO https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Fills_and_Strokes</span>
+                &quot;&lt;/svg&gt;\n&quot;);
+<span class="nc" id="L258">        pw.close();</span>
+<span class="nc" id="L259">        return sw.toString();</span>
+    }
+
+    public void close() {
+<span class="nc" id="L263">        stopAnimation();</span>
+<span class="nc" id="L264">    }</span>
+
+    public String getStrokeColor(){
+<span class="nc bnc" id="L267" title="All 2 branches missed.">        if(strokeColor != null)</span>
+<span class="nc" id="L268">            return strokeColor;</span>
+
+<span class="nc" id="L270">        return TRANSPARENT_COLOR;</span>
+    }
+
+    public String getFillColor(){
+<span class="nc bnc" id="L274" title="All 2 branches missed.">        if(fillColor != null)</span>
+<span class="nc" id="L275">            return fillColor;</span>
+
+<span class="nc" id="L277">        return TRANSPARENT_COLOR;</span>
+    }
+
+    public float getStrokeSize(){
+<span class="nc" id="L281">        return strokeSize;</span>
+    }
+
+    public void setStrokeSize(float size){
+<span class="nc" id="L285">        strokeSize = size;</span>
+<span class="nc" id="L286">    }</span>
+
+    public void setStrokeColor(String strokeColor) {
+<span class="nc" id="L289">        this.strokeColor = strokeColor;</span>
+<span class="nc" id="L290">    }</span>
+
+    public void setFillColor(String fillColor) {
+<span class="nc" id="L293">        this.fillColor = fillColor;</span>
+<span class="nc" id="L294">    }</span>
+
+    public String getPath(){
+<span class="nc" id="L297">        return startPath;</span>
+    }
+
+    public int getSVGWidth() {
+<span class="nc" id="L301">        return width;</span>
+    }
+
+    public void setSVGWidth(int width) {
+<span class="nc" id="L305">        this.width = width;</span>
+<span class="nc" id="L306">    }</span>
+
+    public int getSVGHeight() {
+<span class="nc" id="L309">        return height;</span>
+    }
+
+    public void setSVGHeight(int height) {
+<span class="nc" id="L313">        this.height = height;</span>
+<span class="nc" id="L314">    }</span>
+
+    public int getSVGViewBoxWidth() {
+<span class="nc" id="L317">        return viewBoxWidth;</span>
+    }
+
+    public void setSVGViewBoxWidth(int viewBoxWidth) {
+<span class="nc" id="L321">        this.viewBoxWidth = viewBoxWidth;</span>
+<span class="nc" id="L322">    }</span>
+
+    public int getSVGViewBoxHeight() {
+<span class="nc" id="L325">        return viewBoxHeight;</span>
+    }
+
+    public void setSVGViewBoxHeight(int viewBoxHeight) {
+<span class="nc" id="L329">        this.viewBoxHeight = viewBoxHeight;</span>
+<span class="nc" id="L330">    }</span>
+
+    public SVGDrawingPanelListener getListener() {
+<span class="nc" id="L333">        return listener;</span>
+    }
+
+    public void setListener(SVGDrawingPanelListener listener) {
+<span class="nc" id="L337">        this.listener = listener;</span>
+<span class="nc" id="L338">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

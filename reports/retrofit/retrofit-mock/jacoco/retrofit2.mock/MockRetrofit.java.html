@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MockRetrofit.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Retrofit Mock Adapter</a> &gt; <a href="index.source.html" class="el_package">retrofit2.mock</a> &gt; <span class="el_source">MockRetrofit.java</span></div><h1>MockRetrofit.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2015 Square, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package retrofit2.mock;
+
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import retrofit2.Retrofit;
+
+public final class MockRetrofit {
+  private final Retrofit retrofit;
+  private final NetworkBehavior behavior;
+  private final ExecutorService executor;
+
+<span class="fc" id="L28">  MockRetrofit(Retrofit retrofit, NetworkBehavior behavior, ExecutorService executor) {</span>
+<span class="fc" id="L29">    this.retrofit = retrofit;</span>
+<span class="fc" id="L30">    this.behavior = behavior;</span>
+<span class="fc" id="L31">    this.executor = executor;</span>
+<span class="fc" id="L32">  }</span>
+
+  public Retrofit retrofit() {
+<span class="fc" id="L35">    return retrofit;</span>
+  }
+
+  public NetworkBehavior networkBehavior() {
+<span class="fc" id="L39">    return behavior;</span>
+  }
+
+  public Executor backgroundExecutor() {
+<span class="fc" id="L43">    return executor;</span>
+  }
+
+  @SuppressWarnings(&quot;unchecked&quot;) // Single-interface proxy creation guarded by parameter safety.
+  public &lt;T&gt; BehaviorDelegate&lt;T&gt; create(Class&lt;T&gt; service) {
+<span class="fc" id="L48">    return new BehaviorDelegate&lt;&gt;(retrofit, behavior, executor, service);</span>
+  }
+
+  public static final class Builder {
+    private final Retrofit retrofit;
+    private NetworkBehavior behavior;
+    private ExecutorService executor;
+
+    @SuppressWarnings(&quot;ConstantConditions&quot;) // Guarding public API nullability.
+<span class="fc" id="L57">    public Builder(Retrofit retrofit) {</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">      if (retrofit == null) throw new NullPointerException(&quot;retrofit == null&quot;);</span>
+<span class="fc" id="L59">      this.retrofit = retrofit;</span>
+<span class="fc" id="L60">    }</span>
+
+    @SuppressWarnings(&quot;ConstantConditions&quot;) // Guarding public API nullability.
+    public Builder networkBehavior(NetworkBehavior behavior) {
+<span class="fc bfc" id="L64" title="All 2 branches covered.">      if (behavior == null) throw new NullPointerException(&quot;behavior == null&quot;);</span>
+<span class="fc" id="L65">      this.behavior = behavior;</span>
+<span class="fc" id="L66">      return this;</span>
+    }
+
+    @SuppressWarnings(&quot;ConstantConditions&quot;) // Guarding public API nullability.
+    public Builder backgroundExecutor(ExecutorService executor) {
+<span class="fc bfc" id="L71" title="All 2 branches covered.">      if (executor == null) throw new NullPointerException(&quot;executor == null&quot;);</span>
+<span class="fc" id="L72">      this.executor = executor;</span>
+<span class="fc" id="L73">      return this;</span>
+    }
+
+    public MockRetrofit build() {
+<span class="fc bfc" id="L77" title="All 2 branches covered.">      if (behavior == null) behavior = NetworkBehavior.create();</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">      if (executor == null) executor = Executors.newCachedThreadPool();</span>
+<span class="fc" id="L79">      return new MockRetrofit(retrofit, behavior, executor);</span>
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

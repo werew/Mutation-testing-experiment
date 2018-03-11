@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PropertyUtil.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JavaHamcrest</a> &gt; <a href="index.source.html" class="el_package">org.hamcrest.beans</a> &gt; <span class="el_source">PropertyUtil.java</span></div><h1>PropertyUtil.java</h1><pre class="source lang-java linenums">package org.hamcrest.beans;
+
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+
+/**
+ * Utility class for accessing properties on JavaBean objects.
+ * See http://java.sun.com/products/javabeans/docs/index.html for
+ * more information on JavaBeans.
+ *
+ * @author Iain McGinniss
+ * @author Steve Freeman
+ * @since 1.1.0
+ */
+<span class="nc" id="L16">public class PropertyUtil {</span>
+    /**
+     * Returns the description of the property with the provided
+     * name on the provided object's interface.
+     *
+     * @return the descriptor of the property, or null if the property does not exist.
+     * @throws IllegalArgumentException if there's a introspection failure
+     */
+    public static PropertyDescriptor getPropertyDescriptor(String propertyName, Object fromObj) throws IllegalArgumentException {
+<span class="fc bfc" id="L25" title="All 2 branches covered.">        for (PropertyDescriptor property : propertyDescriptorsFor(fromObj, null)) {</span>
+<span class="fc bfc" id="L26" title="All 2 branches covered.">            if (property.getName().equals(propertyName)) {</span>
+<span class="fc" id="L27">                return property;</span>
+            }
+        }
+
+<span class="fc" id="L31">        return null;</span>
+    }
+
+    /**
+     * Returns all the property descriptors for the class associated with the given object
+     * 
+     * @param fromObj Use the class of this object
+     * @param stopClass Don't include any properties from this ancestor class upwards.
+     * @return Property descriptors
+     * @throws IllegalArgumentException if there's a introspection failure
+     */
+    public static PropertyDescriptor[] propertyDescriptorsFor(Object fromObj, Class&lt;Object&gt; stopClass) throws IllegalArgumentException {
+      try {
+<span class="fc" id="L44">        return Introspector.getBeanInfo(fromObj.getClass(), stopClass).getPropertyDescriptors();</span>
+<span class="nc" id="L45">      } catch (IntrospectionException e) {</span>
+<span class="nc" id="L46">        throw new IllegalArgumentException(&quot;Could not get property descriptors for &quot; + fromObj.getClass(), e);</span>
+      }
+    }
+
+<span class="fc" id="L50">    public static final Object[] NO_ARGUMENTS = new Object[0];</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

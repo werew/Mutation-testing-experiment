@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JsonAdapter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Moshi</a> &gt; <a href="index.source.html" class="el_package">com.squareup.moshi</a> &gt; <span class="el_source">JsonAdapter.java</span></div><h1>JsonAdapter.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2014 Square, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.squareup.moshi;
+
+import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.math.BigDecimal;
+import java.util.Set;
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
+import okio.Buffer;
+import okio.BufferedSink;
+import okio.BufferedSource;
+
+/**
+ * Converts Java values to JSON, and JSON values to Java.
+ */
+<span class="fc" id="L32">public abstract class JsonAdapter&lt;T&gt; {</span>
+  @CheckReturnValue public abstract @Nullable T fromJson(JsonReader reader) throws IOException;
+
+  @CheckReturnValue public final @Nullable T fromJson(BufferedSource source) throws IOException {
+<span class="nc" id="L36">    return fromJson(JsonReader.of(source));</span>
+  }
+
+  @CheckReturnValue public final @Nullable T fromJson(String string) throws IOException {
+<span class="fc" id="L40">    JsonReader reader = JsonReader.of(new Buffer().writeUtf8(string));</span>
+<span class="fc" id="L41">    T result = fromJson(reader);</span>
+<span class="fc bfc" id="L42" title="All 4 branches covered.">    if (!isLenient() &amp;&amp; reader.peek() != JsonReader.Token.END_DOCUMENT) {</span>
+<span class="fc" id="L43">      throw new JsonDataException(&quot;JSON document was not fully consumed.&quot;);</span>
+    }
+<span class="fc" id="L45">    return result;</span>
+  }
+
+  public abstract void toJson(JsonWriter writer, @Nullable T value) throws IOException;
+
+  public final void toJson(BufferedSink sink, @Nullable T value) throws IOException {
+<span class="fc" id="L51">    JsonWriter writer = JsonWriter.of(sink);</span>
+<span class="fc" id="L52">    toJson(writer, value);</span>
+<span class="fc" id="L53">  }</span>
+
+  @CheckReturnValue public final String toJson(@Nullable T value) {
+<span class="fc" id="L56">    Buffer buffer = new Buffer();</span>
+    try {
+<span class="fc" id="L58">      toJson(buffer, value);</span>
+<span class="nc" id="L59">    } catch (IOException e) {</span>
+<span class="nc" id="L60">      throw new AssertionError(e); // No I/O writing to a Buffer.</span>
+<span class="fc" id="L61">    }</span>
+<span class="fc" id="L62">    return buffer.readUtf8();</span>
+  }
+
+  /**
+   * Encodes {@code value} as a Java value object comprised of maps, lists, strings, numbers,
+   * booleans, and nulls.
+   *
+   * &lt;p&gt;Values encoded using {@code value(double)} or {@code value(long)} are modeled with the
+   * corresponding boxed type. Values encoded using {@code value(Number)} are modeled as a
+   * {@link Long} for boxed integer types ({@link Byte}, {@link Short}, {@link Integer}, and {@link
+   * Long}), as a {@link Double} for boxed floating point types ({@link Float} and {@link Double}),
+   * and as a {@link BigDecimal} for all other types.
+   */
+  @CheckReturnValue public final @Nullable Object toJsonValue(@Nullable T value) {
+<span class="fc" id="L76">    JsonValueWriter writer = new JsonValueWriter();</span>
+    try {
+<span class="fc" id="L78">      toJson(writer, value);</span>
+<span class="fc" id="L79">      return writer.root();</span>
+<span class="nc" id="L80">    } catch (IOException e) {</span>
+<span class="nc" id="L81">      throw new AssertionError(e); // No I/O writing to an object.</span>
+    }
+  }
+
+  /**
+   * Decodes a Java value object from {@code value}, which must be comprised of maps, lists,
+   * strings, numbers, booleans and nulls.
+   */
+  @CheckReturnValue public final @Nullable T fromJsonValue(@Nullable Object value) {
+<span class="fc" id="L90">    JsonValueReader reader = new JsonValueReader(value);</span>
+    try {
+<span class="fc" id="L92">      return fromJson(reader);</span>
+<span class="nc" id="L93">    } catch (IOException e) {</span>
+<span class="nc" id="L94">      throw new AssertionError(e); // No I/O reading from an object.</span>
+    }
+  }
+
+  /**
+   * Returns a JSON adapter equal to this JSON adapter, but that serializes nulls when encoding
+   * JSON.
+   */
+  @CheckReturnValue public final JsonAdapter&lt;T&gt; serializeNulls() {
+<span class="fc" id="L103">    final JsonAdapter&lt;T&gt; delegate = this;</span>
+<span class="fc" id="L104">    return new JsonAdapter&lt;T&gt;() {</span>
+      @Override public @Nullable T fromJson(JsonReader reader) throws IOException {
+<span class="nc" id="L106">        return delegate.fromJson(reader);</span>
+      }
+      @Override public void toJson(JsonWriter writer, @Nullable T value) throws IOException {
+<span class="fc" id="L109">        boolean serializeNulls = writer.getSerializeNulls();</span>
+<span class="fc" id="L110">        writer.setSerializeNulls(true);</span>
+        try {
+<span class="fc" id="L112">          delegate.toJson(writer, value);</span>
+        } finally {
+<span class="fc" id="L114">          writer.setSerializeNulls(serializeNulls);</span>
+        }
+<span class="fc" id="L116">      }</span>
+      @Override boolean isLenient() {
+<span class="nc" id="L118">        return delegate.isLenient();</span>
+      }
+      @Override public String toString() {
+<span class="nc" id="L121">        return delegate + &quot;.serializeNulls()&quot;;</span>
+      }
+    };
+  }
+
+  /**
+   * Returns a JSON adapter equal to this JSON adapter, but with support for reading and writing
+   * nulls.
+   */
+  @CheckReturnValue public final JsonAdapter&lt;T&gt; nullSafe() {
+<span class="fc" id="L131">    final JsonAdapter&lt;T&gt; delegate = this;</span>
+<span class="fc" id="L132">    return new JsonAdapter&lt;T&gt;() {</span>
+      @Override public @Nullable T fromJson(JsonReader reader) throws IOException {
+<span class="fc bfc" id="L134" title="All 2 branches covered.">        if (reader.peek() == JsonReader.Token.NULL) {</span>
+<span class="fc" id="L135">          return reader.nextNull();</span>
+        } else {
+<span class="fc" id="L137">          return delegate.fromJson(reader);</span>
+        }
+      }
+      @Override public void toJson(JsonWriter writer, @Nullable T value) throws IOException {
+<span class="fc bfc" id="L141" title="All 2 branches covered.">        if (value == null) {</span>
+<span class="fc" id="L142">          writer.nullValue();</span>
+        } else {
+<span class="fc" id="L144">          delegate.toJson(writer, value);</span>
+        }
+<span class="fc" id="L146">      }</span>
+      @Override boolean isLenient() {
+<span class="fc" id="L148">        return delegate.isLenient();</span>
+      }
+      @Override public String toString() {
+<span class="nc" id="L151">        return delegate + &quot;.nullSafe()&quot;;</span>
+      }
+    };
+  }
+
+  /** Returns a JSON adapter equal to this, but is lenient when reading and writing. */
+  @CheckReturnValue public final JsonAdapter&lt;T&gt; lenient() {
+<span class="fc" id="L158">    final JsonAdapter&lt;T&gt; delegate = this;</span>
+<span class="fc" id="L159">    return new JsonAdapter&lt;T&gt;() {</span>
+      @Override public @Nullable T fromJson(JsonReader reader) throws IOException {
+<span class="fc" id="L161">        boolean lenient = reader.isLenient();</span>
+<span class="fc" id="L162">        reader.setLenient(true);</span>
+        try {
+<span class="fc" id="L164">          return delegate.fromJson(reader);</span>
+        } finally {
+<span class="fc" id="L166">          reader.setLenient(lenient);</span>
+        }
+      }
+      @Override public void toJson(JsonWriter writer, @Nullable T value) throws IOException {
+<span class="fc" id="L170">        boolean lenient = writer.isLenient();</span>
+<span class="fc" id="L171">        writer.setLenient(true);</span>
+        try {
+<span class="fc" id="L173">          delegate.toJson(writer, value);</span>
+        } finally {
+<span class="fc" id="L175">          writer.setLenient(lenient);</span>
+        }
+<span class="fc" id="L177">      }</span>
+      @Override boolean isLenient() {
+<span class="fc" id="L179">        return true;</span>
+      }
+      @Override public String toString() {
+<span class="nc" id="L182">        return delegate + &quot;.lenient()&quot;;</span>
+      }
+    };
+  }
+
+  /**
+   * Returns a JSON adapter equal to this, but that throws a {@link JsonDataException} when
+   * {@linkplain JsonReader#setFailOnUnknown(boolean) unknown values} are encountered. This
+   * constraint applies to both the top-level message handled by this type adapter as well as to
+   * nested messages.
+   */
+  @CheckReturnValue public final JsonAdapter&lt;T&gt; failOnUnknown() {
+<span class="fc" id="L194">    final JsonAdapter&lt;T&gt; delegate = this;</span>
+<span class="fc" id="L195">    return new JsonAdapter&lt;T&gt;() {</span>
+      @Override public @Nullable T fromJson(JsonReader reader) throws IOException {
+<span class="fc" id="L197">        boolean skipForbidden = reader.failOnUnknown();</span>
+<span class="fc" id="L198">        reader.setFailOnUnknown(true);</span>
+        try {
+<span class="nc" id="L200">          return delegate.fromJson(reader);</span>
+        } finally {
+<span class="fc" id="L202">          reader.setFailOnUnknown(skipForbidden);</span>
+        }
+      }
+      @Override public void toJson(JsonWriter writer, @Nullable T value) throws IOException {
+<span class="nc" id="L206">        delegate.toJson(writer, value);</span>
+<span class="nc" id="L207">      }</span>
+      @Override boolean isLenient() {
+<span class="nc" id="L209">        return delegate.isLenient();</span>
+      }
+      @Override public String toString() {
+<span class="nc" id="L212">        return delegate + &quot;.failOnUnknown()&quot;;</span>
+      }
+    };
+  }
+
+  /**
+   * Return a JSON adapter equal to this, but using {@code indent} to control how the result is
+   * formatted. The {@code indent} string to be repeated for each level of indentation in the
+   * encoded document. If {@code indent.isEmpty()} the encoded document will be compact. Otherwise
+   * the encoded document will be more human-readable.
+   *
+   * @param indent a string containing only whitespace.
+   */
+  @CheckReturnValue public JsonAdapter&lt;T&gt; indent(final String indent) {
+<span class="fc bfc" id="L226" title="All 2 branches covered.">    if (indent == null) {</span>
+<span class="fc" id="L227">      throw new NullPointerException(&quot;indent == null&quot;);</span>
+    }
+<span class="fc" id="L229">    final JsonAdapter&lt;T&gt; delegate = this;</span>
+<span class="fc" id="L230">    return new JsonAdapter&lt;T&gt;() {</span>
+      @Override public @Nullable T fromJson(JsonReader reader) throws IOException {
+<span class="nc" id="L232">        return delegate.fromJson(reader);</span>
+      }
+      @Override public void toJson(JsonWriter writer, @Nullable T value) throws IOException {
+<span class="fc" id="L235">        String originalIndent = writer.getIndent();</span>
+<span class="fc" id="L236">        writer.setIndent(indent);</span>
+        try {
+<span class="fc" id="L238">          delegate.toJson(writer, value);</span>
+        } finally {
+<span class="fc" id="L240">          writer.setIndent(originalIndent);</span>
+        }
+<span class="fc" id="L242">      }</span>
+      @Override boolean isLenient() {
+<span class="nc" id="L244">        return delegate.isLenient();</span>
+      }
+      @Override public String toString() {
+<span class="nc" id="L247">        return delegate + &quot;.indent(\&quot;&quot; + indent + &quot;\&quot;)&quot;;</span>
+      }
+    };
+  }
+
+  boolean isLenient() {
+<span class="fc" id="L253">    return false;</span>
+  }
+
+  public interface Factory {
+    /**
+     * Attempts to create an adapter for {@code type} annotated with {@code annotations}. This
+     * returns the adapter if one was created, or null if this factory isn't capable of creating
+     * such an adapter.
+     *
+     * &lt;p&gt;Implementations may use to {@link Moshi#adapter} to compose adapters of other types, or
+     * {@link Moshi#nextAdapter} to delegate to the underlying adapter of the same type.
+     */
+    @CheckReturnValue
+    @Nullable JsonAdapter&lt;?&gt; create(Type type, Set&lt;? extends Annotation&gt; annotations, Moshi moshi);
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

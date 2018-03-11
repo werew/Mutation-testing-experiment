@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>VectAlignExportDialog.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">vectalign</a> &gt; <a href="index.source.html" class="el_package">com.bonnyfone.vectalign.viewer</a> &gt; <span class="el_source">VectAlignExportDialog.java</span></div><h1>VectAlignExportDialog.java</h1><pre class="source lang-java linenums">package com.bonnyfone.vectalign.viewer;
+
+import com.bonnyfone.vectalign.AnimatedVectorDrawableUtils;
+
+import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.io.File;
+
+/**
+ * Created by ziby on 03/06/16.
+ */
+public class VectAlignExportDialog extends javax.swing.JDialog implements WindowListener{
+
+    private static final int DEFAULT_EXPORT_SIZE = 300;
+
+    private static File lastOuputDir;
+<span class="nc" id="L22">    private static String lastDuration = &quot;2000&quot;;</span>
+<span class="nc" id="L23">    private static String lastPrefix = &quot;vectalign&quot;;</span>
+    private static boolean lastSupportVectorCompat;
+
+    private final String[] solution;
+    private final String strokeColor;
+    private final String fillColor;
+    private final int strokeWidth;
+    private final boolean stroke;
+    private final boolean fill;
+    private final int viewPortWidth;
+    private final int viewPortHeight;
+
+    JPanel panelInput;
+    JPanel panelExport;
+
+    JLabel labelDir;
+    JLabel labelPrefix;
+    JLabel labelDuration;
+    JLabel labelVectorCompat;
+
+    JTextField txtDir;
+    JTextField txtPrefix;
+    JTextField txtDuration;
+    JCheckBox checkVectorCompat;
+
+    JButton btnOpenDir;
+    JButton btnExport;
+
+<span class="nc" id="L51">    public VectAlignExportDialog(String[] solution, String strokeColor, String fillColor, int strokeWidth, boolean stroke, boolean fill, int viewPortWidth, int viewPortHeight){</span>
+<span class="nc" id="L52">        this.solution = solution;</span>
+<span class="nc" id="L53">        this.strokeColor = strokeColor;</span>
+<span class="nc" id="L54">        this.fillColor = fillColor;</span>
+<span class="nc" id="L55">        this.strokeWidth = strokeWidth;</span>
+<span class="nc" id="L56">        this.stroke = stroke;</span>
+<span class="nc" id="L57">        this.fill = fill;</span>
+<span class="nc" id="L58">        this.viewPortWidth = viewPortWidth;</span>
+<span class="nc" id="L59">        this.viewPortHeight = viewPortHeight;</span>
+<span class="nc" id="L60">        init();</span>
+<span class="nc" id="L61">        bindListeners();</span>
+<span class="nc" id="L62">        pack();</span>
+<span class="nc" id="L63">        center();</span>
+<span class="nc" id="L64">    }</span>
+
+    private void center(){
+<span class="nc" id="L67">        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();</span>
+<span class="nc" id="L68">        this.setLocation(dim.width / 2 - this.getSize().width / 2, dim.height / 2 - this.getSize().height / 2);</span>
+<span class="nc" id="L69">    }</span>
+
+    private void init(){
+<span class="nc" id="L72">        setTitle(&quot;Export options&quot;);</span>
+<span class="nc" id="L73">        setResizable(false);</span>
+<span class="nc" id="L74">        panelInput = new JPanel();</span>
+<span class="nc" id="L75">        panelExport = new JPanel();</span>
+
+<span class="nc" id="L77">        labelDir = new JLabel(&quot;Output dir: &quot;);</span>
+<span class="nc" id="L78">        labelPrefix = new JLabel(&quot;Files prefix&quot;);</span>
+<span class="nc" id="L79">        labelDuration = new JLabel(&quot;Morph duration (ms):&quot;);</span>
+<span class="nc" id="L80">        labelVectorCompat = new JLabel(&quot;wnafee/vector-compat&quot;);</span>
+
+<span class="nc bnc" id="L82" title="All 2 branches missed.">        txtDir = new JTextField(lastOuputDir != null ? lastOuputDir.getAbsolutePath() : &quot;&quot;);</span>
+<span class="nc" id="L83">        txtDuration = new JTextField(lastDuration);</span>
+<span class="nc" id="L84">        txtPrefix = new JTextField(lastPrefix);</span>
+<span class="nc" id="L85">        checkVectorCompat = new JCheckBox(&quot;include vector-compat attributes&quot;, lastSupportVectorCompat);</span>
+
+<span class="nc" id="L87">        btnExport = new JButton(&quot;Export&quot;, new ImageIcon((new ImageIcon(this.getClass().getResource(&quot;/export-icon.png&quot;)).getImage().getScaledInstance(20, 20, java.awt.Image.SCALE_SMOOTH))));</span>
+<span class="nc" id="L88">        btnOpenDir = new JButton(&quot;...&quot;);</span>
+
+<span class="nc" id="L90">        panelInput.setLayout(new GridBagLayout());</span>
+
+        //dir
+<span class="nc" id="L93">        GridBagConstraints gc1 = new GridBagConstraints();</span>
+<span class="nc" id="L94">        gc1.fill = GridBagConstraints.HORIZONTAL;</span>
+<span class="nc" id="L95">        gc1.gridx = 0;</span>
+<span class="nc" id="L96">        gc1.gridy = 0;</span>
+<span class="nc" id="L97">        gc1.weightx = 0.1f;</span>
+<span class="nc" id="L98">        gc1.insets.left=10;</span>
+<span class="nc" id="L99">        gc1.insets.top=10;</span>
+<span class="nc" id="L100">        panelInput.add(labelDir, gc1);</span>
+
+<span class="nc" id="L102">        GridBagConstraints gc2 = new GridBagConstraints();</span>
+<span class="nc" id="L103">        gc2.fill = GridBagConstraints.HORIZONTAL;</span>
+<span class="nc" id="L104">        gc2.gridx = 1;</span>
+<span class="nc" id="L105">        gc2.gridy = 0;</span>
+<span class="nc" id="L106">        gc2.weightx = 0.85f;</span>
+<span class="nc" id="L107">        gc2.insets.top=10;</span>
+<span class="nc" id="L108">        panelInput.add(txtDir, gc2);</span>
+
+<span class="nc" id="L110">        GridBagConstraints gc3 = new GridBagConstraints();</span>
+<span class="nc" id="L111">        gc3.fill = GridBagConstraints.HORIZONTAL;</span>
+<span class="nc" id="L112">        gc3.gridx = 3;</span>
+<span class="nc" id="L113">        gc3.gridy = 0;</span>
+<span class="nc" id="L114">        gc3.weightx = 0.05f;</span>
+<span class="nc" id="L115">        gc3.insets.top=10;</span>
+<span class="nc" id="L116">        panelInput.add(btnOpenDir, gc3);</span>
+
+        //prefix
+<span class="nc" id="L119">        GridBagConstraints gc4 = new GridBagConstraints();</span>
+<span class="nc" id="L120">        gc4.fill = GridBagConstraints.HORIZONTAL;</span>
+<span class="nc" id="L121">        gc4.gridx = 0;</span>
+<span class="nc" id="L122">        gc4.gridy = 1;</span>
+<span class="nc" id="L123">        gc4.insets.left=10;</span>
+<span class="nc" id="L124">        gc4.insets.top=10;</span>
+<span class="nc" id="L125">        panelInput.add(labelPrefix, gc4);</span>
+
+<span class="nc" id="L127">        GridBagConstraints gc5 = new GridBagConstraints();</span>
+<span class="nc" id="L128">        gc5.fill = GridBagConstraints.HORIZONTAL;</span>
+<span class="nc" id="L129">        gc5.gridx = 1;</span>
+<span class="nc" id="L130">        gc5.gridy = 1;</span>
+<span class="nc" id="L131">        gc5.gridwidth = 2;</span>
+<span class="nc" id="L132">        gc5.insets.top=10;</span>
+<span class="nc" id="L133">        panelInput.add(txtPrefix, gc5);</span>
+
+        //duration
+<span class="nc" id="L136">        GridBagConstraints gc6 = new GridBagConstraints();</span>
+<span class="nc" id="L137">        gc6.fill = GridBagConstraints.HORIZONTAL;</span>
+<span class="nc" id="L138">        gc6.gridx = 0;</span>
+<span class="nc" id="L139">        gc6.gridy = 2;</span>
+<span class="nc" id="L140">        gc6.insets.left=10;</span>
+<span class="nc" id="L141">        gc6.insets.top=10;</span>
+<span class="nc" id="L142">        panelInput.add(labelDuration, gc6);</span>
+
+<span class="nc" id="L144">        GridBagConstraints gc7 = new GridBagConstraints();</span>
+<span class="nc" id="L145">        gc7.fill = GridBagConstraints.HORIZONTAL;</span>
+<span class="nc" id="L146">        gc7.gridx = 1;</span>
+<span class="nc" id="L147">        gc7.gridy = 2;</span>
+<span class="nc" id="L148">        gc7.gridwidth = 2;</span>
+<span class="nc" id="L149">        gc7.insets.top=10;</span>
+<span class="nc" id="L150">        panelInput.add(txtDuration, gc7);</span>
+
+        //support vect-compat
+<span class="nc" id="L153">        GridBagConstraints gc8 = new GridBagConstraints();</span>
+<span class="nc" id="L154">        gc8.fill = GridBagConstraints.HORIZONTAL;</span>
+<span class="nc" id="L155">        gc8.gridx = 0;</span>
+<span class="nc" id="L156">        gc8.gridy = 3;</span>
+<span class="nc" id="L157">        gc8.insets.left=10;</span>
+<span class="nc" id="L158">        gc8.insets.right=10;</span>
+<span class="nc" id="L159">        gc8.insets.top=10;</span>
+<span class="nc" id="L160">        gc8.insets.bottom=20;</span>
+<span class="nc" id="L161">        panelInput.add(labelVectorCompat, gc8);</span>
+
+<span class="nc" id="L163">        GridBagConstraints gc9 = new GridBagConstraints();</span>
+<span class="nc" id="L164">        gc9.fill = GridBagConstraints.HORIZONTAL;</span>
+<span class="nc" id="L165">        gc9.gridx = 1;</span>
+<span class="nc" id="L166">        gc9.gridy = 3;</span>
+<span class="nc" id="L167">        gc9.gridwidth = 2;</span>
+<span class="nc" id="L168">        gc9.insets.top=10;</span>
+<span class="nc" id="L169">        gc9.insets.bottom=20;</span>
+<span class="nc" id="L170">        panelInput.add(checkVectorCompat, gc9);</span>
+
+        //Export
+<span class="nc" id="L173">        panelExport.add(btnExport, BorderLayout.CENTER);</span>
+<span class="nc" id="L174">        panelExport.setAlignmentX(Component.CENTER_ALIGNMENT);</span>
+
+        //Pack
+<span class="nc" id="L177">        setLayout(new BorderLayout());</span>
+<span class="nc" id="L178">        add(panelInput, BorderLayout.CENTER);</span>
+<span class="nc" id="L179">        add(panelExport, BorderLayout.SOUTH);</span>
+
+<span class="nc" id="L181">    }</span>
+
+    private void bindListeners(){
+<span class="nc" id="L184">        btnExport.addActionListener(new ActionListener() {</span>
+            @Override
+            public void actionPerformed(ActionEvent e) {
+<span class="nc bnc" id="L187" title="All 2 branches missed.">                if(export()){</span>
+<span class="nc" id="L188">                    dispose();</span>
+                }
+<span class="nc" id="L190">            }</span>
+        });
+
+<span class="nc" id="L193">        btnOpenDir.addActionListener(new ActionListener() {</span>
+            @Override
+            public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L196">                lastOuputDir = showOpenDir(&quot;Choose output directory&quot;, lastOuputDir);</span>
+<span class="nc bnc" id="L197" title="All 2 branches missed.">                if(lastOuputDir != null)</span>
+<span class="nc" id="L198">                    txtDir.setText(lastOuputDir.getAbsolutePath());</span>
+<span class="nc" id="L199">            }</span>
+        });
+
+<span class="nc" id="L202">    }</span>
+
+    private boolean export(){
+<span class="nc" id="L205">        lastSupportVectorCompat = checkVectorCompat.isSelected();</span>
+<span class="nc" id="L206">        lastDuration = txtDuration.getText();</span>
+<span class="nc bnc" id="L207" title="All 2 branches missed.">        if(lastOuputDir != null){</span>
+            //Chose prefix
+<span class="nc" id="L209">            String defaultPrefix = &quot;vectalign&quot;;</span>
+<span class="nc" id="L210">            String prefix = txtPrefix.getText();</span>
+<span class="nc bnc" id="L211" title="All 4 branches missed.">            if(prefix == null || prefix.trim().equals(&quot;&quot;)){</span>
+<span class="nc" id="L212">                prefix = &quot;&quot;;</span>
+            }
+<span class="nc" id="L214">            lastPrefix = prefix.toLowerCase();</span>
+
+            //Export
+<span class="nc" id="L217">            boolean success = AnimatedVectorDrawableUtils.export(lastOuputDir, lastDuration, lastSupportVectorCompat,</span>
+                    lastPrefix, solution, stroke, fill, strokeColor, strokeWidth, fillColor,
+                    DEFAULT_EXPORT_SIZE, DEFAULT_EXPORT_SIZE, viewPortWidth, viewPortHeight);
+
+<span class="nc bnc" id="L221" title="All 2 branches missed.">            if(success)</span>
+<span class="nc" id="L222">                JOptionPane.showMessageDialog(VectAlignExportDialog.this, &quot;Export completed (&quot;+lastOuputDir.getAbsolutePath() +&quot;)&quot;, &quot;VectAlign Export&quot;, JOptionPane.INFORMATION_MESSAGE);</span>
+            else
+<span class="nc" id="L224">                JOptionPane.showMessageDialog(VectAlignExportDialog.this, &quot;Unable to export files to &quot;+lastOuputDir.getAbsolutePath() , &quot;VectAlign Export&quot;, JOptionPane.ERROR_MESSAGE);</span>
+
+<span class="nc" id="L226">            return success;</span>
+        }
+        else
+<span class="nc" id="L229">            JOptionPane.showMessageDialog(VectAlignExportDialog.this, &quot;Specify a valid ouput directory.&quot; , &quot;VectAlign Export&quot;, JOptionPane.ERROR_MESSAGE);</span>
+
+<span class="nc" id="L231">        return false;</span>
+    }
+
+    private File showOpenDir(String title, File lastFile){
+<span class="nc" id="L235">        final JFileChooser fc = new JFileChooser();</span>
+<span class="nc" id="L236">        fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);</span>
+<span class="nc" id="L237">        fc.setDialogTitle(title);</span>
+<span class="nc bnc" id="L238" title="All 2 branches missed.">        if(lastFile != null)</span>
+<span class="nc" id="L239">            fc.setSelectedFile(lastFile);</span>
+
+<span class="nc" id="L241">        fc.setFileFilter(new FileFilter() {</span>
+            @Override
+            public boolean accept(File f) {
+<span class="nc bnc" id="L244" title="All 2 branches missed.">                if (f.isDirectory())</span>
+<span class="nc" id="L245">                    return true;</span>
+<span class="nc" id="L246">                return false;</span>
+            }
+
+            @Override
+            public String getDescription() {
+<span class="nc" id="L251">                return &quot;Directory&quot;;</span>
+            }
+
+        });
+
+<span class="nc" id="L256">        int returnVal = fc.showOpenDialog(null);</span>
+<span class="nc" id="L257">        File file = null;</span>
+<span class="nc bnc" id="L258" title="All 2 branches missed.">        if(returnVal == JFileChooser.APPROVE_OPTION)</span>
+<span class="nc" id="L259">            file = fc.getSelectedFile();</span>
+
+<span class="nc" id="L261">        return file;</span>
+    }
+
+    @Override
+    public void windowOpened(WindowEvent e) {
+<span class="nc" id="L266">    }</span>
+
+    @Override
+    public void windowClosing(WindowEvent e) {
+<span class="nc" id="L270">    }</span>
+
+    @Override
+    public void windowClosed(WindowEvent e) {
+<span class="nc" id="L274">    }</span>
+
+    @Override
+    public void windowIconified(WindowEvent e) {
+<span class="nc" id="L278">    }</span>
+
+    @Override
+    public void windowDeiconified(WindowEvent e) {
+<span class="nc" id="L282">    }</span>
+
+    @Override
+    public void windowActivated(WindowEvent e) {
+<span class="nc" id="L286">    }</span>
+
+    @Override
+    public void windowDeactivated(WindowEvent e) {
+<span class="nc" id="L290">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

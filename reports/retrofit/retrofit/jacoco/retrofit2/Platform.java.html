@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Platform.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Retrofit</a> &gt; <a href="index.source.html" class="el_package">retrofit2</a> &gt; <span class="el_source">Platform.java</span></div><h1>Platform.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2013 Square, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package retrofit2;
+
+import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
+import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.util.concurrent.Executor;
+import javax.annotation.Nullable;
+import org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement;
+
+<span class="fc" id="L28">class Platform {</span>
+<span class="fc" id="L29">  private static final Platform PLATFORM = findPlatform();</span>
+
+  static Platform get() {
+<span class="fc" id="L32">    return PLATFORM;</span>
+  }
+
+  private static Platform findPlatform() {
+    try {
+<span class="fc" id="L37">      Class.forName(&quot;android.os.Build&quot;);</span>
+<span class="pc bpc" id="L38" title="1 of 2 branches missed.">      if (Build.VERSION.SDK_INT != 0) {</span>
+<span class="nc" id="L39">        return new Android();</span>
+      }
+<span class="nc" id="L41">    } catch (ClassNotFoundException ignored) {</span>
+<span class="fc" id="L42">    }</span>
+    try {
+<span class="fc" id="L44">      Class.forName(&quot;java.util.Optional&quot;);</span>
+<span class="fc" id="L45">      return new Java8();</span>
+<span class="nc" id="L46">    } catch (ClassNotFoundException ignored) {</span>
+    }
+<span class="nc" id="L48">    return new Platform();</span>
+  }
+
+  @Nullable Executor defaultCallbackExecutor() {
+<span class="fc" id="L52">    return null;</span>
+  }
+
+  CallAdapter.Factory defaultCallAdapterFactory(@Nullable Executor callbackExecutor) {
+<span class="fc bfc" id="L56" title="All 2 branches covered.">    if (callbackExecutor != null) {</span>
+<span class="fc" id="L57">      return new ExecutorCallAdapterFactory(callbackExecutor);</span>
+    }
+<span class="fc" id="L59">    return DefaultCallAdapterFactory.INSTANCE;</span>
+  }
+
+  boolean isDefaultMethod(Method method) {
+<span class="nc" id="L63">    return false;</span>
+  }
+
+  @Nullable Object invokeDefaultMethod(Method method, Class&lt;?&gt; declaringClass, Object object,
+      @Nullable Object... args) throws Throwable {
+<span class="nc" id="L68">    throw new UnsupportedOperationException();</span>
+  }
+
+  @IgnoreJRERequirement // Only classloaded and used on Java 8.
+<span class="fc" id="L72">  static class Java8 extends Platform {</span>
+    @Override boolean isDefaultMethod(Method method) {
+<span class="fc" id="L74">      return method.isDefault();</span>
+    }
+
+    @Override Object invokeDefaultMethod(Method method, Class&lt;?&gt; declaringClass, Object object,
+        @Nullable Object... args) throws Throwable {
+      // Because the service interface might not be public, we need to use a MethodHandle lookup
+      // that ignores the visibility of the declaringClass.
+<span class="nc" id="L81">      Constructor&lt;Lookup&gt; constructor = Lookup.class.getDeclaredConstructor(Class.class, int.class);</span>
+<span class="nc" id="L82">      constructor.setAccessible(true);</span>
+<span class="nc" id="L83">      return constructor.newInstance(declaringClass, -1 /* trusted */)</span>
+<span class="nc" id="L84">          .unreflectSpecial(method, declaringClass)</span>
+<span class="nc" id="L85">          .bindTo(object)</span>
+<span class="nc" id="L86">          .invokeWithArguments(args);</span>
+    }
+  }
+
+<span class="nc" id="L90">  static class Android extends Platform {</span>
+    @Override public Executor defaultCallbackExecutor() {
+<span class="nc" id="L92">      return new MainThreadExecutor();</span>
+    }
+
+    @Override CallAdapter.Factory defaultCallAdapterFactory(@Nullable Executor callbackExecutor) {
+<span class="nc bnc" id="L96" title="All 2 branches missed.">      if (callbackExecutor == null) throw new AssertionError();</span>
+<span class="nc" id="L97">      return new ExecutorCallAdapterFactory(callbackExecutor);</span>
+    }
+
+<span class="nc" id="L100">    static class MainThreadExecutor implements Executor {</span>
+<span class="nc" id="L101">      private final Handler handler = new Handler(Looper.getMainLooper());</span>
+
+      @Override public void execute(Runnable r) {
+<span class="nc" id="L104">        handler.post(r);</span>
+<span class="nc" id="L105">      }</span>
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

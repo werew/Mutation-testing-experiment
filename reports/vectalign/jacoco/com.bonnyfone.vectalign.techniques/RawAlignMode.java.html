@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RawAlignMode.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">vectalign</a> &gt; <a href="index.source.html" class="el_package">com.bonnyfone.vectalign.techniques</a> &gt; <span class="el_source">RawAlignMode.java</span></div><h1>RawAlignMode.java</h1><pre class="source lang-java linenums">package com.bonnyfone.vectalign.techniques;
+
+import android.support.v7.graphics.drawable.PathParser;
+import com.bonnyfone.vectalign.PathNodeUtils;
+import com.bonnyfone.vectalign.VectAlign;
+
+import java.util.ArrayList;
+
+/**
+ * The raw alignment technique, which uses the NWAlignment approach
+ */
+<span class="fc" id="L12">public class RawAlignMode extends AbstractAlignMode {</span>
+
+    protected  ArrayList&lt;PathParser.PathDataNode&gt;[] doRawAlign(PathParser.PathDataNode[] from, PathParser.PathDataNode[] to){
+
+        //Aligning
+<span class="fc" id="L17">        boolean equivalent = false;</span>
+<span class="fc" id="L18">        int extraCloneNodes = 0;</span>
+<span class="fc" id="L19">        ArrayList&lt;PathParser.PathDataNode&gt; alignedFrom = null;</span>
+<span class="fc" id="L20">        ArrayList&lt;PathParser.PathDataNode&gt; alignedTo = null;</span>
+
+<span class="pc bpc" id="L22" title="1 of 4 branches missed.">        for(int i = 0; i &lt; VectAlign.MAX_ALIGN_ITERATIONS &amp;&amp; !equivalent; i++){</span>
+<span class="fc" id="L23">            System.out.println(i + &quot;. align iteration...&quot;);</span>
+<span class="fc" id="L24">            NWAlignment nw = new NWAlignment(PathNodeUtils.transform(from, extraCloneNodes, true), PathNodeUtils.transform(to, extraCloneNodes, true));</span>
+<span class="fc" id="L25">            nw.align();</span>
+<span class="fc" id="L26">            alignedFrom = nw.getAlignedFrom();</span>
+<span class="fc" id="L27">            alignedTo = nw.getAlignedTo();</span>
+<span class="pc bpc" id="L28" title="2 of 4 branches missed.">            equivalent = PathNodeUtils.isEquivalent(nw.getOriginalFrom(), nw.getAlignedFrom()) &amp;&amp; PathNodeUtils.isEquivalent(nw.getOriginalTo(), nw.getAlignedTo());</span>
+
+<span class="pc bpc" id="L30" title="1 of 2 branches missed.">            if(equivalent){</span>
+<span class="fc" id="L31">                System.out.println(&quot;Alignment found!&quot;);</span>
+<span class="fc" id="L32">                System.out.println(PathNodeUtils.pathNodesToString(nw.getAlignedFrom(), true));</span>
+<span class="fc" id="L33">                System.out.println(PathNodeUtils.pathNodesToString(nw.getAlignedTo(), true));</span>
+            }
+<span class="fc" id="L35">            extraCloneNodes++;</span>
+        }
+
+<span class="pc bpc" id="L38" title="1 of 2 branches missed.">        if(!equivalent)</span>
+<span class="nc" id="L39">            return null;</span>
+        else
+<span class="fc" id="L41">            return new ArrayList[]{alignedFrom, alignedTo};</span>
+    }
+
+    @Override
+    public ArrayList&lt;PathParser.PathDataNode&gt;[] align(PathParser.PathDataNode[] from, PathParser.PathDataNode[] to) {
+<span class="fc" id="L46">        return doRawAlign(from, to);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

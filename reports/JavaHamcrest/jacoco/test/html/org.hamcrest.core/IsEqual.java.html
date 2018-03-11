@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>IsEqual.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JavaHamcrest</a> &gt; <a href="index.source.html" class="el_package">org.hamcrest.core</a> &gt; <span class="el_source">IsEqual.java</span></div><h1>IsEqual.java</h1><pre class="source lang-java linenums">package org.hamcrest.core;
+
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+
+import java.lang.reflect.Array;
+
+
+/**
+ * Is the value equal to another value, as tested by the
+ * {@link java.lang.Object#equals} invokedMethod?
+ */
+public class IsEqual&lt;T&gt; extends BaseMatcher&lt;T&gt; {
+    private final Object expectedValue;
+
+<span class="fc" id="L17">    public IsEqual(T equalArg) {</span>
+<span class="fc" id="L18">        expectedValue = equalArg;</span>
+<span class="fc" id="L19">    }</span>
+
+    @Override
+    public boolean matches(Object actualValue) {
+<span class="fc" id="L23">        return areEqual(actualValue, expectedValue);</span>
+    }
+
+    @Override
+    public void describeTo(Description description) {
+<span class="fc" id="L28">        description.appendValue(expectedValue);</span>
+<span class="fc" id="L29">    }</span>
+
+    private static boolean areEqual(Object actual, Object expected) {
+<span class="fc bfc" id="L32" title="All 2 branches covered.">        if (actual == null) {</span>
+<span class="fc bfc" id="L33" title="All 2 branches covered.">            return expected == null;</span>
+        }
+        
+<span class="fc bfc" id="L36" title="All 4 branches covered.">        if (expected != null &amp;&amp; isArray(actual)) {</span>
+<span class="pc bpc" id="L37" title="1 of 4 branches missed.">            return isArray(expected) &amp;&amp; areArraysEqual(actual, expected);</span>
+        }
+        
+<span class="fc" id="L40">        return actual.equals(expected);</span>
+    }
+
+    private static boolean areArraysEqual(Object actualArray, Object expectedArray) {
+<span class="fc bfc" id="L44" title="All 4 branches covered.">        return areArrayLengthsEqual(actualArray, expectedArray) &amp;&amp; areArrayElementsEqual(actualArray, expectedArray);</span>
+    }
+
+    private static boolean areArrayLengthsEqual(Object actualArray, Object expectedArray) {
+<span class="fc bfc" id="L48" title="All 2 branches covered.">        return Array.getLength(actualArray) == Array.getLength(expectedArray);</span>
+    }
+
+    private static boolean areArrayElementsEqual(Object actualArray, Object expectedArray) {
+<span class="fc bfc" id="L52" title="All 2 branches covered.">        for (int i = 0; i &lt; Array.getLength(actualArray); i++) {</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">            if (!areEqual(Array.get(actualArray, i), Array.get(expectedArray, i))) {</span>
+<span class="fc" id="L54">                return false;</span>
+            }
+        }
+<span class="fc" id="L57">        return true;</span>
+    }
+
+    private static boolean isArray(Object o) {
+<span class="fc" id="L61">        return o.getClass().isArray();</span>
+    }
+
+    /**
+     * Creates a matcher that matches when the examined object is logically equal to the specified
+     * &lt;code&gt;operand&lt;/code&gt;, as determined by calling the {@link java.lang.Object#equals} method on
+     * the &lt;b&gt;examined&lt;/b&gt; object.
+     * 
+     * &lt;p&gt;If the specified operand is &lt;code&gt;null&lt;/code&gt; then the created matcher will only match if
+     * the examined object's &lt;code&gt;equals&lt;/code&gt; method returns &lt;code&gt;true&lt;/code&gt; when passed a
+     * &lt;code&gt;null&lt;/code&gt; (which would be a violation of the &lt;code&gt;equals&lt;/code&gt; contract), unless the
+     * examined object itself is &lt;code&gt;null&lt;/code&gt;, in which case the matcher will return a positive
+     * match.&lt;/p&gt;
+     * 
+     * &lt;p&gt;The created matcher provides a special behaviour when examining &lt;code&gt;Array&lt;/code&gt;s, whereby
+     * it will match if both the operand and the examined object are arrays of the same length and
+     * contain items that are equal to each other (according to the above rules) &lt;b&gt;in the same
+     * indexes&lt;/b&gt;.&lt;/p&gt; 
+     * For example:
+     * &lt;pre&gt;
+     * assertThat(&quot;foo&quot;, equalTo(&quot;foo&quot;));
+     * assertThat(new String[] {&quot;foo&quot;, &quot;bar&quot;}, equalTo(new String[] {&quot;foo&quot;, &quot;bar&quot;}));
+     * &lt;/pre&gt;
+     * 
+     */
+    public static &lt;T&gt; Matcher&lt;T&gt; equalTo(T operand) {
+<span class="fc" id="L87">        return new IsEqual&lt;&gt;(operand);</span>
+    }
+
+    /**
+     * Creates an {@link org.hamcrest.core.IsEqual} matcher that does not enforce the values being
+     * compared to be of the same static type.
+     */
+    public static Matcher&lt;Object&gt; equalToObject(Object operand) {
+<span class="fc" id="L95">        return new IsEqual&lt;&gt;(operand);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

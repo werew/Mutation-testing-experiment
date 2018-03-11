@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Iso8601Utils.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">moshi-adapters</a> &gt; <a href="index.source.html" class="el_package">com.squareup.moshi.adapters</a> &gt; <span class="el_source">Iso8601Utils.java</span></div><h1>Iso8601Utils.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2011 FasterXML, LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.squareup.moshi.adapters;
+
+import com.squareup.moshi.JsonDataException;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Locale;
+import java.util.TimeZone;
+
+/**
+ * Jackson’s date formatter, pruned to Moshi's needs. Forked from this file:
+ * https://github.com/FasterXML/jackson-databind/blob/67ebf7305f492285a8f9f4de31545f5f16fc7c3a/src/main/java/com/fasterxml/jackson/databind/util/ISO8601Utils.java
+ *
+ * Utilities methods for manipulating dates in iso8601 format. This is much much faster and GC
+ * friendly than using SimpleDateFormat so highly suitable if you (un)serialize lots of date
+ * objects.
+ *
+ * Supported parse format: [yyyy-MM-dd|yyyyMMdd][T(hh:mm[:ss[.sss]]|hhmm[ss[.sss]])]?[Z|[+-]hh[:]mm]]
+ *
+ * @see &lt;a href=&quot;http://www.w3.org/TR/NOTE-datetime&quot;&gt;this specification&lt;/a&gt;
+ */
+<span class="nc" id="L37">final class Iso8601Utils {</span>
+  /** ID to represent the 'GMT' string */
+  static final String GMT_ID = &quot;GMT&quot;;
+
+  /** The GMT timezone, prefetched to avoid more lookups. */
+<span class="fc" id="L42">  static final TimeZone TIMEZONE_Z = TimeZone.getTimeZone(GMT_ID);</span>
+
+  /** Returns {@code date} formatted as yyyy-MM-ddThh:mm:ss.sssZ */
+  public static String format(Date date) {
+<span class="fc" id="L46">    Calendar calendar = new GregorianCalendar(TIMEZONE_Z, Locale.US);</span>
+<span class="fc" id="L47">    calendar.setTime(date);</span>
+
+    // estimate capacity of buffer as close as we can (yeah, that's pedantic ;)
+<span class="fc" id="L50">    int capacity = &quot;yyyy-MM-ddThh:mm:ss.sssZ&quot;.length();</span>
+<span class="fc" id="L51">    StringBuilder formatted = new StringBuilder(capacity);</span>
+<span class="fc" id="L52">    padInt(formatted, calendar.get(Calendar.YEAR), &quot;yyyy&quot;.length());</span>
+<span class="fc" id="L53">    formatted.append('-');</span>
+<span class="fc" id="L54">    padInt(formatted, calendar.get(Calendar.MONTH) + 1, &quot;MM&quot;.length());</span>
+<span class="fc" id="L55">    formatted.append('-');</span>
+<span class="fc" id="L56">    padInt(formatted, calendar.get(Calendar.DAY_OF_MONTH), &quot;dd&quot;.length());</span>
+<span class="fc" id="L57">    formatted.append('T');</span>
+<span class="fc" id="L58">    padInt(formatted, calendar.get(Calendar.HOUR_OF_DAY), &quot;hh&quot;.length());</span>
+<span class="fc" id="L59">    formatted.append(':');</span>
+<span class="fc" id="L60">    padInt(formatted, calendar.get(Calendar.MINUTE), &quot;mm&quot;.length());</span>
+<span class="fc" id="L61">    formatted.append(':');</span>
+<span class="fc" id="L62">    padInt(formatted, calendar.get(Calendar.SECOND), &quot;ss&quot;.length());</span>
+<span class="fc" id="L63">    formatted.append('.');</span>
+<span class="fc" id="L64">    padInt(formatted, calendar.get(Calendar.MILLISECOND), &quot;sss&quot;.length());</span>
+<span class="fc" id="L65">    formatted.append('Z');</span>
+<span class="fc" id="L66">    return formatted.toString();</span>
+  }
+
+  /**
+   * Parse a date from ISO-8601 formatted string. It expects a format
+   * [yyyy-MM-dd|yyyyMMdd][T(hh:mm[:ss[.sss]]|hhmm[ss[.sss]])]?[Z|[+-]hh:mm]]
+   *
+   * @param date ISO string to parse in the appropriate format.
+   * @return the parsed date
+   */
+  public static Date parse(String date) {
+    try {
+<span class="fc" id="L78">      int offset = 0;</span>
+
+      // extract year
+<span class="fc" id="L81">      int year = parseInt(date, offset, offset += 4);</span>
+<span class="pc bpc" id="L82" title="1 of 2 branches missed.">      if (checkOffset(date, offset, '-')) {</span>
+<span class="fc" id="L83">        offset += 1;</span>
+      }
+
+      // extract month
+<span class="fc" id="L87">      int month = parseInt(date, offset, offset += 2);</span>
+<span class="pc bpc" id="L88" title="1 of 2 branches missed.">      if (checkOffset(date, offset, '-')) {</span>
+<span class="fc" id="L89">        offset += 1;</span>
+      }
+
+      // extract day
+<span class="fc" id="L93">      int day = parseInt(date, offset, offset += 2);</span>
+      // default time value
+<span class="fc" id="L95">      int hour = 0;</span>
+<span class="fc" id="L96">      int minutes = 0;</span>
+<span class="fc" id="L97">      int seconds = 0;</span>
+<span class="fc" id="L98">      int milliseconds =</span>
+          0; // always use 0 otherwise returned date will include millis of current time
+
+      // if the value has no time component (and no time zone), we are done
+<span class="fc" id="L102">      boolean hasT = checkOffset(date, offset, 'T');</span>
+
+<span class="pc bpc" id="L104" title="3 of 4 branches missed.">      if (!hasT &amp;&amp; (date.length() &lt;= offset)) {</span>
+<span class="nc" id="L105">        Calendar calendar = new GregorianCalendar(year, month - 1, day);</span>
+
+<span class="nc" id="L107">        return calendar.getTime();</span>
+      }
+
+<span class="pc bpc" id="L110" title="1 of 2 branches missed.">      if (hasT) {</span>
+
+        // extract hours, minutes, seconds and milliseconds
+<span class="fc" id="L113">        hour = parseInt(date, offset += 1, offset += 2);</span>
+<span class="pc bpc" id="L114" title="1 of 2 branches missed.">        if (checkOffset(date, offset, ':')) {</span>
+<span class="fc" id="L115">          offset += 1;</span>
+        }
+
+<span class="fc" id="L118">        minutes = parseInt(date, offset, offset += 2);</span>
+<span class="pc bpc" id="L119" title="1 of 2 branches missed.">        if (checkOffset(date, offset, ':')) {</span>
+<span class="fc" id="L120">          offset += 1;</span>
+        }
+        // second and milliseconds can be optional
+<span class="pc bpc" id="L123" title="1 of 2 branches missed.">        if (date.length() &gt; offset) {</span>
+<span class="fc" id="L124">          char c = date.charAt(offset);</span>
+<span class="pc bpc" id="L125" title="3 of 6 branches missed.">          if (c != 'Z' &amp;&amp; c != '+' &amp;&amp; c != '-') {</span>
+<span class="fc" id="L126">            seconds = parseInt(date, offset, offset += 2);</span>
+<span class="pc bpc" id="L127" title="1 of 4 branches missed.">            if (seconds &gt; 59 &amp;&amp; seconds &lt; 63) seconds = 59; // truncate up to 3 leap seconds</span>
+            // milliseconds can be optional in the format
+<span class="fc bfc" id="L129" title="All 2 branches covered.">            if (checkOffset(date, offset, '.')) {</span>
+<span class="fc" id="L130">              offset += 1;</span>
+<span class="fc" id="L131">              int endOffset = indexOfNonDigit(date, offset + 1); // assume at least one digit</span>
+<span class="fc" id="L132">              int parseEndOffset = Math.min(endOffset, offset + 3); // parse up to 3 digits</span>
+<span class="fc" id="L133">              int fraction = parseInt(date, offset, parseEndOffset);</span>
+<span class="fc" id="L134">              milliseconds = (int) (Math.pow(10, 3 - (parseEndOffset - offset)) * fraction);</span>
+<span class="fc" id="L135">              offset = endOffset;</span>
+            }
+          }
+        }
+      }
+
+      // extract timezone
+<span class="pc bpc" id="L142" title="1 of 2 branches missed.">      if (date.length() &lt;= offset) {</span>
+<span class="nc" id="L143">        throw new IllegalArgumentException(&quot;No time zone indicator&quot;);</span>
+      }
+
+      TimeZone timezone;
+<span class="fc" id="L147">      char timezoneIndicator = date.charAt(offset);</span>
+
+<span class="fc bfc" id="L149" title="All 2 branches covered.">      if (timezoneIndicator == 'Z') {</span>
+<span class="fc" id="L150">        timezone = TIMEZONE_Z;</span>
+<span class="pc bpc" id="L151" title="1 of 4 branches missed.">      } else if (timezoneIndicator == '+' || timezoneIndicator == '-') {</span>
+<span class="fc" id="L152">        String timezoneOffset = date.substring(offset);</span>
+        // 18-Jun-2015, tatu: Minor simplification, skip offset of &quot;+0000&quot;/&quot;+00:00&quot;
+<span class="pc bpc" id="L154" title="2 of 4 branches missed.">        if (&quot;+0000&quot;.equals(timezoneOffset) || &quot;+00:00&quot;.equals(timezoneOffset)) {</span>
+<span class="nc" id="L155">          timezone = TIMEZONE_Z;</span>
+        } else {
+          // 18-Jun-2015, tatu: Looks like offsets only work from GMT, not UTC...
+          //    not sure why, but it is what it is.
+<span class="fc" id="L159">          String timezoneId = GMT_ID + timezoneOffset;</span>
+<span class="fc" id="L160">          timezone = TimeZone.getTimeZone(timezoneId);</span>
+<span class="fc" id="L161">          String act = timezone.getID();</span>
+<span class="pc bpc" id="L162" title="1 of 2 branches missed.">          if (!act.equals(timezoneId)) {</span>
+            /* 22-Jan-2015, tatu: Looks like canonical version has colons, but we may be given
+             *    one without. If so, don't sweat.
+             *   Yes, very inefficient. Hopefully not hit often.
+             *   If it becomes a perf problem, add 'loose' comparison instead.
+             */
+<span class="nc" id="L168">            String cleaned = act.replace(&quot;:&quot;, &quot;&quot;);</span>
+<span class="nc bnc" id="L169" title="All 2 branches missed.">            if (!cleaned.equals(timezoneId)) {</span>
+<span class="nc" id="L170">              throw new IndexOutOfBoundsException(&quot;Mismatching time zone indicator: &quot;</span>
+<span class="nc" id="L171">                  + timezoneId + &quot; given, resolves to &quot; + timezone.getID());</span>
+            }
+          }
+        }
+<span class="fc" id="L175">      } else {</span>
+<span class="nc" id="L176">        throw new IndexOutOfBoundsException(</span>
+            &quot;Invalid time zone indicator '&quot; + timezoneIndicator + &quot;'&quot;);
+      }
+
+<span class="fc" id="L180">      Calendar calendar = new GregorianCalendar(timezone);</span>
+<span class="fc" id="L181">      calendar.setLenient(false);</span>
+<span class="fc" id="L182">      calendar.set(Calendar.YEAR, year);</span>
+<span class="fc" id="L183">      calendar.set(Calendar.MONTH, month - 1);</span>
+<span class="fc" id="L184">      calendar.set(Calendar.DAY_OF_MONTH, day);</span>
+<span class="fc" id="L185">      calendar.set(Calendar.HOUR_OF_DAY, hour);</span>
+<span class="fc" id="L186">      calendar.set(Calendar.MINUTE, minutes);</span>
+<span class="fc" id="L187">      calendar.set(Calendar.SECOND, seconds);</span>
+<span class="fc" id="L188">      calendar.set(Calendar.MILLISECOND, milliseconds);</span>
+
+<span class="fc" id="L190">      return calendar.getTime();</span>
+      // If we get a ParseException it'll already have the right message/offset.
+      // Other exception types can convert here.
+<span class="nc" id="L193">    } catch (IndexOutOfBoundsException | IllegalArgumentException e) {</span>
+<span class="nc" id="L194">      throw new JsonDataException(&quot;Not an RFC 3339 date: &quot; + date, e);</span>
+    }
+  }
+
+  /**
+   * Check if the expected character exist at the given offset in the value.
+   *
+   * @param value the string to check at the specified offset
+   * @param offset the offset to look for the expected character
+   * @param expected the expected character
+   * @return true if the expected character exist at the given offset
+   */
+  private static boolean checkOffset(String value, int offset, char expected) {
+<span class="pc bpc" id="L207" title="1 of 4 branches missed.">    return (offset &lt; value.length()) &amp;&amp; (value.charAt(offset) == expected);</span>
+  }
+
+  /**
+   * Parse an integer located between 2 given offsets in a string
+   *
+   * @param value the string to parse
+   * @param beginIndex the start index for the integer in the string
+   * @param endIndex the end index for the integer in the string
+   * @return the int
+   * @throws NumberFormatException if the value is not a number
+   */
+  private static int parseInt(String value, int beginIndex, int endIndex)
+      throws NumberFormatException {
+<span class="pc bpc" id="L221" title="3 of 6 branches missed.">    if (beginIndex &lt; 0 || endIndex &gt; value.length() || beginIndex &gt; endIndex) {</span>
+<span class="nc" id="L222">      throw new NumberFormatException(value);</span>
+    }
+    // use same logic as in Integer.parseInt() but less generic we're not supporting negative values
+<span class="fc" id="L225">    int i = beginIndex;</span>
+<span class="fc" id="L226">    int result = 0;</span>
+    int digit;
+<span class="pc bpc" id="L228" title="1 of 2 branches missed.">    if (i &lt; endIndex) {</span>
+<span class="fc" id="L229">      digit = Character.digit(value.charAt(i++), 10);</span>
+<span class="pc bpc" id="L230" title="1 of 2 branches missed.">      if (digit &lt; 0) {</span>
+<span class="nc" id="L231">        throw new NumberFormatException(&quot;Invalid number: &quot; + value.substring(beginIndex, endIndex));</span>
+      }
+<span class="fc" id="L233">      result = -digit;</span>
+    }
+<span class="fc bfc" id="L235" title="All 2 branches covered.">    while (i &lt; endIndex) {</span>
+<span class="fc" id="L236">      digit = Character.digit(value.charAt(i++), 10);</span>
+<span class="pc bpc" id="L237" title="1 of 2 branches missed.">      if (digit &lt; 0) {</span>
+<span class="nc" id="L238">        throw new NumberFormatException(&quot;Invalid number: &quot; + value.substring(beginIndex, endIndex));</span>
+      }
+<span class="fc" id="L240">      result *= 10;</span>
+<span class="fc" id="L241">      result -= digit;</span>
+    }
+<span class="fc" id="L243">    return -result;</span>
+  }
+
+  /**
+   * Zero pad a number to a specified length
+   *
+   * @param buffer buffer to use for padding
+   * @param value the integer value to pad if necessary.
+   * @param length the length of the string we should zero pad
+   */
+  private static void padInt(StringBuilder buffer, int value, int length) {
+<span class="fc" id="L254">    String strValue = Integer.toString(value);</span>
+<span class="fc bfc" id="L255" title="All 2 branches covered.">    for (int i = length - strValue.length(); i &gt; 0; i--) {</span>
+<span class="fc" id="L256">      buffer.append('0');</span>
+    }
+<span class="fc" id="L258">    buffer.append(strValue);</span>
+<span class="fc" id="L259">  }</span>
+
+  /**
+   * Returns the index of the first character in the string that is not a digit, starting at
+   * offset.
+   */
+  private static int indexOfNonDigit(String string, int offset) {
+<span class="pc bpc" id="L266" title="1 of 2 branches missed.">    for (int i = offset; i &lt; string.length(); i++) {</span>
+<span class="fc" id="L267">      char c = string.charAt(i);</span>
+<span class="fc bfc" id="L268" title="All 4 branches covered.">      if (c &lt; '0' || c &gt; '9') return i;</span>
+    }
+<span class="nc" id="L270">    return string.length();</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

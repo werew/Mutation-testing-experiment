@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Response.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Retrofit</a> &gt; <a href="index.source.html" class="el_package">retrofit2</a> &gt; <span class="el_source">Response.java</span></div><h1>Response.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2015 Square, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package retrofit2;
+
+import javax.annotation.Nullable;
+import okhttp3.Headers;
+import okhttp3.Protocol;
+import okhttp3.Request;
+import okhttp3.ResponseBody;
+
+import static retrofit2.Utils.checkNotNull;
+
+/** An HTTP response. */
+public final class Response&lt;T&gt; {
+  /** Create a synthetic successful response with {@code body} as the deserialized body. */
+  public static &lt;T&gt; Response&lt;T&gt; success(@Nullable T body) {
+<span class="fc" id="L30">    return success(body, new okhttp3.Response.Builder() //</span>
+<span class="fc" id="L31">        .code(200)</span>
+<span class="fc" id="L32">        .message(&quot;OK&quot;)</span>
+<span class="fc" id="L33">        .protocol(Protocol.HTTP_1_1)</span>
+<span class="fc" id="L34">        .request(new Request.Builder().url(&quot;http://localhost/&quot;).build())</span>
+<span class="fc" id="L35">        .build());</span>
+  }
+
+  /**
+   * Create a synthetic successful response using {@code headers} with {@code body} as the
+   * deserialized body.
+   */
+  public static &lt;T&gt; Response&lt;T&gt; success(@Nullable T body, Headers headers) {
+<span class="fc" id="L43">    checkNotNull(headers, &quot;headers == null&quot;);</span>
+<span class="fc" id="L44">    return success(body, new okhttp3.Response.Builder() //</span>
+<span class="fc" id="L45">        .code(200)</span>
+<span class="fc" id="L46">        .message(&quot;OK&quot;)</span>
+<span class="fc" id="L47">        .protocol(Protocol.HTTP_1_1)</span>
+<span class="fc" id="L48">        .headers(headers)</span>
+<span class="fc" id="L49">        .request(new Request.Builder().url(&quot;http://localhost/&quot;).build())</span>
+<span class="fc" id="L50">        .build());</span>
+  }
+
+  /**
+   * Create a successful response from {@code rawResponse} with {@code body} as the deserialized
+   * body.
+   */
+  public static &lt;T&gt; Response&lt;T&gt; success(@Nullable T body, okhttp3.Response rawResponse) {
+<span class="fc" id="L58">    checkNotNull(rawResponse, &quot;rawResponse == null&quot;);</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">    if (!rawResponse.isSuccessful()) {</span>
+<span class="fc" id="L60">      throw new IllegalArgumentException(&quot;rawResponse must be successful response&quot;);</span>
+    }
+<span class="fc" id="L62">    return new Response&lt;&gt;(rawResponse, body, null);</span>
+  }
+
+  /**
+   * Create a synthetic error response with an HTTP status code of {@code code} and {@code body}
+   * as the error body.
+   */
+  public static &lt;T&gt; Response&lt;T&gt; error(int code, ResponseBody body) {
+<span class="fc bfc" id="L70" title="All 2 branches covered.">    if (code &lt; 400) throw new IllegalArgumentException(&quot;code &lt; 400: &quot; + code);</span>
+<span class="fc" id="L71">    return error(body, new okhttp3.Response.Builder() //</span>
+<span class="fc" id="L72">        .code(code)</span>
+<span class="fc" id="L73">        .message(&quot;Response.error()&quot;)</span>
+<span class="fc" id="L74">        .protocol(Protocol.HTTP_1_1)</span>
+<span class="fc" id="L75">        .request(new Request.Builder().url(&quot;http://localhost/&quot;).build())</span>
+<span class="fc" id="L76">        .build());</span>
+  }
+
+  /** Create an error response from {@code rawResponse} with {@code body} as the error body. */
+  public static &lt;T&gt; Response&lt;T&gt; error(ResponseBody body, okhttp3.Response rawResponse) {
+<span class="fc" id="L81">    checkNotNull(body, &quot;body == null&quot;);</span>
+<span class="fc" id="L82">    checkNotNull(rawResponse, &quot;rawResponse == null&quot;);</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">    if (rawResponse.isSuccessful()) {</span>
+<span class="fc" id="L84">      throw new IllegalArgumentException(&quot;rawResponse should not be successful response&quot;);</span>
+    }
+<span class="fc" id="L86">    return new Response&lt;&gt;(rawResponse, null, body);</span>
+  }
+
+  private final okhttp3.Response rawResponse;
+  private final @Nullable T body;
+  private final @Nullable ResponseBody errorBody;
+
+  private Response(okhttp3.Response rawResponse, @Nullable T body,
+<span class="fc" id="L94">      @Nullable ResponseBody errorBody) {</span>
+<span class="fc" id="L95">    this.rawResponse = rawResponse;</span>
+<span class="fc" id="L96">    this.body = body;</span>
+<span class="fc" id="L97">    this.errorBody = errorBody;</span>
+<span class="fc" id="L98">  }</span>
+
+  /** The raw response from the HTTP client. */
+  public okhttp3.Response raw() {
+<span class="fc" id="L102">    return rawResponse;</span>
+  }
+
+  /** HTTP status code. */
+  public int code() {
+<span class="fc" id="L107">    return rawResponse.code();</span>
+  }
+
+  /** HTTP status message or null if unknown. */
+  public String message() {
+<span class="fc" id="L112">    return rawResponse.message();</span>
+  }
+
+  /** HTTP headers. */
+  public Headers headers() {
+<span class="fc" id="L117">    return rawResponse.headers();</span>
+  }
+
+  /** Returns true if {@link #code()} is in the range [200..300). */
+  public boolean isSuccessful() {
+<span class="fc" id="L122">    return rawResponse.isSuccessful();</span>
+  }
+
+  /** The deserialized response body of a {@linkplain #isSuccessful() successful} response. */
+  public @Nullable T body() {
+<span class="fc" id="L127">    return body;</span>
+  }
+
+  /** The raw response body of an {@linkplain #isSuccessful() unsuccessful} response. */
+  public @Nullable ResponseBody errorBody() {
+<span class="fc" id="L132">    return errorBody;</span>
+  }
+
+  @Override public String toString() {
+<span class="nc" id="L136">    return rawResponse.toString();</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

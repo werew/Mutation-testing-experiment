@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ScalarsConverterFactory.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Converter: Java Scalars</a> &gt; <a href="index.source.html" class="el_package">retrofit2.converter.scalars</a> &gt; <span class="el_source">ScalarsConverterFactory.java</span></div><h1>ScalarsConverterFactory.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2015 Square, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package retrofit2.converter.scalars;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
+import retrofit2.Converter;
+import retrofit2.Retrofit;
+import retrofit2.converter.scalars.ScalarResponseBodyConverters.BooleanResponseBodyConverter;
+import retrofit2.converter.scalars.ScalarResponseBodyConverters.ByteResponseBodyConverter;
+import retrofit2.converter.scalars.ScalarResponseBodyConverters.CharacterResponseBodyConverter;
+import retrofit2.converter.scalars.ScalarResponseBodyConverters.DoubleResponseBodyConverter;
+import retrofit2.converter.scalars.ScalarResponseBodyConverters.FloatResponseBodyConverter;
+import retrofit2.converter.scalars.ScalarResponseBodyConverters.IntegerResponseBodyConverter;
+import retrofit2.converter.scalars.ScalarResponseBodyConverters.LongResponseBodyConverter;
+import retrofit2.converter.scalars.ScalarResponseBodyConverters.ShortResponseBodyConverter;
+import retrofit2.converter.scalars.ScalarResponseBodyConverters.StringResponseBodyConverter;
+
+/**
+ * A {@linkplain Converter.Factory converter} for strings and both primitives and their boxed types
+ * to {@code text/plain} bodies.
+ */
+public final class ScalarsConverterFactory extends Converter.Factory {
+  public static ScalarsConverterFactory create() {
+<span class="fc" id="L40">    return new ScalarsConverterFactory();</span>
+  }
+
+  private ScalarsConverterFactory() {
+  }
+
+  @Override public Converter&lt;?, RequestBody&gt; requestBodyConverter(Type type,
+      Annotation[] parameterAnnotations, Annotation[] methodAnnotations, Retrofit retrofit) {
+<span class="fc bfc" id="L48" title="All 34 branches covered.">    if (type == String.class</span>
+        || type == boolean.class
+        || type == Boolean.class
+        || type == byte.class
+        || type == Byte.class
+        || type == char.class
+        || type == Character.class
+        || type == double.class
+        || type == Double.class
+        || type == float.class
+        || type == Float.class
+        || type == int.class
+        || type == Integer.class
+        || type == long.class
+        || type == Long.class
+        || type == short.class
+        || type == Short.class) {
+<span class="fc" id="L65">      return ScalarRequestBodyConverter.INSTANCE;</span>
+    }
+<span class="fc" id="L67">    return null;</span>
+  }
+
+  @Override
+  public Converter&lt;ResponseBody, ?&gt; responseBodyConverter(Type type, Annotation[] annotations,
+      Retrofit retrofit) {
+<span class="fc bfc" id="L73" title="All 2 branches covered.">    if (type == String.class) {</span>
+<span class="fc" id="L74">      return StringResponseBodyConverter.INSTANCE;</span>
+    }
+<span class="fc bfc" id="L76" title="All 4 branches covered.">    if (type == Boolean.class || type == boolean.class) {</span>
+<span class="fc" id="L77">      return BooleanResponseBodyConverter.INSTANCE;</span>
+    }
+<span class="fc bfc" id="L79" title="All 4 branches covered.">    if (type == Byte.class || type == byte.class) {</span>
+<span class="fc" id="L80">      return ByteResponseBodyConverter.INSTANCE;</span>
+    }
+<span class="fc bfc" id="L82" title="All 4 branches covered.">    if (type == Character.class || type == char.class) {</span>
+<span class="fc" id="L83">      return CharacterResponseBodyConverter.INSTANCE;</span>
+    }
+<span class="fc bfc" id="L85" title="All 4 branches covered.">    if (type == Double.class || type == double.class) {</span>
+<span class="fc" id="L86">      return DoubleResponseBodyConverter.INSTANCE;</span>
+    }
+<span class="fc bfc" id="L88" title="All 4 branches covered.">    if (type == Float.class || type == float.class) {</span>
+<span class="fc" id="L89">      return FloatResponseBodyConverter.INSTANCE;</span>
+    }
+<span class="fc bfc" id="L91" title="All 4 branches covered.">    if (type == Integer.class || type == int.class) {</span>
+<span class="fc" id="L92">      return IntegerResponseBodyConverter.INSTANCE;</span>
+    }
+<span class="fc bfc" id="L94" title="All 4 branches covered.">    if (type == Long.class || type == long.class) {</span>
+<span class="fc" id="L95">      return LongResponseBodyConverter.INSTANCE;</span>
+    }
+<span class="fc bfc" id="L97" title="All 4 branches covered.">    if (type == Short.class || type == short.class) {</span>
+<span class="fc" id="L98">      return ShortResponseBodyConverter.INSTANCE;</span>
+    }
+<span class="fc" id="L100">    return null;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

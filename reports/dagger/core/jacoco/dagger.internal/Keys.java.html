@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Keys.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Dagger</a> &gt; <a href="index.source.html" class="el_package">dagger.internal</a> &gt; <span class="el_source">Keys.java</span></div><h1>Keys.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2012 Square, Inc.
+ * Copyright (C) 2012 Google, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package dagger.internal;
+
+import dagger.Lazy;
+import dagger.MembersInjector;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.Set;
+import javax.inject.Provider;
+import javax.inject.Qualifier;
+
+/**
+ * Formats strings that identify the value to be injected. Keys are of one of
+ * three forms:
+ * &lt;ol&gt;
+ *   &lt;li&gt;{@code com.square.Foo}: provides instances of Foo.
+ *   &lt;li&gt;{@code @com.square.Bar/com.square.Foo}: provides instances of Foo
+ *       qualified by the annotation.
+ *   &lt;li&gt;{@code members/com.square.Foo}: injects members of Foo.
+ * &lt;/ol&gt;
+ * Bindings from {@code @Provides} methods are of the first two types. BindingsGroup
+ * created from {@code @Inject}-annotated members of a class are of the first
+ * and last types.
+ */
+public final class Keys {
+<span class="fc" id="L43">  private static final String PROVIDER_PREFIX = Provider.class.getCanonicalName() + &quot;&lt;&quot;;</span>
+<span class="fc" id="L44">  private static final String MEMBERS_INJECTOR_PREFIX =</span>
+<span class="fc" id="L45">      MembersInjector.class.getCanonicalName() + &quot;&lt;&quot;;</span>
+<span class="fc" id="L46">  private static final String LAZY_PREFIX = Lazy.class.getCanonicalName() + &quot;&lt;&quot;;</span>
+<span class="fc" id="L47">  private static final String SET_PREFIX = Set.class.getCanonicalName() + &quot;&lt;&quot;;</span>
+
+<span class="fc" id="L49">  private static final Memoizer&lt;Class&lt;? extends Annotation&gt;, Boolean&gt; IS_QUALIFIER_ANNOTATION =</span>
+<span class="fc" id="L50">      new Memoizer&lt;Class&lt;? extends Annotation&gt;, Boolean&gt;() {</span>
+        @Override protected Boolean create(Class&lt;? extends Annotation&gt; annotationType) {
+<span class="fc" id="L52">          return annotationType.isAnnotationPresent(Qualifier.class);</span>
+        }
+      };
+
+<span class="nc" id="L56">  Keys() {</span>
+<span class="nc" id="L57">  }</span>
+
+  /** Returns a key for {@code type} with no annotation. */
+  public static String get(Type type) {
+<span class="fc" id="L61">    return get(type, null);</span>
+  }
+
+  /** Returns a key for the members of {@code type}. */
+  public static String getMembersKey(Class&lt;?&gt; key) {
+    // for classes key.getName() is equivalent to get(key)
+<span class="fc" id="L67">    return &quot;members/&quot;.concat(key.getName());</span>
+  }
+
+  /** Returns a key for {@code type} annotated by {@code annotation}. */
+  private static String get(Type type, Annotation annotation) {
+<span class="fc" id="L72">    type = boxIfPrimitive(type);</span>
+<span class="fc bfc" id="L73" title="All 6 branches covered.">    if (annotation == null &amp;&amp; type instanceof Class &amp;&amp; !((Class&lt;?&gt;) type).isArray()) {</span>
+<span class="fc" id="L74">      return ((Class&lt;?&gt;) type).getName();</span>
+    }
+<span class="fc" id="L76">    StringBuilder result = new StringBuilder();</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">    if (annotation != null) {</span>
+<span class="fc" id="L78">      result.append(annotation).append(&quot;/&quot;);</span>
+    }
+<span class="fc" id="L80">    typeToString(type, result, true);</span>
+<span class="fc" id="L81">    return result.toString();</span>
+  }
+
+  /**
+   * Returns a key for {@code type} annotated with {@code annotations},
+   * wrapped by {@code Set}, reporting failures against {@code subject}.
+   *
+   * @param annotations the annotations on a single method, field or parameter.
+   *     This array may contain at most one qualifier annotation.
+   */
+  public static String getSetKey(Type type, Annotation[] annotations, Object subject) {
+<span class="fc" id="L92">    Annotation qualifier = extractQualifier(annotations, subject);</span>
+<span class="fc" id="L93">    type = boxIfPrimitive(type);</span>
+<span class="fc" id="L94">    StringBuilder result = new StringBuilder();</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">    if (qualifier != null) {</span>
+<span class="fc" id="L96">      result.append(qualifier).append(&quot;/&quot;);</span>
+    }
+<span class="fc" id="L98">    result.append(SET_PREFIX);</span>
+<span class="fc" id="L99">    typeToString(type, result, true);</span>
+<span class="fc" id="L100">    result.append(&quot;&gt;&quot;);</span>
+<span class="fc" id="L101">    return result.toString();</span>
+  }
+
+  /**
+   * Returns a key for {@code type} annotated with {@code annotations},
+   * reporting failures against {@code subject}.
+   *
+   * @param annotations the annotations on a single method, field or parameter.
+   *     This array may contain at most one qualifier annotation.
+   */
+  public static String get(Type type, Annotation[] annotations, Object subject) {
+<span class="fc" id="L112">    return get(type, extractQualifier(annotations, subject));</span>
+  }
+
+  /**
+   * Validates that among {@code annotations} there exists only one annotation which is, itself
+   * qualified by {@code \@Qualifier}
+   */
+  private static Annotation extractQualifier(Annotation[] annotations,
+      Object subject) {
+<span class="fc" id="L121">    Annotation qualifier = null;</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">    for (Annotation a : annotations) {</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">      if (!IS_QUALIFIER_ANNOTATION.get(a.annotationType())) {</span>
+<span class="fc" id="L124">        continue;</span>
+      }
+<span class="pc bpc" id="L126" title="1 of 2 branches missed.">      if (qualifier != null) {</span>
+<span class="nc" id="L127">        throw new IllegalArgumentException(&quot;Too many qualifier annotations on &quot; + subject);</span>
+      }
+<span class="fc" id="L129">      qualifier = a;</span>
+    }
+<span class="fc" id="L131">    return qualifier;</span>
+  }
+
+  /**
+   * @param topLevel true if this is a top-level type where primitive types
+   *     like 'int' are forbidden. Recursive calls pass 'false' to support
+   *     arrays like {@code int[]}.
+   */
+  private static void typeToString(Type type, StringBuilder result, boolean topLevel) {
+<span class="fc bfc" id="L140" title="All 2 branches covered.">    if (type instanceof Class) {</span>
+<span class="fc" id="L141">      Class&lt;?&gt; c = (Class&lt;?&gt;) type;</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">      if (c.isArray()) {</span>
+<span class="fc" id="L143">        typeToString(c.getComponentType(), result, false);</span>
+<span class="fc" id="L144">        result.append(&quot;[]&quot;);</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">      } else if (c.isPrimitive()) {</span>
+<span class="pc bpc" id="L146" title="1 of 2 branches missed.">        if (topLevel) {</span>
+<span class="nc" id="L147">          throw new UnsupportedOperationException(&quot;Uninjectable type &quot; + c.getName());</span>
+        }
+<span class="fc" id="L149">        result.append(c.getName());</span>
+      } else {
+<span class="fc" id="L151">        result.append(c.getName());</span>
+      }
+<span class="fc bfc" id="L153" title="All 2 branches covered.">    } else if (type instanceof ParameterizedType) {</span>
+<span class="fc" id="L154">      ParameterizedType parameterizedType = (ParameterizedType) type;</span>
+<span class="fc" id="L155">      typeToString(parameterizedType.getRawType(), result, true);</span>
+<span class="fc" id="L156">      Type[] arguments = parameterizedType.getActualTypeArguments();</span>
+<span class="fc" id="L157">      result.append(&quot;&lt;&quot;);</span>
+<span class="fc bfc" id="L158" title="All 2 branches covered.">      for (int i = 0; i &lt; arguments.length; i++) {</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">        if (i != 0) {</span>
+<span class="fc" id="L160">          result.append(&quot;, &quot;);</span>
+        }
+<span class="fc" id="L162">        typeToString(arguments[i], result, true);</span>
+      }
+<span class="fc" id="L164">      result.append(&quot;&gt;&quot;);</span>
+<span class="pc bpc" id="L165" title="1 of 2 branches missed.">    } else if (type instanceof GenericArrayType) {</span>
+<span class="nc" id="L166">      GenericArrayType genericArrayType = (GenericArrayType) type;</span>
+<span class="nc" id="L167">      typeToString(genericArrayType.getGenericComponentType(), result, false);</span>
+<span class="nc" id="L168">      result.append(&quot;[]&quot;);</span>
+<span class="nc" id="L169">    } else {</span>
+<span class="fc" id="L170">      throw new UnsupportedOperationException(&quot;Uninjectable type &quot; + type);</span>
+    }
+<span class="fc" id="L172">  }</span>
+
+  /**
+   * Returns a key for the type provided by, or injected by this key. For
+   * example, if this is a key for a {@code Provider&lt;Foo&gt;}, this returns the
+   * key for {@code Foo}. This retains annotations and supports both Provider
+   * keys and MembersInjector keys.
+   */
+  static String getBuiltInBindingsKey(String key) {
+<span class="fc" id="L181">    int start = startOfType(key);</span>
+<span class="fc bfc" id="L182" title="All 2 branches covered.">    if (substringStartsWith(key, start, PROVIDER_PREFIX)) {</span>
+<span class="fc" id="L183">      return extractKey(key, start, key.substring(0, start), PROVIDER_PREFIX);</span>
+<span class="fc bfc" id="L184" title="All 2 branches covered.">    } else if (substringStartsWith(key, start, MEMBERS_INJECTOR_PREFIX)) {</span>
+<span class="fc" id="L185">      return extractKey(key, start, &quot;members/&quot;, MEMBERS_INJECTOR_PREFIX);</span>
+    } else {
+<span class="fc" id="L187">      return null;</span>
+    }
+  }
+
+  /**
+   * Returns a key for the underlying binding of a Lazy&lt;T&gt; value. For example,
+   * if this is a key for a {@code Lazy&lt;Foo&gt;}, this returns the key for
+   * {@code Foo}. This retains annotations.
+   */
+  static String getLazyKey(String key) {
+<span class="fc" id="L197">    int start = startOfType(key);</span>
+<span class="fc bfc" id="L198" title="All 2 branches covered.">    if (substringStartsWith(key, start, LAZY_PREFIX)) {</span>
+<span class="fc" id="L199">      return extractKey(key, start, key.substring(0, start), LAZY_PREFIX);</span>
+    } else {
+<span class="fc" id="L201">      return null;</span>
+    }
+  }
+
+  /**
+   * Returns the start of a key if it is a plain key, and the start of the
+   * underlying key if it is an annotated key
+   */
+  private static int startOfType(String key) {
+<span class="fc bfc" id="L210" title="All 2 branches covered.">    return (key.startsWith(&quot;@&quot;)) ? key.lastIndexOf('/') + 1 : 0;</span>
+  }
+
+  /**
+   * Returns an unwrapped key (the key for T from a Provider&lt;T&gt; for example),
+   * removing all wrapping key information, but preserving annotations or known
+   * prefixes.
+   *
+   * @param key the key from which the delegate key should be extracted.
+   * @param start
+   *          an index into the key representing the key's &quot;real&quot; start after
+   *          any annotations.
+   * @param delegatePrefix
+   *          key prefix elements extracted from the underlying delegate
+   *          (annotations, &quot;members/&quot;, etc.)
+   * @param prefix the prefix to strip.
+   */
+  private static String extractKey(String key, int start, String delegatePrefix, String prefix) {
+<span class="fc" id="L228">    return delegatePrefix + key.substring(start + prefix.length(), key.length() - 1);</span>
+  }
+
+  /** Returns true if {@code string.substring(offset).startsWith(substring)}. */
+  private static boolean substringStartsWith(String string, int offset, String substring) {
+<span class="fc" id="L233">    return string.regionMatches(offset, substring, 0, substring.length());</span>
+  }
+
+  /** Returns true if {@code key} has a qualifier annotation. */
+  public static boolean isAnnotated(String key) {
+<span class="fc" id="L238">    return key.startsWith(&quot;@&quot;);</span>
+  }
+
+  /**
+   * Returns the class name for {@code key}, if {@code key} was created with a
+   * class instance. Returns null if {@code key} represents a parameterized type
+   * or an array type.
+   */
+  public static String getClassName(String key) {
+<span class="fc" id="L247">    int start = 0;</span>
+<span class="fc bfc" id="L248" title="All 4 branches covered.">    if (key.startsWith(&quot;@&quot;) || key.startsWith(&quot;members/&quot;)) {</span>
+<span class="fc" id="L249">      start = key.lastIndexOf('/') + 1;</span>
+    }
+<span class="fc bfc" id="L251" title="All 4 branches covered.">    return (key.indexOf('&lt;', start) == -1 &amp;&amp; key.indexOf('[', start) == -1)</span>
+<span class="fc" id="L252">        ? key.substring(start)</span>
+        : null;
+  }
+
+  /** Returns true if {@code name} is the name of a platform-provided class. */
+  public static boolean isPlatformType(String name) {
+<span class="pc bpc" id="L258" title="2 of 6 branches missed.">    return name.startsWith(&quot;java.&quot;) || name.startsWith(&quot;javax.&quot;) || name.startsWith(&quot;android.&quot;);</span>
+  }
+
+  private static Type boxIfPrimitive(Type type) {
+<span class="pc bpc" id="L262" title="1 of 2 branches missed.">    if (type == byte.class) return Byte.class;</span>
+<span class="pc bpc" id="L263" title="1 of 2 branches missed.">    if (type == short.class) return Short.class;</span>
+<span class="fc bfc" id="L264" title="All 2 branches covered.">    if (type == int.class) return Integer.class;</span>
+<span class="pc bpc" id="L265" title="1 of 2 branches missed.">    if (type == long.class) return Long.class;</span>
+<span class="pc bpc" id="L266" title="1 of 2 branches missed.">    if (type == char.class) return Character.class;</span>
+<span class="pc bpc" id="L267" title="1 of 2 branches missed.">    if (type == boolean.class) return Boolean.class;</span>
+<span class="pc bpc" id="L268" title="1 of 2 branches missed.">    if (type == float.class) return Float.class;</span>
+<span class="pc bpc" id="L269" title="1 of 2 branches missed.">    if (type == double.class) return Double.class;</span>
+<span class="pc bpc" id="L270" title="1 of 2 branches missed.">    if (type == void.class) return Void.class;</span>
+<span class="fc" id="L271">    return type;</span>
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

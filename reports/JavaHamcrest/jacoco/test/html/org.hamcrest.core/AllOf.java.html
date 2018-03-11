@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AllOf.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JavaHamcrest</a> &gt; <a href="index.source.html" class="el_package">org.hamcrest.core</a> &gt; <span class="el_source">AllOf.java</span></div><h1>AllOf.java</h1><pre class="source lang-java linenums">package org.hamcrest.core;
+
+import org.hamcrest.Description;
+import org.hamcrest.DiagnosingMatcher;
+import org.hamcrest.Matcher;
+
+import java.util.Arrays;
+
+/**
+ * Calculates the logical conjunction of multiple matchers. Evaluation is shortcut, so
+ * subsequent matchers are not called if an earlier matcher returns &lt;code&gt;false&lt;/code&gt;.
+ */
+public class AllOf&lt;T&gt; extends DiagnosingMatcher&lt;T&gt; {
+
+    private final Iterable&lt;Matcher&lt;? super T&gt;&gt; matchers;
+
+<span class="fc" id="L17">    public AllOf(Iterable&lt;Matcher&lt;? super T&gt;&gt; matchers) {</span>
+<span class="fc" id="L18">        this.matchers = matchers;</span>
+<span class="fc" id="L19">    }</span>
+
+    @Override
+    public boolean matches(Object o, Description mismatch) {
+<span class="fc bfc" id="L23" title="All 2 branches covered.">        for (Matcher&lt;? super T&gt; matcher : matchers) {</span>
+<span class="fc bfc" id="L24" title="All 2 branches covered.">            if (!matcher.matches(o)) {</span>
+<span class="fc" id="L25">                mismatch.appendDescriptionOf(matcher).appendText(&quot; &quot;);</span>
+<span class="fc" id="L26">                matcher.describeMismatch(o, mismatch);</span>
+<span class="fc" id="L27">              return false;</span>
+            }
+<span class="fc" id="L29">        }</span>
+<span class="fc" id="L30">        return true;</span>
+    }
+
+    @Override
+    public void describeTo(Description description) {
+<span class="fc" id="L35">        description.appendList(&quot;(&quot;, &quot; &quot; + &quot;and&quot; + &quot; &quot;, &quot;)&quot;, matchers);</span>
+<span class="fc" id="L36">    }</span>
+
+    /**
+     * Creates a matcher that matches if the examined object matches &lt;b&gt;ALL&lt;/b&gt; of the specified matchers.
+     * For example:
+     * &lt;pre&gt;assertThat(&quot;myValue&quot;, allOf(startsWith(&quot;my&quot;), containsString(&quot;Val&quot;)))&lt;/pre&gt;
+     */
+    public static &lt;T&gt; Matcher&lt;T&gt; allOf(Iterable&lt;Matcher&lt;? super T&gt;&gt; matchers) {
+<span class="fc" id="L44">        return new AllOf&lt;&gt;(matchers);</span>
+    }
+
+    /**
+     * Creates a matcher that matches if the examined object matches &lt;b&gt;ALL&lt;/b&gt; of the specified matchers.
+     * For example:
+     * &lt;pre&gt;assertThat(&quot;myValue&quot;, allOf(startsWith(&quot;my&quot;), containsString(&quot;Val&quot;)))&lt;/pre&gt;
+     */
+    @SafeVarargs
+    public static &lt;T&gt; Matcher&lt;T&gt; allOf(Matcher&lt;? super T&gt;... matchers) {
+<span class="fc" id="L54">        return allOf(Arrays.asList(matchers));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

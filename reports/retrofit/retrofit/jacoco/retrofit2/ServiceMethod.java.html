@@ -1,0 +1,793 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ServiceMethod.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Retrofit</a> &gt; <a href="index.source.html" class="el_package">retrofit2</a> &gt; <span class="el_source">ServiceMethod.java</span></div><h1>ServiceMethod.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2015 Square, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package retrofit2;
+
+import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.net.URI;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import javax.annotation.Nullable;
+import okhttp3.Headers;
+import okhttp3.HttpUrl;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
+import retrofit2.http.Body;
+import retrofit2.http.DELETE;
+import retrofit2.http.Field;
+import retrofit2.http.FieldMap;
+import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.GET;
+import retrofit2.http.HEAD;
+import retrofit2.http.HTTP;
+import retrofit2.http.Header;
+import retrofit2.http.HeaderMap;
+import retrofit2.http.Multipart;
+import retrofit2.http.OPTIONS;
+import retrofit2.http.PATCH;
+import retrofit2.http.POST;
+import retrofit2.http.PUT;
+import retrofit2.http.Part;
+import retrofit2.http.PartMap;
+import retrofit2.http.Path;
+import retrofit2.http.Query;
+import retrofit2.http.QueryMap;
+import retrofit2.http.QueryName;
+import retrofit2.http.Url;
+
+/** Adapts an invocation of an interface method into an HTTP call. */
+final class ServiceMethod&lt;R, T&gt; {
+  // Upper and lower characters, digits, underscores, and hyphens, starting with a character.
+  static final String PARAM = &quot;[a-zA-Z][a-zA-Z0-9_-]*&quot;;
+<span class="fc" id="L63">  static final Pattern PARAM_URL_REGEX = Pattern.compile(&quot;\\{(&quot; + PARAM + &quot;)\\}&quot;);</span>
+<span class="fc" id="L64">  static final Pattern PARAM_NAME_REGEX = Pattern.compile(PARAM);</span>
+
+  private final okhttp3.Call.Factory callFactory;
+  private final CallAdapter&lt;R, T&gt; callAdapter;
+
+  private final HttpUrl baseUrl;
+  private final Converter&lt;ResponseBody, R&gt; responseConverter;
+  private final String httpMethod;
+  private final String relativeUrl;
+  private final Headers headers;
+  private final MediaType contentType;
+  private final boolean hasBody;
+  private final boolean isFormEncoded;
+  private final boolean isMultipart;
+  private final ParameterHandler&lt;?&gt;[] parameterHandlers;
+
+<span class="fc" id="L80">  ServiceMethod(Builder&lt;R, T&gt; builder) {</span>
+<span class="fc" id="L81">    this.callFactory = builder.retrofit.callFactory();</span>
+<span class="fc" id="L82">    this.callAdapter = builder.callAdapter;</span>
+<span class="fc" id="L83">    this.baseUrl = builder.retrofit.baseUrl();</span>
+<span class="fc" id="L84">    this.responseConverter = builder.responseConverter;</span>
+<span class="fc" id="L85">    this.httpMethod = builder.httpMethod;</span>
+<span class="fc" id="L86">    this.relativeUrl = builder.relativeUrl;</span>
+<span class="fc" id="L87">    this.headers = builder.headers;</span>
+<span class="fc" id="L88">    this.contentType = builder.contentType;</span>
+<span class="fc" id="L89">    this.hasBody = builder.hasBody;</span>
+<span class="fc" id="L90">    this.isFormEncoded = builder.isFormEncoded;</span>
+<span class="fc" id="L91">    this.isMultipart = builder.isMultipart;</span>
+<span class="fc" id="L92">    this.parameterHandlers = builder.parameterHandlers;</span>
+<span class="fc" id="L93">  }</span>
+
+  /** Builds an HTTP request from method arguments. */
+  okhttp3.Call toCall(@Nullable Object... args) throws IOException {
+<span class="fc" id="L97">    RequestBuilder requestBuilder = new RequestBuilder(httpMethod, baseUrl, relativeUrl, headers,</span>
+        contentType, hasBody, isFormEncoded, isMultipart);
+
+    @SuppressWarnings(&quot;unchecked&quot;) // It is an error to invoke a method with the wrong arg types.
+<span class="fc" id="L101">    ParameterHandler&lt;Object&gt;[] handlers = (ParameterHandler&lt;Object&gt;[]) parameterHandlers;</span>
+
+<span class="fc bfc" id="L103" title="All 2 branches covered.">    int argumentCount = args != null ? args.length : 0;</span>
+<span class="pc bpc" id="L104" title="1 of 2 branches missed.">    if (argumentCount != handlers.length) {</span>
+<span class="nc" id="L105">      throw new IllegalArgumentException(&quot;Argument count (&quot; + argumentCount</span>
+          + &quot;) doesn't match expected count (&quot; + handlers.length + &quot;)&quot;);
+    }
+
+<span class="fc bfc" id="L109" title="All 2 branches covered.">    for (int p = 0; p &lt; argumentCount; p++) {</span>
+<span class="fc" id="L110">      handlers[p].apply(requestBuilder, args[p]);</span>
+    }
+
+<span class="fc" id="L113">    return callFactory.newCall(requestBuilder.build());</span>
+  }
+
+  T adapt(Call&lt;R&gt; call) {
+<span class="fc" id="L117">    return callAdapter.adapt(call);</span>
+  }
+
+  /** Builds a method return value from an HTTP response body. */
+  R toResponse(ResponseBody body) throws IOException {
+<span class="fc" id="L122">    return responseConverter.convert(body);</span>
+  }
+
+  /**
+   * Inspects the annotations on an interface method to construct a reusable service method. This
+   * requires potentially-expensive reflection so it is best to build each service method only once
+   * and reuse it. Builders cannot be reused.
+   */
+  static final class Builder&lt;T, R&gt; {
+    final Retrofit retrofit;
+    final Method method;
+    final Annotation[] methodAnnotations;
+    final Annotation[][] parameterAnnotationsArray;
+    final Type[] parameterTypes;
+
+    Type responseType;
+    boolean gotField;
+    boolean gotPart;
+    boolean gotBody;
+    boolean gotPath;
+    boolean gotQuery;
+    boolean gotUrl;
+    String httpMethod;
+    boolean hasBody;
+    boolean isFormEncoded;
+    boolean isMultipart;
+    String relativeUrl;
+    Headers headers;
+    MediaType contentType;
+    Set&lt;String&gt; relativeUrlParamNames;
+    ParameterHandler&lt;?&gt;[] parameterHandlers;
+    Converter&lt;ResponseBody, T&gt; responseConverter;
+    CallAdapter&lt;T, R&gt; callAdapter;
+
+<span class="fc" id="L156">    Builder(Retrofit retrofit, Method method) {</span>
+<span class="fc" id="L157">      this.retrofit = retrofit;</span>
+<span class="fc" id="L158">      this.method = method;</span>
+<span class="fc" id="L159">      this.methodAnnotations = method.getAnnotations();</span>
+<span class="fc" id="L160">      this.parameterTypes = method.getGenericParameterTypes();</span>
+<span class="fc" id="L161">      this.parameterAnnotationsArray = method.getParameterAnnotations();</span>
+<span class="fc" id="L162">    }</span>
+
+    public ServiceMethod build() {
+<span class="fc" id="L165">      callAdapter = createCallAdapter();</span>
+<span class="fc" id="L166">      responseType = callAdapter.responseType();</span>
+<span class="fc bfc" id="L167" title="All 4 branches covered.">      if (responseType == Response.class || responseType == okhttp3.Response.class) {</span>
+<span class="fc" id="L168">        throw methodError(&quot;'&quot;</span>
+<span class="fc" id="L169">            + Utils.getRawType(responseType).getName()</span>
+            + &quot;' is not a valid response body type. Did you mean ResponseBody?&quot;);
+      }
+<span class="fc" id="L172">      responseConverter = createResponseConverter();</span>
+
+<span class="fc bfc" id="L174" title="All 2 branches covered.">      for (Annotation annotation : methodAnnotations) {</span>
+<span class="fc" id="L175">        parseMethodAnnotation(annotation);</span>
+      }
+
+<span class="fc bfc" id="L178" title="All 2 branches covered.">      if (httpMethod == null) {</span>
+<span class="fc" id="L179">        throw methodError(&quot;HTTP method annotation is required (e.g., @GET, @POST, etc.).&quot;);</span>
+      }
+
+<span class="fc bfc" id="L182" title="All 2 branches covered.">      if (!hasBody) {</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">        if (isMultipart) {</span>
+<span class="fc" id="L184">          throw methodError(</span>
+              &quot;Multipart can only be specified on HTTP methods with request body (e.g., @POST).&quot;);
+        }
+<span class="fc bfc" id="L187" title="All 2 branches covered.">        if (isFormEncoded) {</span>
+<span class="fc" id="L188">          throw methodError(&quot;FormUrlEncoded can only be specified on HTTP methods with &quot;</span>
+              + &quot;request body (e.g., @POST).&quot;);
+        }
+      }
+
+<span class="fc" id="L193">      int parameterCount = parameterAnnotationsArray.length;</span>
+<span class="fc" id="L194">      parameterHandlers = new ParameterHandler&lt;?&gt;[parameterCount];</span>
+<span class="fc bfc" id="L195" title="All 2 branches covered.">      for (int p = 0; p &lt; parameterCount; p++) {</span>
+<span class="fc" id="L196">        Type parameterType = parameterTypes[p];</span>
+<span class="fc bfc" id="L197" title="All 2 branches covered.">        if (Utils.hasUnresolvableType(parameterType)) {</span>
+<span class="fc" id="L198">          throw parameterError(p, &quot;Parameter type must not include a type variable or wildcard: %s&quot;,</span>
+              parameterType);
+        }
+
+<span class="fc" id="L202">        Annotation[] parameterAnnotations = parameterAnnotationsArray[p];</span>
+<span class="pc bpc" id="L203" title="1 of 2 branches missed.">        if (parameterAnnotations == null) {</span>
+<span class="nc" id="L204">          throw parameterError(p, &quot;No Retrofit annotation found.&quot;);</span>
+        }
+
+<span class="fc" id="L207">        parameterHandlers[p] = parseParameter(p, parameterType, parameterAnnotations);</span>
+      }
+
+<span class="fc bfc" id="L210" title="All 4 branches covered.">      if (relativeUrl == null &amp;&amp; !gotUrl) {</span>
+<span class="fc" id="L211">        throw methodError(&quot;Missing either @%s URL or @Url parameter.&quot;, httpMethod);</span>
+      }
+<span class="fc bfc" id="L213" title="All 8 branches covered.">      if (!isFormEncoded &amp;&amp; !isMultipart &amp;&amp; !hasBody &amp;&amp; gotBody) {</span>
+<span class="fc" id="L214">        throw methodError(&quot;Non-body HTTP method cannot contain @Body.&quot;);</span>
+      }
+<span class="fc bfc" id="L216" title="All 4 branches covered.">      if (isFormEncoded &amp;&amp; !gotField) {</span>
+<span class="fc" id="L217">        throw methodError(&quot;Form-encoded method must contain at least one @Field.&quot;);</span>
+      }
+<span class="fc bfc" id="L219" title="All 4 branches covered.">      if (isMultipart &amp;&amp; !gotPart) {</span>
+<span class="fc" id="L220">        throw methodError(&quot;Multipart method must contain at least one @Part.&quot;);</span>
+      }
+
+<span class="fc" id="L223">      return new ServiceMethod&lt;&gt;(this);</span>
+    }
+
+    private CallAdapter&lt;T, R&gt; createCallAdapter() {
+<span class="fc" id="L227">      Type returnType = method.getGenericReturnType();</span>
+<span class="fc bfc" id="L228" title="All 2 branches covered.">      if (Utils.hasUnresolvableType(returnType)) {</span>
+<span class="fc" id="L229">        throw methodError(</span>
+            &quot;Method return type must not include a type variable or wildcard: %s&quot;, returnType);
+      }
+<span class="fc bfc" id="L232" title="All 2 branches covered.">      if (returnType == void.class) {</span>
+<span class="fc" id="L233">        throw methodError(&quot;Service methods cannot return void.&quot;);</span>
+      }
+<span class="fc" id="L235">      Annotation[] annotations = method.getAnnotations();</span>
+      try {
+        //noinspection unchecked
+<span class="fc" id="L238">        return (CallAdapter&lt;T, R&gt;) retrofit.callAdapter(returnType, annotations);</span>
+<span class="fc" id="L239">      } catch (RuntimeException e) { // Wide exception range because factories are user code.</span>
+<span class="fc" id="L240">        throw methodError(e, &quot;Unable to create call adapter for %s&quot;, returnType);</span>
+      }
+    }
+
+    private void parseMethodAnnotation(Annotation annotation) {
+<span class="fc bfc" id="L245" title="All 2 branches covered.">      if (annotation instanceof DELETE) {</span>
+<span class="fc" id="L246">        parseHttpMethodAndPath(&quot;DELETE&quot;, ((DELETE) annotation).value(), false);</span>
+<span class="fc bfc" id="L247" title="All 2 branches covered.">      } else if (annotation instanceof GET) {</span>
+<span class="fc" id="L248">        parseHttpMethodAndPath(&quot;GET&quot;, ((GET) annotation).value(), false);</span>
+<span class="fc bfc" id="L249" title="All 2 branches covered.">      } else if (annotation instanceof HEAD) {</span>
+<span class="fc" id="L250">        parseHttpMethodAndPath(&quot;HEAD&quot;, ((HEAD) annotation).value(), false);</span>
+<span class="fc bfc" id="L251" title="All 2 branches covered.">        if (!Void.class.equals(responseType)) {</span>
+<span class="fc" id="L252">          throw methodError(&quot;HEAD method must use Void as response type.&quot;);</span>
+        }
+<span class="fc bfc" id="L254" title="All 2 branches covered.">      } else if (annotation instanceof PATCH) {</span>
+<span class="fc" id="L255">        parseHttpMethodAndPath(&quot;PATCH&quot;, ((PATCH) annotation).value(), true);</span>
+<span class="fc bfc" id="L256" title="All 2 branches covered.">      } else if (annotation instanceof POST) {</span>
+<span class="fc" id="L257">        parseHttpMethodAndPath(&quot;POST&quot;, ((POST) annotation).value(), true);</span>
+<span class="fc bfc" id="L258" title="All 2 branches covered.">      } else if (annotation instanceof PUT) {</span>
+<span class="fc" id="L259">        parseHttpMethodAndPath(&quot;PUT&quot;, ((PUT) annotation).value(), true);</span>
+<span class="fc bfc" id="L260" title="All 2 branches covered.">      } else if (annotation instanceof OPTIONS) {</span>
+<span class="fc" id="L261">        parseHttpMethodAndPath(&quot;OPTIONS&quot;, ((OPTIONS) annotation).value(), false);</span>
+<span class="fc bfc" id="L262" title="All 2 branches covered.">      } else if (annotation instanceof HTTP) {</span>
+<span class="fc" id="L263">        HTTP http = (HTTP) annotation;</span>
+<span class="fc" id="L264">        parseHttpMethodAndPath(http.method(), http.path(), http.hasBody());</span>
+<span class="fc bfc" id="L265" title="All 2 branches covered.">      } else if (annotation instanceof retrofit2.http.Headers) {</span>
+<span class="fc" id="L266">        String[] headersToParse = ((retrofit2.http.Headers) annotation).value();</span>
+<span class="fc bfc" id="L267" title="All 2 branches covered.">        if (headersToParse.length == 0) {</span>
+<span class="fc" id="L268">          throw methodError(&quot;@Headers annotation is empty.&quot;);</span>
+        }
+<span class="fc" id="L270">        headers = parseHeaders(headersToParse);</span>
+<span class="fc bfc" id="L271" title="All 2 branches covered.">      } else if (annotation instanceof Multipart) {</span>
+<span class="fc bfc" id="L272" title="All 2 branches covered.">        if (isFormEncoded) {</span>
+<span class="fc" id="L273">          throw methodError(&quot;Only one encoding annotation is allowed.&quot;);</span>
+        }
+<span class="fc" id="L275">        isMultipart = true;</span>
+<span class="fc bfc" id="L276" title="All 2 branches covered.">      } else if (annotation instanceof FormUrlEncoded) {</span>
+<span class="fc bfc" id="L277" title="All 2 branches covered.">        if (isMultipart) {</span>
+<span class="fc" id="L278">          throw methodError(&quot;Only one encoding annotation is allowed.&quot;);</span>
+        }
+<span class="fc" id="L280">        isFormEncoded = true;</span>
+      }
+<span class="fc" id="L282">    }</span>
+
+    private void parseHttpMethodAndPath(String httpMethod, String value, boolean hasBody) {
+<span class="fc bfc" id="L285" title="All 2 branches covered.">      if (this.httpMethod != null) {</span>
+<span class="fc" id="L286">        throw methodError(&quot;Only one HTTP method is allowed. Found: %s and %s.&quot;,</span>
+            this.httpMethod, httpMethod);
+      }
+<span class="fc" id="L289">      this.httpMethod = httpMethod;</span>
+<span class="fc" id="L290">      this.hasBody = hasBody;</span>
+
+<span class="fc bfc" id="L292" title="All 2 branches covered.">      if (value.isEmpty()) {</span>
+<span class="fc" id="L293">        return;</span>
+      }
+
+      // Get the relative URL path and existing query string, if present.
+<span class="fc" id="L297">      int question = value.indexOf('?');</span>
+<span class="pc bpc" id="L298" title="1 of 4 branches missed.">      if (question != -1 &amp;&amp; question &lt; value.length() - 1) {</span>
+        // Ensure the query string does not have any named parameters.
+<span class="fc" id="L300">        String queryParams = value.substring(question + 1);</span>
+<span class="fc" id="L301">        Matcher queryParamMatcher = PARAM_URL_REGEX.matcher(queryParams);</span>
+<span class="fc bfc" id="L302" title="All 2 branches covered.">        if (queryParamMatcher.find()) {</span>
+<span class="fc" id="L303">          throw methodError(&quot;URL query string \&quot;%s\&quot; must not have replace block. &quot;</span>
+              + &quot;For dynamic query parameters use @Query.&quot;, queryParams);
+        }
+      }
+
+<span class="fc" id="L308">      this.relativeUrl = value;</span>
+<span class="fc" id="L309">      this.relativeUrlParamNames = parsePathParameters(value);</span>
+<span class="fc" id="L310">    }</span>
+
+    private Headers parseHeaders(String[] headers) {
+<span class="fc" id="L313">      Headers.Builder builder = new Headers.Builder();</span>
+<span class="fc bfc" id="L314" title="All 2 branches covered.">      for (String header : headers) {</span>
+<span class="fc" id="L315">        int colon = header.indexOf(':');</span>
+<span class="pc bpc" id="L316" title="2 of 6 branches missed.">        if (colon == -1 || colon == 0 || colon == header.length() - 1) {</span>
+<span class="fc" id="L317">          throw methodError(</span>
+              &quot;@Headers value must be in the form \&quot;Name: Value\&quot;. Found: \&quot;%s\&quot;&quot;, header);
+        }
+<span class="fc" id="L320">        String headerName = header.substring(0, colon);</span>
+<span class="fc" id="L321">        String headerValue = header.substring(colon + 1).trim();</span>
+<span class="fc bfc" id="L322" title="All 2 branches covered.">        if (&quot;Content-Type&quot;.equalsIgnoreCase(headerName)) {</span>
+<span class="fc" id="L323">          MediaType type = MediaType.parse(headerValue);</span>
+<span class="fc bfc" id="L324" title="All 2 branches covered.">          if (type == null) {</span>
+<span class="fc" id="L325">            throw methodError(&quot;Malformed content type: %s&quot;, headerValue);</span>
+          }
+<span class="fc" id="L327">          contentType = type;</span>
+<span class="fc" id="L328">        } else {</span>
+<span class="fc" id="L329">          builder.add(headerName, headerValue);</span>
+        }
+      }
+<span class="fc" id="L332">      return builder.build();</span>
+    }
+
+    private ParameterHandler&lt;?&gt; parseParameter(
+        int p, Type parameterType, Annotation[] annotations) {
+<span class="fc" id="L337">      ParameterHandler&lt;?&gt; result = null;</span>
+<span class="fc bfc" id="L338" title="All 2 branches covered.">      for (Annotation annotation : annotations) {</span>
+<span class="fc" id="L339">        ParameterHandler&lt;?&gt; annotationAction = parseParameterAnnotation(</span>
+            p, parameterType, annotations, annotation);
+
+<span class="fc bfc" id="L342" title="All 2 branches covered.">        if (annotationAction == null) {</span>
+<span class="fc" id="L343">          continue;</span>
+        }
+
+<span class="fc bfc" id="L346" title="All 2 branches covered.">        if (result != null) {</span>
+<span class="fc" id="L347">          throw parameterError(p, &quot;Multiple Retrofit annotations found, only one allowed.&quot;);</span>
+        }
+
+<span class="fc" id="L350">        result = annotationAction;</span>
+      }
+
+<span class="fc bfc" id="L353" title="All 2 branches covered.">      if (result == null) {</span>
+<span class="fc" id="L354">        throw parameterError(p, &quot;No Retrofit annotation found.&quot;);</span>
+      }
+
+<span class="fc" id="L357">      return result;</span>
+    }
+
+    private ParameterHandler&lt;?&gt; parseParameterAnnotation(
+        int p, Type type, Annotation[] annotations, Annotation annotation) {
+<span class="fc bfc" id="L362" title="All 2 branches covered.">      if (annotation instanceof Url) {</span>
+<span class="pc bpc" id="L363" title="1 of 2 branches missed.">        if (gotUrl) {</span>
+<span class="nc" id="L364">          throw parameterError(p, &quot;Multiple @Url method annotations found.&quot;);</span>
+        }
+<span class="pc bpc" id="L366" title="1 of 2 branches missed.">        if (gotPath) {</span>
+<span class="nc" id="L367">          throw parameterError(p, &quot;@Path parameters may not be used with @Url.&quot;);</span>
+        }
+<span class="fc bfc" id="L369" title="All 2 branches covered.">        if (gotQuery) {</span>
+<span class="fc" id="L370">          throw parameterError(p, &quot;A @Url parameter must not come after a @Query&quot;);</span>
+        }
+<span class="fc bfc" id="L372" title="All 2 branches covered.">        if (relativeUrl != null) {</span>
+<span class="fc" id="L373">          throw parameterError(p, &quot;@Url cannot be used with @%s URL&quot;, httpMethod);</span>
+        }
+
+<span class="fc" id="L376">        gotUrl = true;</span>
+
+<span class="pc bpc" id="L378" title="1 of 8 branches missed.">        if (type == HttpUrl.class</span>
+            || type == String.class
+            || type == URI.class
+<span class="pc bpc" id="L381" title="1 of 2 branches missed.">            || (type instanceof Class &amp;&amp; &quot;android.net.Uri&quot;.equals(((Class&lt;?&gt;) type).getName()))) {</span>
+<span class="fc" id="L382">          return new ParameterHandler.RelativeUrl();</span>
+        } else {
+<span class="fc" id="L384">          throw parameterError(p,</span>
+              &quot;@Url must be okhttp3.HttpUrl, String, java.net.URI, or android.net.Uri type.&quot;);
+        }
+
+<span class="fc bfc" id="L388" title="All 2 branches covered.">      } else if (annotation instanceof Path) {</span>
+<span class="fc bfc" id="L389" title="All 2 branches covered.">        if (gotQuery) {</span>
+<span class="fc" id="L390">          throw parameterError(p, &quot;A @Path parameter must not come after a @Query.&quot;);</span>
+        }
+<span class="fc bfc" id="L392" title="All 2 branches covered.">        if (gotUrl) {</span>
+<span class="fc" id="L393">          throw parameterError(p, &quot;@Path parameters may not be used with @Url.&quot;);</span>
+        }
+<span class="fc bfc" id="L395" title="All 2 branches covered.">        if (relativeUrl == null) {</span>
+<span class="fc" id="L396">          throw parameterError(p, &quot;@Path can only be used with relative url on @%s&quot;, httpMethod);</span>
+        }
+<span class="fc" id="L398">        gotPath = true;</span>
+
+<span class="fc" id="L400">        Path path = (Path) annotation;</span>
+<span class="fc" id="L401">        String name = path.value();</span>
+<span class="fc" id="L402">        validatePathName(p, name);</span>
+
+<span class="fc" id="L404">        Converter&lt;?, String&gt; converter = retrofit.stringConverter(type, annotations);</span>
+<span class="fc" id="L405">        return new ParameterHandler.Path&lt;&gt;(name, converter, path.encoded());</span>
+
+<span class="fc bfc" id="L407" title="All 2 branches covered.">      } else if (annotation instanceof Query) {</span>
+<span class="fc" id="L408">        Query query = (Query) annotation;</span>
+<span class="fc" id="L409">        String name = query.value();</span>
+<span class="fc" id="L410">        boolean encoded = query.encoded();</span>
+
+<span class="fc" id="L412">        Class&lt;?&gt; rawParameterType = Utils.getRawType(type);</span>
+<span class="fc" id="L413">        gotQuery = true;</span>
+<span class="fc bfc" id="L414" title="All 2 branches covered.">        if (Iterable.class.isAssignableFrom(rawParameterType)) {</span>
+<span class="pc bpc" id="L415" title="1 of 2 branches missed.">          if (!(type instanceof ParameterizedType)) {</span>
+<span class="nc" id="L416">            throw parameterError(p, rawParameterType.getSimpleName()</span>
+                + &quot; must include generic type (e.g., &quot;
+<span class="nc" id="L418">                + rawParameterType.getSimpleName()</span>
+                + &quot;&lt;String&gt;)&quot;);
+          }
+<span class="fc" id="L421">          ParameterizedType parameterizedType = (ParameterizedType) type;</span>
+<span class="fc" id="L422">          Type iterableType = Utils.getParameterUpperBound(0, parameterizedType);</span>
+<span class="fc" id="L423">          Converter&lt;?, String&gt; converter =</span>
+<span class="fc" id="L424">              retrofit.stringConverter(iterableType, annotations);</span>
+<span class="fc" id="L425">          return new ParameterHandler.Query&lt;&gt;(name, converter, encoded).iterable();</span>
+<span class="fc bfc" id="L426" title="All 2 branches covered.">        } else if (rawParameterType.isArray()) {</span>
+<span class="fc" id="L427">          Class&lt;?&gt; arrayComponentType = boxIfPrimitive(rawParameterType.getComponentType());</span>
+<span class="fc" id="L428">          Converter&lt;?, String&gt; converter =</span>
+<span class="fc" id="L429">              retrofit.stringConverter(arrayComponentType, annotations);</span>
+<span class="fc" id="L430">          return new ParameterHandler.Query&lt;&gt;(name, converter, encoded).array();</span>
+        } else {
+<span class="fc" id="L432">          Converter&lt;?, String&gt; converter =</span>
+<span class="fc" id="L433">              retrofit.stringConverter(type, annotations);</span>
+<span class="fc" id="L434">          return new ParameterHandler.Query&lt;&gt;(name, converter, encoded);</span>
+        }
+
+<span class="fc bfc" id="L437" title="All 2 branches covered.">      } else if (annotation instanceof QueryName) {</span>
+<span class="fc" id="L438">        QueryName query = (QueryName) annotation;</span>
+<span class="fc" id="L439">        boolean encoded = query.encoded();</span>
+
+<span class="fc" id="L441">        Class&lt;?&gt; rawParameterType = Utils.getRawType(type);</span>
+<span class="fc" id="L442">        gotQuery = true;</span>
+<span class="fc bfc" id="L443" title="All 2 branches covered.">        if (Iterable.class.isAssignableFrom(rawParameterType)) {</span>
+<span class="pc bpc" id="L444" title="1 of 2 branches missed.">          if (!(type instanceof ParameterizedType)) {</span>
+<span class="nc" id="L445">            throw parameterError(p, rawParameterType.getSimpleName()</span>
+                + &quot; must include generic type (e.g., &quot;
+<span class="nc" id="L447">                + rawParameterType.getSimpleName()</span>
+                + &quot;&lt;String&gt;)&quot;);
+          }
+<span class="fc" id="L450">          ParameterizedType parameterizedType = (ParameterizedType) type;</span>
+<span class="fc" id="L451">          Type iterableType = Utils.getParameterUpperBound(0, parameterizedType);</span>
+<span class="fc" id="L452">          Converter&lt;?, String&gt; converter =</span>
+<span class="fc" id="L453">              retrofit.stringConverter(iterableType, annotations);</span>
+<span class="fc" id="L454">          return new ParameterHandler.QueryName&lt;&gt;(converter, encoded).iterable();</span>
+<span class="fc bfc" id="L455" title="All 2 branches covered.">        } else if (rawParameterType.isArray()) {</span>
+<span class="fc" id="L456">          Class&lt;?&gt; arrayComponentType = boxIfPrimitive(rawParameterType.getComponentType());</span>
+<span class="fc" id="L457">          Converter&lt;?, String&gt; converter =</span>
+<span class="fc" id="L458">              retrofit.stringConverter(arrayComponentType, annotations);</span>
+<span class="fc" id="L459">          return new ParameterHandler.QueryName&lt;&gt;(converter, encoded).array();</span>
+        } else {
+<span class="fc" id="L461">          Converter&lt;?, String&gt; converter =</span>
+<span class="fc" id="L462">              retrofit.stringConverter(type, annotations);</span>
+<span class="fc" id="L463">          return new ParameterHandler.QueryName&lt;&gt;(converter, encoded);</span>
+        }
+
+<span class="fc bfc" id="L466" title="All 2 branches covered.">      } else if (annotation instanceof QueryMap) {</span>
+<span class="fc" id="L467">        Class&lt;?&gt; rawParameterType = Utils.getRawType(type);</span>
+<span class="fc bfc" id="L468" title="All 2 branches covered.">        if (!Map.class.isAssignableFrom(rawParameterType)) {</span>
+<span class="fc" id="L469">          throw parameterError(p, &quot;@QueryMap parameter type must be Map.&quot;);</span>
+        }
+<span class="fc" id="L471">        Type mapType = Utils.getSupertype(type, rawParameterType, Map.class);</span>
+<span class="pc bpc" id="L472" title="1 of 2 branches missed.">        if (!(mapType instanceof ParameterizedType)) {</span>
+<span class="nc" id="L473">          throw parameterError(p, &quot;Map must include generic types (e.g., Map&lt;String, String&gt;)&quot;);</span>
+        }
+<span class="fc" id="L475">        ParameterizedType parameterizedType = (ParameterizedType) mapType;</span>
+<span class="fc" id="L476">        Type keyType = Utils.getParameterUpperBound(0, parameterizedType);</span>
+<span class="pc bpc" id="L477" title="1 of 2 branches missed.">        if (String.class != keyType) {</span>
+<span class="nc" id="L478">          throw parameterError(p, &quot;@QueryMap keys must be of type String: &quot; + keyType);</span>
+        }
+<span class="fc" id="L480">        Type valueType = Utils.getParameterUpperBound(1, parameterizedType);</span>
+<span class="fc" id="L481">        Converter&lt;?, String&gt; valueConverter =</span>
+<span class="fc" id="L482">            retrofit.stringConverter(valueType, annotations);</span>
+
+<span class="fc" id="L484">        return new ParameterHandler.QueryMap&lt;&gt;(valueConverter, ((QueryMap) annotation).encoded());</span>
+
+<span class="fc bfc" id="L486" title="All 2 branches covered.">      } else if (annotation instanceof Header) {</span>
+<span class="fc" id="L487">        Header header = (Header) annotation;</span>
+<span class="fc" id="L488">        String name = header.value();</span>
+
+<span class="fc" id="L490">        Class&lt;?&gt; rawParameterType = Utils.getRawType(type);</span>
+<span class="fc bfc" id="L491" title="All 2 branches covered.">        if (Iterable.class.isAssignableFrom(rawParameterType)) {</span>
+<span class="pc bpc" id="L492" title="1 of 2 branches missed.">          if (!(type instanceof ParameterizedType)) {</span>
+<span class="nc" id="L493">            throw parameterError(p, rawParameterType.getSimpleName()</span>
+                + &quot; must include generic type (e.g., &quot;
+<span class="nc" id="L495">                + rawParameterType.getSimpleName()</span>
+                + &quot;&lt;String&gt;)&quot;);
+          }
+<span class="fc" id="L498">          ParameterizedType parameterizedType = (ParameterizedType) type;</span>
+<span class="fc" id="L499">          Type iterableType = Utils.getParameterUpperBound(0, parameterizedType);</span>
+<span class="fc" id="L500">          Converter&lt;?, String&gt; converter =</span>
+<span class="fc" id="L501">              retrofit.stringConverter(iterableType, annotations);</span>
+<span class="fc" id="L502">          return new ParameterHandler.Header&lt;&gt;(name, converter).iterable();</span>
+<span class="fc bfc" id="L503" title="All 2 branches covered.">        } else if (rawParameterType.isArray()) {</span>
+<span class="fc" id="L504">          Class&lt;?&gt; arrayComponentType = boxIfPrimitive(rawParameterType.getComponentType());</span>
+<span class="fc" id="L505">          Converter&lt;?, String&gt; converter =</span>
+<span class="fc" id="L506">              retrofit.stringConverter(arrayComponentType, annotations);</span>
+<span class="fc" id="L507">          return new ParameterHandler.Header&lt;&gt;(name, converter).array();</span>
+        } else {
+<span class="fc" id="L509">          Converter&lt;?, String&gt; converter =</span>
+<span class="fc" id="L510">              retrofit.stringConverter(type, annotations);</span>
+<span class="fc" id="L511">          return new ParameterHandler.Header&lt;&gt;(name, converter);</span>
+        }
+
+<span class="fc bfc" id="L514" title="All 2 branches covered.">      } else if (annotation instanceof HeaderMap) {</span>
+<span class="fc" id="L515">        Class&lt;?&gt; rawParameterType = Utils.getRawType(type);</span>
+<span class="fc bfc" id="L516" title="All 2 branches covered.">        if (!Map.class.isAssignableFrom(rawParameterType)) {</span>
+<span class="fc" id="L517">          throw parameterError(p, &quot;@HeaderMap parameter type must be Map.&quot;);</span>
+        }
+<span class="fc" id="L519">        Type mapType = Utils.getSupertype(type, rawParameterType, Map.class);</span>
+<span class="pc bpc" id="L520" title="1 of 2 branches missed.">        if (!(mapType instanceof ParameterizedType)) {</span>
+<span class="nc" id="L521">          throw parameterError(p, &quot;Map must include generic types (e.g., Map&lt;String, String&gt;)&quot;);</span>
+        }
+<span class="fc" id="L523">        ParameterizedType parameterizedType = (ParameterizedType) mapType;</span>
+<span class="fc" id="L524">        Type keyType = Utils.getParameterUpperBound(0, parameterizedType);</span>
+<span class="pc bpc" id="L525" title="1 of 2 branches missed.">        if (String.class != keyType) {</span>
+<span class="nc" id="L526">          throw parameterError(p, &quot;@HeaderMap keys must be of type String: &quot; + keyType);</span>
+        }
+<span class="fc" id="L528">        Type valueType = Utils.getParameterUpperBound(1, parameterizedType);</span>
+<span class="fc" id="L529">        Converter&lt;?, String&gt; valueConverter =</span>
+<span class="fc" id="L530">            retrofit.stringConverter(valueType, annotations);</span>
+
+<span class="fc" id="L532">        return new ParameterHandler.HeaderMap&lt;&gt;(valueConverter);</span>
+
+<span class="fc bfc" id="L534" title="All 2 branches covered.">      } else if (annotation instanceof Field) {</span>
+<span class="fc bfc" id="L535" title="All 2 branches covered.">        if (!isFormEncoded) {</span>
+<span class="fc" id="L536">          throw parameterError(p, &quot;@Field parameters can only be used with form encoding.&quot;);</span>
+        }
+<span class="fc" id="L538">        Field field = (Field) annotation;</span>
+<span class="fc" id="L539">        String name = field.value();</span>
+<span class="fc" id="L540">        boolean encoded = field.encoded();</span>
+
+<span class="fc" id="L542">        gotField = true;</span>
+
+<span class="fc" id="L544">        Class&lt;?&gt; rawParameterType = Utils.getRawType(type);</span>
+<span class="fc bfc" id="L545" title="All 2 branches covered.">        if (Iterable.class.isAssignableFrom(rawParameterType)) {</span>
+<span class="pc bpc" id="L546" title="1 of 2 branches missed.">          if (!(type instanceof ParameterizedType)) {</span>
+<span class="nc" id="L547">            throw parameterError(p, rawParameterType.getSimpleName()</span>
+                + &quot; must include generic type (e.g., &quot;
+<span class="nc" id="L549">                + rawParameterType.getSimpleName()</span>
+                + &quot;&lt;String&gt;)&quot;);
+          }
+<span class="fc" id="L552">          ParameterizedType parameterizedType = (ParameterizedType) type;</span>
+<span class="fc" id="L553">          Type iterableType = Utils.getParameterUpperBound(0, parameterizedType);</span>
+<span class="fc" id="L554">          Converter&lt;?, String&gt; converter =</span>
+<span class="fc" id="L555">              retrofit.stringConverter(iterableType, annotations);</span>
+<span class="fc" id="L556">          return new ParameterHandler.Field&lt;&gt;(name, converter, encoded).iterable();</span>
+<span class="fc bfc" id="L557" title="All 2 branches covered.">        } else if (rawParameterType.isArray()) {</span>
+<span class="fc" id="L558">          Class&lt;?&gt; arrayComponentType = boxIfPrimitive(rawParameterType.getComponentType());</span>
+<span class="fc" id="L559">          Converter&lt;?, String&gt; converter =</span>
+<span class="fc" id="L560">              retrofit.stringConverter(arrayComponentType, annotations);</span>
+<span class="fc" id="L561">          return new ParameterHandler.Field&lt;&gt;(name, converter, encoded).array();</span>
+        } else {
+<span class="fc" id="L563">          Converter&lt;?, String&gt; converter =</span>
+<span class="fc" id="L564">              retrofit.stringConverter(type, annotations);</span>
+<span class="fc" id="L565">          return new ParameterHandler.Field&lt;&gt;(name, converter, encoded);</span>
+        }
+
+<span class="fc bfc" id="L568" title="All 2 branches covered.">      } else if (annotation instanceof FieldMap) {</span>
+<span class="fc bfc" id="L569" title="All 2 branches covered.">        if (!isFormEncoded) {</span>
+<span class="fc" id="L570">          throw parameterError(p, &quot;@FieldMap parameters can only be used with form encoding.&quot;);</span>
+        }
+<span class="fc" id="L572">        Class&lt;?&gt; rawParameterType = Utils.getRawType(type);</span>
+<span class="fc bfc" id="L573" title="All 2 branches covered.">        if (!Map.class.isAssignableFrom(rawParameterType)) {</span>
+<span class="fc" id="L574">          throw parameterError(p, &quot;@FieldMap parameter type must be Map.&quot;);</span>
+        }
+<span class="fc" id="L576">        Type mapType = Utils.getSupertype(type, rawParameterType, Map.class);</span>
+<span class="pc bpc" id="L577" title="1 of 2 branches missed.">        if (!(mapType instanceof ParameterizedType)) {</span>
+<span class="nc" id="L578">          throw parameterError(p,</span>
+              &quot;Map must include generic types (e.g., Map&lt;String, String&gt;)&quot;);
+        }
+<span class="fc" id="L581">        ParameterizedType parameterizedType = (ParameterizedType) mapType;</span>
+<span class="fc" id="L582">        Type keyType = Utils.getParameterUpperBound(0, parameterizedType);</span>
+<span class="pc bpc" id="L583" title="1 of 2 branches missed.">        if (String.class != keyType) {</span>
+<span class="nc" id="L584">          throw parameterError(p, &quot;@FieldMap keys must be of type String: &quot; + keyType);</span>
+        }
+<span class="fc" id="L586">        Type valueType = Utils.getParameterUpperBound(1, parameterizedType);</span>
+<span class="fc" id="L587">        Converter&lt;?, String&gt; valueConverter =</span>
+<span class="fc" id="L588">            retrofit.stringConverter(valueType, annotations);</span>
+
+<span class="fc" id="L590">        gotField = true;</span>
+<span class="fc" id="L591">        return new ParameterHandler.FieldMap&lt;&gt;(valueConverter, ((FieldMap) annotation).encoded());</span>
+
+<span class="fc bfc" id="L593" title="All 2 branches covered.">      } else if (annotation instanceof Part) {</span>
+<span class="fc bfc" id="L594" title="All 2 branches covered.">        if (!isMultipart) {</span>
+<span class="fc" id="L595">          throw parameterError(p, &quot;@Part parameters can only be used with multipart encoding.&quot;);</span>
+        }
+<span class="fc" id="L597">        Part part = (Part) annotation;</span>
+<span class="fc" id="L598">        gotPart = true;</span>
+
+<span class="fc" id="L600">        String partName = part.value();</span>
+<span class="fc" id="L601">        Class&lt;?&gt; rawParameterType = Utils.getRawType(type);</span>
+<span class="fc bfc" id="L602" title="All 2 branches covered.">        if (partName.isEmpty()) {</span>
+<span class="fc bfc" id="L603" title="All 2 branches covered.">          if (Iterable.class.isAssignableFrom(rawParameterType)) {</span>
+<span class="pc bpc" id="L604" title="1 of 2 branches missed.">            if (!(type instanceof ParameterizedType)) {</span>
+<span class="nc" id="L605">              throw parameterError(p, rawParameterType.getSimpleName()</span>
+                  + &quot; must include generic type (e.g., &quot;
+<span class="nc" id="L607">                  + rawParameterType.getSimpleName()</span>
+                  + &quot;&lt;String&gt;)&quot;);
+            }
+<span class="fc" id="L610">            ParameterizedType parameterizedType = (ParameterizedType) type;</span>
+<span class="fc" id="L611">            Type iterableType = Utils.getParameterUpperBound(0, parameterizedType);</span>
+<span class="fc bfc" id="L612" title="All 2 branches covered.">            if (!MultipartBody.Part.class.isAssignableFrom(Utils.getRawType(iterableType))) {</span>
+<span class="fc" id="L613">              throw parameterError(p,</span>
+                  &quot;@Part annotation must supply a name or use MultipartBody.Part parameter type.&quot;);
+            }
+<span class="fc" id="L616">            return ParameterHandler.RawPart.INSTANCE.iterable();</span>
+<span class="fc bfc" id="L617" title="All 2 branches covered.">          } else if (rawParameterType.isArray()) {</span>
+<span class="fc" id="L618">            Class&lt;?&gt; arrayComponentType = rawParameterType.getComponentType();</span>
+<span class="fc bfc" id="L619" title="All 2 branches covered.">            if (!MultipartBody.Part.class.isAssignableFrom(arrayComponentType)) {</span>
+<span class="fc" id="L620">              throw parameterError(p,</span>
+                  &quot;@Part annotation must supply a name or use MultipartBody.Part parameter type.&quot;);
+            }
+<span class="fc" id="L623">            return ParameterHandler.RawPart.INSTANCE.array();</span>
+<span class="fc bfc" id="L624" title="All 2 branches covered.">          } else if (MultipartBody.Part.class.isAssignableFrom(rawParameterType)) {</span>
+<span class="fc" id="L625">            return ParameterHandler.RawPart.INSTANCE;</span>
+          } else {
+<span class="fc" id="L627">            throw parameterError(p,</span>
+                &quot;@Part annotation must supply a name or use MultipartBody.Part parameter type.&quot;);
+          }
+        } else {
+<span class="fc" id="L631">          Headers headers =</span>
+<span class="fc" id="L632">              Headers.of(&quot;Content-Disposition&quot;, &quot;form-data; name=\&quot;&quot; + partName + &quot;\&quot;&quot;,</span>
+<span class="fc" id="L633">                  &quot;Content-Transfer-Encoding&quot;, part.encoding());</span>
+
+<span class="fc bfc" id="L635" title="All 2 branches covered.">          if (Iterable.class.isAssignableFrom(rawParameterType)) {</span>
+<span class="pc bpc" id="L636" title="1 of 2 branches missed.">            if (!(type instanceof ParameterizedType)) {</span>
+<span class="nc" id="L637">              throw parameterError(p, rawParameterType.getSimpleName()</span>
+                  + &quot; must include generic type (e.g., &quot;
+<span class="nc" id="L639">                  + rawParameterType.getSimpleName()</span>
+                  + &quot;&lt;String&gt;)&quot;);
+            }
+<span class="fc" id="L642">            ParameterizedType parameterizedType = (ParameterizedType) type;</span>
+<span class="fc" id="L643">            Type iterableType = Utils.getParameterUpperBound(0, parameterizedType);</span>
+<span class="fc bfc" id="L644" title="All 2 branches covered.">            if (MultipartBody.Part.class.isAssignableFrom(Utils.getRawType(iterableType))) {</span>
+<span class="fc" id="L645">              throw parameterError(p, &quot;@Part parameters using the MultipartBody.Part must not &quot;</span>
+                  + &quot;include a part name in the annotation.&quot;);
+            }
+<span class="fc" id="L648">            Converter&lt;?, RequestBody&gt; converter =</span>
+<span class="fc" id="L649">                retrofit.requestBodyConverter(iterableType, annotations, methodAnnotations);</span>
+<span class="fc" id="L650">            return new ParameterHandler.Part&lt;&gt;(headers, converter).iterable();</span>
+<span class="fc bfc" id="L651" title="All 2 branches covered.">          } else if (rawParameterType.isArray()) {</span>
+<span class="fc" id="L652">            Class&lt;?&gt; arrayComponentType = boxIfPrimitive(rawParameterType.getComponentType());</span>
+<span class="fc bfc" id="L653" title="All 2 branches covered.">            if (MultipartBody.Part.class.isAssignableFrom(arrayComponentType)) {</span>
+<span class="fc" id="L654">              throw parameterError(p, &quot;@Part parameters using the MultipartBody.Part must not &quot;</span>
+                  + &quot;include a part name in the annotation.&quot;);
+            }
+<span class="fc" id="L657">            Converter&lt;?, RequestBody&gt; converter =</span>
+<span class="fc" id="L658">                retrofit.requestBodyConverter(arrayComponentType, annotations, methodAnnotations);</span>
+<span class="fc" id="L659">            return new ParameterHandler.Part&lt;&gt;(headers, converter).array();</span>
+<span class="fc bfc" id="L660" title="All 2 branches covered.">          } else if (MultipartBody.Part.class.isAssignableFrom(rawParameterType)) {</span>
+<span class="fc" id="L661">            throw parameterError(p, &quot;@Part parameters using the MultipartBody.Part must not &quot;</span>
+                + &quot;include a part name in the annotation.&quot;);
+          } else {
+<span class="fc" id="L664">            Converter&lt;?, RequestBody&gt; converter =</span>
+<span class="fc" id="L665">                retrofit.requestBodyConverter(type, annotations, methodAnnotations);</span>
+<span class="fc" id="L666">            return new ParameterHandler.Part&lt;&gt;(headers, converter);</span>
+          }
+        }
+
+<span class="fc bfc" id="L670" title="All 2 branches covered.">      } else if (annotation instanceof PartMap) {</span>
+<span class="fc bfc" id="L671" title="All 2 branches covered.">        if (!isMultipart) {</span>
+<span class="fc" id="L672">          throw parameterError(p, &quot;@PartMap parameters can only be used with multipart encoding.&quot;);</span>
+        }
+<span class="fc" id="L674">        gotPart = true;</span>
+<span class="fc" id="L675">        Class&lt;?&gt; rawParameterType = Utils.getRawType(type);</span>
+<span class="fc bfc" id="L676" title="All 2 branches covered.">        if (!Map.class.isAssignableFrom(rawParameterType)) {</span>
+<span class="fc" id="L677">          throw parameterError(p, &quot;@PartMap parameter type must be Map.&quot;);</span>
+        }
+<span class="fc" id="L679">        Type mapType = Utils.getSupertype(type, rawParameterType, Map.class);</span>
+<span class="pc bpc" id="L680" title="1 of 2 branches missed.">        if (!(mapType instanceof ParameterizedType)) {</span>
+<span class="nc" id="L681">          throw parameterError(p, &quot;Map must include generic types (e.g., Map&lt;String, String&gt;)&quot;);</span>
+        }
+<span class="fc" id="L683">        ParameterizedType parameterizedType = (ParameterizedType) mapType;</span>
+
+<span class="fc" id="L685">        Type keyType = Utils.getParameterUpperBound(0, parameterizedType);</span>
+<span class="fc bfc" id="L686" title="All 2 branches covered.">        if (String.class != keyType) {</span>
+<span class="fc" id="L687">          throw parameterError(p, &quot;@PartMap keys must be of type String: &quot; + keyType);</span>
+        }
+
+<span class="fc" id="L690">        Type valueType = Utils.getParameterUpperBound(1, parameterizedType);</span>
+<span class="fc bfc" id="L691" title="All 2 branches covered.">        if (MultipartBody.Part.class.isAssignableFrom(Utils.getRawType(valueType))) {</span>
+<span class="fc" id="L692">          throw parameterError(p, &quot;@PartMap values cannot be MultipartBody.Part. &quot;</span>
+              + &quot;Use @Part List&lt;Part&gt; or a different value type instead.&quot;);
+        }
+
+<span class="fc" id="L696">        Converter&lt;?, RequestBody&gt; valueConverter =</span>
+<span class="fc" id="L697">            retrofit.requestBodyConverter(valueType, annotations, methodAnnotations);</span>
+
+<span class="fc" id="L699">        PartMap partMap = (PartMap) annotation;</span>
+<span class="fc" id="L700">        return new ParameterHandler.PartMap&lt;&gt;(valueConverter, partMap.encoding());</span>
+
+<span class="fc bfc" id="L702" title="All 2 branches covered.">      } else if (annotation instanceof Body) {</span>
+<span class="pc bpc" id="L703" title="1 of 4 branches missed.">        if (isFormEncoded || isMultipart) {</span>
+<span class="fc" id="L704">          throw parameterError(p,</span>
+              &quot;@Body parameters cannot be used with form or multi-part encoding.&quot;);
+        }
+<span class="fc bfc" id="L707" title="All 2 branches covered.">        if (gotBody) {</span>
+<span class="fc" id="L708">          throw parameterError(p, &quot;Multiple @Body method annotations found.&quot;);</span>
+        }
+
+        Converter&lt;?, RequestBody&gt; converter;
+        try {
+<span class="fc" id="L713">          converter = retrofit.requestBodyConverter(type, annotations, methodAnnotations);</span>
+<span class="fc" id="L714">        } catch (RuntimeException e) {</span>
+          // Wide exception range because factories are user code.
+<span class="fc" id="L716">          throw parameterError(e, p, &quot;Unable to create @Body converter for %s&quot;, type);</span>
+<span class="fc" id="L717">        }</span>
+<span class="fc" id="L718">        gotBody = true;</span>
+<span class="fc" id="L719">        return new ParameterHandler.Body&lt;&gt;(converter);</span>
+      }
+
+<span class="fc" id="L722">      return null; // Not a Retrofit annotation.</span>
+    }
+
+    private void validatePathName(int p, String name) {
+<span class="fc bfc" id="L726" title="All 2 branches covered.">      if (!PARAM_NAME_REGEX.matcher(name).matches()) {</span>
+<span class="fc" id="L727">        throw parameterError(p, &quot;@Path parameter name must match %s. Found: %s&quot;,</span>
+<span class="fc" id="L728">            PARAM_URL_REGEX.pattern(), name);</span>
+      }
+      // Verify URL replacement name is actually present in the URL path.
+<span class="fc bfc" id="L731" title="All 2 branches covered.">      if (!relativeUrlParamNames.contains(name)) {</span>
+<span class="fc" id="L732">        throw parameterError(p, &quot;URL \&quot;%s\&quot; does not contain \&quot;{%s}\&quot;.&quot;, relativeUrl, name);</span>
+      }
+<span class="fc" id="L734">    }</span>
+
+    private Converter&lt;ResponseBody, T&gt; createResponseConverter() {
+<span class="fc" id="L737">      Annotation[] annotations = method.getAnnotations();</span>
+      try {
+<span class="fc" id="L739">        return retrofit.responseBodyConverter(responseType, annotations);</span>
+<span class="fc" id="L740">      } catch (RuntimeException e) { // Wide exception range because factories are user code.</span>
+<span class="fc" id="L741">        throw methodError(e, &quot;Unable to create converter for %s&quot;, responseType);</span>
+      }
+    }
+
+    private RuntimeException methodError(String message, Object... args) {
+<span class="fc" id="L746">      return methodError(null, message, args);</span>
+    }
+
+    private RuntimeException methodError(Throwable cause, String message, Object... args) {
+<span class="fc" id="L750">      message = String.format(message, args);</span>
+<span class="fc" id="L751">      return new IllegalArgumentException(message</span>
+          + &quot;\n    for method &quot;
+<span class="fc" id="L753">          + method.getDeclaringClass().getSimpleName()</span>
+          + &quot;.&quot;
+<span class="fc" id="L755">          + method.getName(), cause);</span>
+    }
+
+    private RuntimeException parameterError(
+        Throwable cause, int p, String message, Object... args) {
+<span class="fc" id="L760">      return methodError(cause, message + &quot; (parameter #&quot; + (p + 1) + &quot;)&quot;, args);</span>
+    }
+
+    private RuntimeException parameterError(int p, String message, Object... args) {
+<span class="fc" id="L764">      return methodError(message + &quot; (parameter #&quot; + (p + 1) + &quot;)&quot;, args);</span>
+    }
+  }
+
+  /**
+   * Gets the set of unique path parameters used in the given URI. If a parameter is used twice
+   * in the URI, it will only show up once in the set.
+   */
+  static Set&lt;String&gt; parsePathParameters(String path) {
+<span class="fc" id="L773">    Matcher m = PARAM_URL_REGEX.matcher(path);</span>
+<span class="fc" id="L774">    Set&lt;String&gt; patterns = new LinkedHashSet&lt;&gt;();</span>
+<span class="fc bfc" id="L775" title="All 2 branches covered.">    while (m.find()) {</span>
+<span class="fc" id="L776">      patterns.add(m.group(1));</span>
+    }
+<span class="fc" id="L778">    return patterns;</span>
+  }
+
+  static Class&lt;?&gt; boxIfPrimitive(Class&lt;?&gt; type) {
+<span class="pc bpc" id="L782" title="1 of 2 branches missed.">    if (boolean.class == type) return Boolean.class;</span>
+<span class="pc bpc" id="L783" title="1 of 2 branches missed.">    if (byte.class == type) return Byte.class;</span>
+<span class="pc bpc" id="L784" title="1 of 2 branches missed.">    if (char.class == type) return Character.class;</span>
+<span class="pc bpc" id="L785" title="1 of 2 branches missed.">    if (double.class == type) return Double.class;</span>
+<span class="pc bpc" id="L786" title="1 of 2 branches missed.">    if (float.class == type) return Float.class;</span>
+<span class="fc bfc" id="L787" title="All 2 branches covered.">    if (int.class == type) return Integer.class;</span>
+<span class="pc bpc" id="L788" title="1 of 2 branches missed.">    if (long.class == type) return Long.class;</span>
+<span class="pc bpc" id="L789" title="1 of 2 branches missed.">    if (short.class == type) return Short.class;</span>
+<span class="fc" id="L790">    return type;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

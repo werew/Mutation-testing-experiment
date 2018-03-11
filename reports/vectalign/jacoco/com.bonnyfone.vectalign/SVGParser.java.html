@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SVGParser.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">vectalign</a> &gt; <a href="index.source.html" class="el_package">com.bonnyfone.vectalign</a> &gt; <span class="el_source">SVGParser.java</span></div><h1>SVGParser.java</h1><pre class="source lang-java linenums">package com.bonnyfone.vectalign;
+
+import org.w3c.dom.*;
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.prefs.NodeChangeEvent;
+
+/**
+ * Created by ziby on 26/08/15.
+ */
+<span class="nc" id="L18">public class SVGParser {</span>
+
+    /**
+     * Check if file is an SVG
+     * @param f
+     * @return
+     */
+    public static boolean isSVGImage(File f){
+        try {
+<span class="nc" id="L27">            System.out.println(&quot;Checking if &quot; + f.getAbsolutePath() + &quot; is an SVG file...&quot;);</span>
+<span class="nc" id="L28">            Document document = getXMLDocumentFromFile(f);</span>
+<span class="nc bnc" id="L29" title="All 4 branches missed.">            boolean headerSVG = document.getDoctype() != null &amp;&amp; document.getDoctype().getName().toLowerCase().equals(&quot;svg&quot;);</span>
+<span class="nc bnc" id="L30" title="All 2 branches missed.">            if(headerSVG)</span>
+<span class="nc" id="L31">                return true;</span>
+            else{
+<span class="nc bnc" id="L33" title="All 2 branches missed.">                return document.getElementsByTagName(&quot;svg&quot;) != null;</span>
+            }
+
+<span class="nc" id="L36">        } catch (Exception e) {}</span>
+
+<span class="nc" id="L38">        return false;</span>
+    }
+
+    /**
+     * Parse path elements of an SVG file into a single big path sequence.
+     * @param f
+     * @return
+     */
+    public static String getPathDataFromSVGFile(File f){
+        try {
+<span class="nc" id="L48">            StringBuilder sb = new StringBuilder();</span>
+<span class="nc" id="L49">            Document document = getXMLDocumentFromFile(f);</span>
+<span class="nc" id="L50">            NodeList nList = document.getElementsByTagName(&quot;path&quot;);</span>
+<span class="nc bnc" id="L51" title="All 2 branches missed.">            for(int i=0; i&lt;nList.getLength(); i++){</span>
+<span class="nc" id="L52">                Element e = (Element) nList.item(i);</span>
+<span class="nc" id="L53">                sb.append(e.getAttribute(&quot;d&quot;));</span>
+            }
+
+<span class="nc" id="L56">            return sb.toString();</span>
+<span class="nc" id="L57">        } catch (Exception e) {}</span>
+
+<span class="nc" id="L59">        return null;</span>
+
+    }
+
+    private static Document getXMLDocumentFromFile(File f) throws ParserConfigurationException, IOException, SAXException {
+<span class="nc" id="L64">        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();</span>
+<span class="nc" id="L65">        factory.setNamespaceAware(false);</span>
+<span class="nc" id="L66">        factory.setValidating(false);</span>
+<span class="nc" id="L67">        factory.setFeature(&quot;http://xml.org/sax/features/namespaces&quot;, false);</span>
+<span class="nc" id="L68">        factory.setFeature(&quot;http://xml.org/sax/features/validation&quot;, false);</span>
+<span class="nc" id="L69">        factory.setFeature(&quot;http://apache.org/xml/features/nonvalidating/load-dtd-grammar&quot;, false);</span>
+<span class="nc" id="L70">        factory.setFeature(&quot;http://apache.org/xml/features/nonvalidating/load-external-dtd&quot;, false);</span>
+<span class="nc" id="L71">        DocumentBuilder builder = null;</span>
+<span class="nc" id="L72">        builder = factory.newDocumentBuilder();</span>
+<span class="nc" id="L73">        Document document = builder.parse(f);</span>
+<span class="nc" id="L74">        return document;</span>
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

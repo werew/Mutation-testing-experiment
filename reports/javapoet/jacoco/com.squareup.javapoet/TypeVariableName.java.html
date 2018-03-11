@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TypeVariableName.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JavaPoet</a> &gt; <a href="index.source.html" class="el_package">com.squareup.javapoet</a> &gt; <span class="el_source">TypeVariableName.java</span></div><h1>TypeVariableName.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2015 Square, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.squareup.javapoet;
+
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.lang.model.element.TypeParameterElement;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.type.TypeVariable;
+
+import static com.squareup.javapoet.Util.checkArgument;
+import static com.squareup.javapoet.Util.checkNotNull;
+
+public final class TypeVariableName extends TypeName {
+  public final String name;
+  public final List&lt;TypeName&gt; bounds;
+
+  private TypeVariableName(String name, List&lt;TypeName&gt; bounds) {
+<span class="fc" id="L39">    this(name, bounds, new ArrayList&lt;&gt;());</span>
+<span class="fc" id="L40">  }</span>
+
+  private TypeVariableName(String name, List&lt;TypeName&gt; bounds, List&lt;AnnotationSpec&gt; annotations) {
+<span class="fc" id="L43">    super(annotations);</span>
+<span class="fc" id="L44">    this.name = checkNotNull(name, &quot;name == null&quot;);</span>
+<span class="fc" id="L45">    this.bounds = bounds;</span>
+
+<span class="fc bfc" id="L47" title="All 2 branches covered.">    for (TypeName bound : this.bounds) {</span>
+<span class="pc bpc" id="L48" title="2 of 4 branches missed.">      checkArgument(!bound.isPrimitive() &amp;&amp; bound != VOID, &quot;invalid bound: %s&quot;, bound);</span>
+<span class="fc" id="L49">    }</span>
+<span class="fc" id="L50">  }</span>
+
+  @Override public TypeVariableName annotated(List&lt;AnnotationSpec&gt; annotations) {
+<span class="fc" id="L53">    return new TypeVariableName(name, bounds, annotations);</span>
+  }
+
+  @Override public TypeName withoutAnnotations() {
+<span class="fc" id="L57">    return new TypeVariableName(name, bounds);</span>
+  }
+
+  public TypeVariableName withBounds(Type... bounds) {
+<span class="fc" id="L61">    return withBounds(TypeName.list(bounds));</span>
+  }
+
+  public TypeVariableName withBounds(TypeName... bounds) {
+<span class="nc" id="L65">    return withBounds(Arrays.asList(bounds));</span>
+  }
+
+  public TypeVariableName withBounds(List&lt;? extends TypeName&gt; bounds) {
+<span class="fc" id="L69">    ArrayList&lt;TypeName&gt; newBounds = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L70">    newBounds.addAll(this.bounds);</span>
+<span class="fc" id="L71">    newBounds.addAll(bounds);</span>
+<span class="fc" id="L72">    return new TypeVariableName(name, newBounds, annotations);</span>
+  }
+
+  private static TypeVariableName of(String name, List&lt;TypeName&gt; bounds) {
+    // Strip java.lang.Object from bounds if it is present.
+<span class="fc" id="L77">    List&lt;TypeName&gt; boundsNoObject = new ArrayList&lt;&gt;(bounds);</span>
+<span class="fc" id="L78">    boundsNoObject.remove(OBJECT);</span>
+<span class="fc" id="L79">    return new TypeVariableName(name, Collections.unmodifiableList(boundsNoObject));</span>
+  }
+
+  @Override CodeWriter emit(CodeWriter out) throws IOException {
+<span class="fc" id="L83">    return out.emitAndIndent(name);</span>
+  }
+
+  /** Returns type variable named {@code name} without bounds. */
+  public static TypeVariableName get(String name) {
+<span class="fc" id="L88">    return TypeVariableName.of(name, Collections.emptyList());</span>
+  }
+
+  /** Returns type variable named {@code name} with {@code bounds}. */
+  public static TypeVariableName get(String name, TypeName... bounds) {
+<span class="fc" id="L93">    return TypeVariableName.of(name, Arrays.asList(bounds));</span>
+  }
+
+  /** Returns type variable named {@code name} with {@code bounds}. */
+  public static TypeVariableName get(String name, Type... bounds) {
+<span class="fc" id="L98">    return TypeVariableName.of(name, TypeName.list(bounds));</span>
+  }
+
+  /** Returns type variable equivalent to {@code mirror}. */
+  public static TypeVariableName get(TypeVariable mirror) {
+<span class="fc" id="L103">    return get((TypeParameterElement) mirror.asElement());</span>
+  }
+
+  /**
+   * Make a TypeVariableName for the given TypeMirror. This form is used internally to avoid
+   * infinite recursion in cases like {@code Enum&lt;E extends Enum&lt;E&gt;&gt;}. When we encounter such a
+   * thing, we will make a TypeVariableName without bounds and add that to the {@code typeVariables}
+   * map before looking up the bounds. Then if we encounter this TypeVariable again while
+   * constructing the bounds, we can just return it from the map. And, the code that put the entry
+   * in {@code variables} will make sure that the bounds are filled in before returning.
+   */
+  static TypeVariableName get(
+      TypeVariable mirror, Map&lt;TypeParameterElement, TypeVariableName&gt; typeVariables) {
+<span class="fc" id="L116">    TypeParameterElement element = (TypeParameterElement) mirror.asElement();</span>
+<span class="fc" id="L117">    TypeVariableName typeVariableName = typeVariables.get(element);</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">    if (typeVariableName == null) {</span>
+      // Since the bounds field is public, we need to make it an unmodifiableList. But we control
+      // the List that that wraps, which means we can change it before returning.
+<span class="fc" id="L121">      List&lt;TypeName&gt; bounds = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L122">      List&lt;TypeName&gt; visibleBounds = Collections.unmodifiableList(bounds);</span>
+<span class="fc" id="L123">      typeVariableName = new TypeVariableName(element.getSimpleName().toString(), visibleBounds);</span>
+<span class="fc" id="L124">      typeVariables.put(element, typeVariableName);</span>
+<span class="fc bfc" id="L125" title="All 2 branches covered.">      for (TypeMirror typeMirror : element.getBounds()) {</span>
+<span class="fc" id="L126">        bounds.add(TypeName.get(typeMirror, typeVariables));</span>
+<span class="fc" id="L127">      }</span>
+<span class="fc" id="L128">      bounds.remove(OBJECT);</span>
+    }
+<span class="fc" id="L130">    return typeVariableName;</span>
+  }
+
+  /** Returns type variable equivalent to {@code element}. */
+  public static TypeVariableName get(TypeParameterElement element) {
+<span class="fc" id="L135">    String name = element.getSimpleName().toString();</span>
+<span class="fc" id="L136">    List&lt;? extends TypeMirror&gt; boundsMirrors = element.getBounds();</span>
+
+<span class="fc" id="L138">    List&lt;TypeName&gt; boundsTypeNames = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L139" title="All 2 branches covered.">    for (TypeMirror typeMirror : boundsMirrors) {</span>
+<span class="fc" id="L140">      boundsTypeNames.add(TypeName.get(typeMirror));</span>
+<span class="fc" id="L141">    }</span>
+
+<span class="fc" id="L143">    return TypeVariableName.of(name, boundsTypeNames);</span>
+  }
+
+  /** Returns type variable equivalent to {@code type}. */
+  public static TypeVariableName get(java.lang.reflect.TypeVariable&lt;?&gt; type) {
+<span class="nc" id="L148">    return get(type, new LinkedHashMap&lt;&gt;());</span>
+  }
+
+  /** @see #get(java.lang.reflect.TypeVariable, Map) */
+  static TypeVariableName get(java.lang.reflect.TypeVariable&lt;?&gt; type,
+      Map&lt;Type, TypeVariableName&gt; map) {
+<span class="fc" id="L154">    TypeVariableName result = map.get(type);</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">    if (result == null) {</span>
+<span class="fc" id="L156">      List&lt;TypeName&gt; bounds = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L157">      List&lt;TypeName&gt; visibleBounds = Collections.unmodifiableList(bounds);</span>
+<span class="fc" id="L158">      result = new TypeVariableName(type.getName(), visibleBounds);</span>
+<span class="fc" id="L159">      map.put(type, result);</span>
+<span class="fc bfc" id="L160" title="All 2 branches covered.">      for (Type bound : type.getBounds()) {</span>
+<span class="fc" id="L161">        bounds.add(TypeName.get(bound, map));</span>
+      }
+<span class="fc" id="L163">      bounds.remove(OBJECT);</span>
+    }
+<span class="fc" id="L165">    return result;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

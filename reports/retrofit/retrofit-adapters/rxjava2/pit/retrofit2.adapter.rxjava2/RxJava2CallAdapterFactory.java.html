@@ -1,0 +1,2317 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="../style.css">
+</head>
+<body>
+
+
+<h1>RxJava2CallAdapterFactory.java</h1>
+
+<table class="src">
+
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_1'/>
+1
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_1'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>/*</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_2'/>
+2
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_2'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * Copyright (C) 2015 Square, Inc.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_3'/>
+3
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_3'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_4'/>
+4
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_4'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_5'/>
+5
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_5'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * you may not use this file except in compliance with the License.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_6'/>
+6
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_6'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * You may obtain a copy of the License at</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_7'/>
+7
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_7'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_8'/>
+8
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_8'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *      http://www.apache.org/licenses/LICENSE-2.0</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_9'/>
+9
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_9'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_10'/>
+10
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_10'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * Unless required by applicable law or agreed to in writing, software</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_11'/>
+11
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_11'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * distributed under the License is distributed on an &#34;AS IS&#34; BASIS,</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_12'/>
+12
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_12'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_13'/>
+13
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_13'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * See the License for the specific language governing permissions and</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_14'/>
+14
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_14'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * limitations under the License.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_15'/>
+15
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_15'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> */</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_16'/>
+16
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_16'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>package retrofit2.adapter.rxjava2;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_17'/>
+17
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_17'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_18'/>
+18
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_18'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import io.reactivex.Completable;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_19'/>
+19
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_19'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import io.reactivex.Flowable;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_20'/>
+20
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_20'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import io.reactivex.Maybe;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_21'/>
+21
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_21'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import io.reactivex.Observable;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_22'/>
+22
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_22'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import io.reactivex.Scheduler;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_23'/>
+23
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_23'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import io.reactivex.Single;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_24'/>
+24
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_24'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.io.IOException;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_25'/>
+25
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_25'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.lang.annotation.Annotation;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_26'/>
+26
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_26'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.lang.reflect.ParameterizedType;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_27'/>
+27
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_27'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.lang.reflect.Type;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_28'/>
+28
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_28'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import javax.annotation.Nullable;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_29'/>
+29
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_29'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import retrofit2.CallAdapter;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_30'/>
+30
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_30'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import retrofit2.HttpException;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_31'/>
+31
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_31'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import retrofit2.Response;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_32'/>
+32
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_32'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import retrofit2.Retrofit;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_33'/>
+33
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_33'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_34'/>
+34
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_34'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>/**</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_35'/>
+35
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_35'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * A {@linkplain CallAdapter.Factory call adapter} which uses RxJava 2 for creating observables.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_36'/>
+36
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_36'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * &#60;p&#62;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_37'/>
+37
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_37'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * Adding this class to {@link Retrofit} allows you to return an {@link Observable},</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_38'/>
+38
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_38'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * {@link Flowable}, {@link Single}, {@link Completable} or {@link Maybe} from service methods.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_39'/>
+39
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_39'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * &#60;pre&#62;&#60;code&#62;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_40'/>
+40
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_40'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * interface MyService {</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_41'/>
+41
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_41'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *   &#38;#64;GET(&#34;user/me&#34;)</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_42'/>
+42
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_42'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *   Observable&#38;lt;User&#38;gt; getUser()</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_43'/>
+43
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_43'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_44'/>
+44
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_44'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * &#60;/code&#62;&#60;/pre&#62;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_45'/>
+45
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_45'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * There are three configurations supported for the {@code Observable}, {@code Flowable},</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_46'/>
+46
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_46'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * {@code Single}, {@link Completable} and {@code Maybe} type parameter:</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_47'/>
+47
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_47'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * &#60;ul&#62;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_48'/>
+48
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_48'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * &#60;li&#62;Direct body (e.g., {@code Observable&#60;User&#62;}) calls {@code onNext} with the deserialized body</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_49'/>
+49
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_49'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * for 2XX responses and calls {@code onError} with {@link HttpException} for non-2XX responses and</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_50'/>
+50
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_50'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * {@link IOException} for network errors.&#60;/li&#62;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_51'/>
+51
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_51'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * &#60;li&#62;Response wrapped body (e.g., {@code Observable&#60;Response&#60;User&#62;&#62;}) calls {@code onNext}</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_52'/>
+52
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_52'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * with a {@link Response} object for all HTTP responses and calls {@code onError} with</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_53'/>
+53
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_53'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * {@link IOException} for network errors&#60;/li&#62;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_54'/>
+54
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_54'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * &#60;li&#62;Result wrapped body (e.g., {@code Observable&#60;Result&#60;User&#62;&#62;}) calls {@code onNext} with a</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_55'/>
+55
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_55'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * {@link Result} object for all HTTP responses and errors.&#60;/li&#62;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_56'/>
+56
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_56'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * &#60;/ul&#62;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_57'/>
+57
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_57'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> */</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_58'/>
+58
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_58'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>public final class RxJava2CallAdapterFactory extends CallAdapter.Factory {</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_59'/>
+59
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_59'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  /**</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_60'/>
+60
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_60'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * Returns an instance which creates synchronous observables that do not operate on any scheduler</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_61'/>
+61
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_61'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * by default.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_62'/>
+62
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_62'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   */</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_63'/>
+63
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_63'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public static RxJava2CallAdapterFactory create() {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_64'/>
+64
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_64'>1</a>
+<span>
+1. create : mutated return of Object value for retrofit2/adapter/rxjava2/RxJava2CallAdapterFactory::create to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    return new RxJava2CallAdapterFactory(null, false);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_65'/>
+65
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_65'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_66'/>
+66
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_66'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_67'/>
+67
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_67'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  /**</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_68'/>
+68
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_68'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * Returns an instance which creates asynchronous observables. Applying</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_69'/>
+69
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_69'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * {@link Observable#subscribeOn} has no effect on stream types created by this factory.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_70'/>
+70
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_70'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   */</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_71'/>
+71
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_71'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public static RxJava2CallAdapterFactory createAsync() {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_72'/>
+72
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_72'>1</a>
+<span>
+1. createAsync : mutated return of Object value for retrofit2/adapter/rxjava2/RxJava2CallAdapterFactory::createAsync to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    return new RxJava2CallAdapterFactory(null, true);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_73'/>
+73
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_73'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_74'/>
+74
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_74'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_75'/>
+75
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_75'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  /**</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_76'/>
+76
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_76'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * Returns an instance which creates synchronous observables that</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_77'/>
+77
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_77'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * {@linkplain Observable#subscribeOn(Scheduler) subscribe on} {@code scheduler} by default.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_78'/>
+78
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_78'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   */</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_79'/>
+79
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_79'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  @SuppressWarnings(&#34;ConstantConditions&#34;) // Guarding public API nullability.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_80'/>
+80
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_80'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public static RxJava2CallAdapterFactory createWithScheduler(Scheduler scheduler) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_81'/>
+81
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_81'>1</a>
+<span>
+1. createWithScheduler : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    if (scheduler == null) throw new NullPointerException(&#34;scheduler == null&#34;);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_82'/>
+82
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_82'>1</a>
+<span>
+1. createWithScheduler : mutated return of Object value for retrofit2/adapter/rxjava2/RxJava2CallAdapterFactory::createWithScheduler to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    return new RxJava2CallAdapterFactory(scheduler, false);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_83'/>
+83
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_83'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_84'/>
+84
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_84'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_85'/>
+85
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_85'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  private final @Nullable Scheduler scheduler;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_86'/>
+86
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_86'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  private final boolean isAsync;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_87'/>
+87
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_87'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_88'/>
+88
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_88'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>  private RxJava2CallAdapterFactory(@Nullable Scheduler scheduler, boolean isAsync) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_89'/>
+89
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_89'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    this.scheduler = scheduler;</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_90'/>
+90
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_90'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    this.isAsync = isAsync;</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_91'/>
+91
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_91'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_92'/>
+92
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_92'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_93'/>
+93
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_93'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  @Override</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_94'/>
+94
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_94'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public CallAdapter&#60;?, ?&#62; get(Type returnType, Annotation[] annotations, Retrofit retrofit) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_95'/>
+95
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_95'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    Class&#60;?&#62; rawType = getRawType(returnType);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_96'/>
+96
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_96'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_97'/>
+97
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_97'>1</a>
+<span>
+1. get : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    if (rawType == Completable.class) {</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_98'/>
+98
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_98'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      // Completable is not parameterized (which is what the rest of this method deals with) so it</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_99'/>
+99
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_99'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      // can only be created with a single configuration.</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_100'/>
+100
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_100'>1</a>
+<span>
+1. get : mutated return of Object value for retrofit2/adapter/rxjava2/RxJava2CallAdapterFactory::get to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      return new RxJava2CallAdapter(Void.class, scheduler, isAsync, false, true, false, false,</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_101'/>
+101
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_101'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>          false, true);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_102'/>
+102
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_102'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_103'/>
+103
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_103'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_104'/>
+104
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_104'>1</a>
+<span>
+1. get : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    boolean isFlowable = rawType == Flowable.class;</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_105'/>
+105
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_105'>1</a>
+<span>
+1. get : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    boolean isSingle = rawType == Single.class;</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_106'/>
+106
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_106'>1</a>
+<span>
+1. get : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    boolean isMaybe = rawType == Maybe.class;</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_107'/>
+107
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_107'>4</a>
+<span>
+1. get : negated conditional &rarr; KILLED<br/>
+2. get : negated conditional &rarr; KILLED<br/>
+3. get : negated conditional &rarr; KILLED<br/>
+4. get : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    if (rawType != Observable.class &#38;&#38; !isFlowable &#38;&#38; !isSingle &#38;&#38; !isMaybe) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_108'/>
+108
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_108'>1</a>
+<span>
+1. get : mutated return of Object value for retrofit2/adapter/rxjava2/RxJava2CallAdapterFactory::get to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      return null;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_109'/>
+109
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_109'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_110'/>
+110
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_110'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_111'/>
+111
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_111'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    boolean isResult = false;</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_112'/>
+112
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_112'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    boolean isBody = false;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_113'/>
+113
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_113'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    Type responseType;</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_114'/>
+114
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_114'>1</a>
+<span>
+1. get : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    if (!(returnType instanceof ParameterizedType)) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_115'/>
+115
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_115'>1</a>
+<span>
+1. get : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      String name = isFlowable ? &#34;Flowable&#34;</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_116'/>
+116
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_116'>1</a>
+<span>
+1. get : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>          : isSingle ? &#34;Single&#34;</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_117'/>
+117
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_117'>1</a>
+<span>
+1. get : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>          : isMaybe ? &#34;Maybe&#34; : &#34;Observable&#34;;</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_118'/>
+118
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_118'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      throw new IllegalStateException(name + &#34; return type must be parameterized&#34;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_119'/>
+119
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_119'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>          + &#34; as &#34; + name + &#34;&#60;Foo&#62; or &#34; + name + &#34;&#60;? extends Foo&#62;&#34;);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_120'/>
+120
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_120'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_121'/>
+121
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_121'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_122'/>
+122
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_122'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    Type observableType = getParameterUpperBound(0, (ParameterizedType) returnType);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_123'/>
+123
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_123'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    Class&#60;?&#62; rawObservableType = getRawType(observableType);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_124'/>
+124
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_124'>1</a>
+<span>
+1. get : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    if (rawObservableType == Response.class) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_125'/>
+125
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_125'>1</a>
+<span>
+1. get : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      if (!(observableType instanceof ParameterizedType)) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_126'/>
+126
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_126'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>        throw new IllegalStateException(&#34;Response must be parameterized&#34;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_127'/>
+127
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_127'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>            + &#34; as Response&#60;Foo&#62; or Response&#60;? extends Foo&#62;&#34;);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_128'/>
+128
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_128'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_129'/>
+129
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_129'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      responseType = getParameterUpperBound(0, (ParameterizedType) observableType);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_130'/>
+130
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_130'>1</a>
+<span>
+1. get : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    } else if (rawObservableType == Result.class) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_131'/>
+131
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_131'>1</a>
+<span>
+1. get : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      if (!(observableType instanceof ParameterizedType)) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_132'/>
+132
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_132'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>        throw new IllegalStateException(&#34;Result must be parameterized&#34;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_133'/>
+133
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_133'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>            + &#34; as Result&#60;Foo&#62; or Result&#60;? extends Foo&#62;&#34;);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_134'/>
+134
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_134'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_135'/>
+135
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_135'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      responseType = getParameterUpperBound(0, (ParameterizedType) observableType);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_136'/>
+136
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_136'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      isResult = true;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_137'/>
+137
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_137'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    } else {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_138'/>
+138
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_138'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      responseType = observableType;</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_139'/>
+139
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_139'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      isBody = true;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_140'/>
+140
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_140'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_141'/>
+141
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_141'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_142'/>
+142
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_142'>1</a>
+<span>
+1. get : mutated return of Object value for retrofit2/adapter/rxjava2/RxJava2CallAdapterFactory::get to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    return new RxJava2CallAdapter(responseType, scheduler, isAsync, isResult, isBody, isFlowable,</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_143'/>
+143
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_143'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        isSingle, isMaybe, false);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_144'/>
+144
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_144'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@1940788d_145'/>
+145
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_145'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>}</span></pre></td></tr>
+
+
+
+<tr><td></td><td></td><td><h2>Mutations</h2></td></tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@1940788d_64'>64</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_64'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>create<br/><b>Killed by : </b>retrofit2.adapter.rxjava2.RxJava2CallAdapterFactoryTest.nullSchedulerThrows(retrofit2.adapter.rxjava2.RxJava2CallAdapterFactoryTest)</span></span> mutated return of Object value for retrofit2/adapter/rxjava2/RxJava2CallAdapterFactory::create to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@1940788d_72'>72</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_72'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>createAsync<br/><b>Killed by : </b>retrofit2.adapter.rxjava2.CancelDisposeTest.cancelDoesNotDispose(retrofit2.adapter.rxjava2.CancelDisposeTest)</span></span> mutated return of Object value for retrofit2/adapter/rxjava2/RxJava2CallAdapterFactory::createAsync to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@1940788d_81'>81</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_81'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>createWithScheduler<br/><b>Killed by : </b>retrofit2.adapter.rxjava2.RxJava2CallAdapterFactoryTest.nullSchedulerThrows(retrofit2.adapter.rxjava2.RxJava2CallAdapterFactoryTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@1940788d_82'>82</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_82'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>createWithScheduler<br/><b>Killed by : </b>retrofit2.adapter.rxjava2.ObservableWithSchedulerTest.responseUsesScheduler(retrofit2.adapter.rxjava2.ObservableWithSchedulerTest)</span></span> mutated return of Object value for retrofit2/adapter/rxjava2/RxJava2CallAdapterFactory::createWithScheduler to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@1940788d_97'>97</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_97'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>get<br/><b>Killed by : </b>retrofit2.adapter.rxjava2.RxJava2CallAdapterFactoryTest.nonRxJavaTypeReturnsNull(retrofit2.adapter.rxjava2.RxJava2CallAdapterFactoryTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@1940788d_100'>100</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_100'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>get<br/><b>Killed by : </b>retrofit2.adapter.rxjava2.CompletableThrowingTest.throwingInOnCompleteDeliveredToPlugin(retrofit2.adapter.rxjava2.CompletableThrowingTest)</span></span> mutated return of Object value for retrofit2/adapter/rxjava2/RxJava2CallAdapterFactory::get to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@1940788d_104'>104</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_104'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>get<br/><b>Killed by : </b>retrofit2.adapter.rxjava2.RxJava2CallAdapterFactoryTest.nonRxJavaTypeReturnsNull(retrofit2.adapter.rxjava2.RxJava2CallAdapterFactoryTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@1940788d_105'>105</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_105'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>get<br/><b>Killed by : </b>retrofit2.adapter.rxjava2.RxJava2CallAdapterFactoryTest.nonRxJavaTypeReturnsNull(retrofit2.adapter.rxjava2.RxJava2CallAdapterFactoryTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@1940788d_106'>106</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_106'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>get<br/><b>Killed by : </b>retrofit2.adapter.rxjava2.RxJava2CallAdapterFactoryTest.nonRxJavaTypeReturnsNull(retrofit2.adapter.rxjava2.RxJava2CallAdapterFactoryTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@1940788d_107'>107</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_107'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>get<br/><b>Killed by : </b>retrofit2.adapter.rxjava2.RxJava2CallAdapterFactoryTest.nonRxJavaTypeReturnsNull(retrofit2.adapter.rxjava2.RxJava2CallAdapterFactoryTest)</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>get<br/><b>Killed by : </b>retrofit2.adapter.rxjava2.RxJava2CallAdapterFactoryTest.nonRxJavaTypeReturnsNull(retrofit2.adapter.rxjava2.RxJava2CallAdapterFactoryTest)</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>3.<span><b>3</b><br/><b>Location : </b>get<br/><b>Killed by : </b>retrofit2.adapter.rxjava2.RxJava2CallAdapterFactoryTest.nonRxJavaTypeReturnsNull(retrofit2.adapter.rxjava2.RxJava2CallAdapterFactoryTest)</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>4.<span><b>4</b><br/><b>Location : </b>get<br/><b>Killed by : </b>retrofit2.adapter.rxjava2.RxJava2CallAdapterFactoryTest.nonRxJavaTypeReturnsNull(retrofit2.adapter.rxjava2.RxJava2CallAdapterFactoryTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@1940788d_108'>108</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_108'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>get<br/><b>Killed by : </b>retrofit2.adapter.rxjava2.RxJava2CallAdapterFactoryTest.nonRxJavaTypeReturnsNull(retrofit2.adapter.rxjava2.RxJava2CallAdapterFactoryTest)</span></span> mutated return of Object value for retrofit2/adapter/rxjava2/RxJava2CallAdapterFactory::get to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@1940788d_114'>114</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_114'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>get<br/><b>Killed by : </b>retrofit2.adapter.rxjava2.RxJava2CallAdapterFactoryTest.rawBodyTypeThrows(retrofit2.adapter.rxjava2.RxJava2CallAdapterFactoryTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@1940788d_115'>115</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_115'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>get<br/><b>Killed by : </b>retrofit2.adapter.rxjava2.RxJava2CallAdapterFactoryTest.rawBodyTypeThrows(retrofit2.adapter.rxjava2.RxJava2CallAdapterFactoryTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@1940788d_116'>116</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_116'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>get<br/><b>Killed by : </b>retrofit2.adapter.rxjava2.RxJava2CallAdapterFactoryTest.rawBodyTypeThrows(retrofit2.adapter.rxjava2.RxJava2CallAdapterFactoryTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@1940788d_117'>117</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_117'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>get<br/><b>Killed by : </b>retrofit2.adapter.rxjava2.RxJava2CallAdapterFactoryTest.rawBodyTypeThrows(retrofit2.adapter.rxjava2.RxJava2CallAdapterFactoryTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@1940788d_124'>124</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_124'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>get<br/><b>Killed by : </b>retrofit2.adapter.rxjava2.RxJava2CallAdapterFactoryTest.rawResponseTypeThrows(retrofit2.adapter.rxjava2.RxJava2CallAdapterFactoryTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@1940788d_125'>125</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_125'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>get<br/><b>Killed by : </b>retrofit2.adapter.rxjava2.RxJava2CallAdapterFactoryTest.rawResponseTypeThrows(retrofit2.adapter.rxjava2.RxJava2CallAdapterFactoryTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@1940788d_130'>130</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_130'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>get<br/><b>Killed by : </b>retrofit2.adapter.rxjava2.RxJava2CallAdapterFactoryTest.rawResultTypeThrows(retrofit2.adapter.rxjava2.RxJava2CallAdapterFactoryTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@1940788d_131'>131</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_131'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>get<br/><b>Killed by : </b>retrofit2.adapter.rxjava2.RxJava2CallAdapterFactoryTest.rawResultTypeThrows(retrofit2.adapter.rxjava2.RxJava2CallAdapterFactoryTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@1940788d_142'>142</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@1940788d_142'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>get<br/><b>Killed by : </b>retrofit2.adapter.rxjava2.RxJava2CallAdapterFactoryTest.responseTypes(retrofit2.adapter.rxjava2.RxJava2CallAdapterFactoryTest)</span></span> mutated return of Object value for retrofit2/adapter/rxjava2/RxJava2CallAdapterFactory::get to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED</p> 
+</td>
+</tr>
+
+</table>
+
+
+<h2>Active mutators</h2>
+<ul>
+<li class='mutator'>INCREMENTS_MUTATOR</li>
+<li class='mutator'>VOID_METHOD_CALL_MUTATOR</li>
+<li class='mutator'>RETURN_VALS_MUTATOR</li>
+<li class='mutator'>MATH_MUTATOR</li>
+<li class='mutator'>NEGATE_CONDITIONALS_MUTATOR</li>
+<li class='mutator'>INVERT_NEGS_MUTATOR</li>
+<li class='mutator'>CONDITIONALS_BOUNDARY_MUTATOR</li>
+
+</ul>
+
+<h2>Tests examined</h2>
+<ul>
+<li>retrofit2.adapter.rxjava2.MaybeTest.responseFailure(retrofit2.adapter.rxjava2.MaybeTest) (14 ms)</li><li>retrofit2.adapter.rxjava2.FlowableTest.responseSuccess404(retrofit2.adapter.rxjava2.FlowableTest) (17 ms)</li><li>retrofit2.adapter.rxjava2.ObservableTest.responseSuccess404(retrofit2.adapter.rxjava2.ObservableTest) (18 ms)</li><li>retrofit2.adapter.rxjava2.FlowableTest.responseFailure(retrofit2.adapter.rxjava2.FlowableTest) (9 ms)</li><li>retrofit2.adapter.rxjava2.MaybeTest.responseSuccess404(retrofit2.adapter.rxjava2.MaybeTest) (9 ms)</li><li>retrofit2.adapter.rxjava2.FlowableThrowingTest.bodyThrowingInOnCompleteDeliveredToPlugin(retrofit2.adapter.rxjava2.FlowableThrowingTest) (13 ms)</li><li>retrofit2.adapter.rxjava2.FlowableThrowingTest.bodyThrowingInOnErrorDeliveredToPlugin(retrofit2.adapter.rxjava2.FlowableThrowingTest) (13 ms)</li><li>retrofit2.adapter.rxjava2.MaybeTest.resultFailure(retrofit2.adapter.rxjava2.MaybeTest) (10 ms)</li><li>retrofit2.adapter.rxjava2.CompletableThrowingTest.throwingInOnCompleteDeliveredToPlugin(retrofit2.adapter.rxjava2.CompletableThrowingTest) (7 ms)</li><li>retrofit2.adapter.rxjava2.CompletableTest.completableSuccess404(retrofit2.adapter.rxjava2.CompletableTest) (9 ms)</li><li>retrofit2.adapter.rxjava2.MaybeTest.resultSuccess404(retrofit2.adapter.rxjava2.MaybeTest) (18 ms)</li><li>retrofit2.adapter.rxjava2.SingleWithSchedulerTest.bodyUsesScheduler(retrofit2.adapter.rxjava2.SingleWithSchedulerTest) (12 ms)</li><li>retrofit2.adapter.rxjava2.CancelDisposeTest.cancelDoesNotDispose(retrofit2.adapter.rxjava2.CancelDisposeTest) (13 ms)</li><li>retrofit2.adapter.rxjava2.FlowableThrowingTest.responseThrowingInOnErrorDeliveredToPlugin(retrofit2.adapter.rxjava2.FlowableThrowingTest) (12 ms)</li><li>retrofit2.adapter.rxjava2.ObservableTest.resultSuccess200(retrofit2.adapter.rxjava2.ObservableTest) (5 ms)</li><li>retrofit2.adapter.rxjava2.SingleThrowingTest.bodyThrowingInOnErrorDeliveredToPlugin(retrofit2.adapter.rxjava2.SingleThrowingTest) (8 ms)</li><li>retrofit2.adapter.rxjava2.ObservableTest.bodySuccess200(retrofit2.adapter.rxjava2.ObservableTest) (13 ms)</li><li>retrofit2.adapter.rxjava2.MaybeThrowingTest.resultThrowingInOnSuccessDeliveredToPlugin(retrofit2.adapter.rxjava2.MaybeThrowingTest) (16 ms)</li><li>retrofit2.adapter.rxjava2.MaybeTest.bodyFailure(retrofit2.adapter.rxjava2.MaybeTest) (39 ms)</li><li>retrofit2.adapter.rxjava2.FlowableTest.resultRespectsBackpressure(retrofit2.adapter.rxjava2.FlowableTest) (18 ms)</li><li>retrofit2.adapter.rxjava2.CompletableTest.completableSuccess200(retrofit2.adapter.rxjava2.CompletableTest) (12 ms)</li><li>retrofit2.adapter.rxjava2.SingleWithSchedulerTest.resultUsesScheduler(retrofit2.adapter.rxjava2.SingleWithSchedulerTest) (12 ms)</li><li>retrofit2.adapter.rxjava2.SingleTest.responseSuccess404(retrofit2.adapter.rxjava2.SingleTest) (9 ms)</li><li>retrofit2.adapter.rxjava2.FlowableThrowingTest.responseThrowingInOnNextDeliveredToError(retrofit2.adapter.rxjava2.FlowableThrowingTest) (19 ms)</li><li>retrofit2.adapter.rxjava2.SingleTest.responseFailure(retrofit2.adapter.rxjava2.SingleTest) (7 ms)</li><li>retrofit2.adapter.rxjava2.RxJava2CallAdapterFactoryTest.nonRxJavaTypeReturnsNull(retrofit2.adapter.rxjava2.RxJava2CallAdapterFactoryTest) (3 ms)</li><li>retrofit2.adapter.rxjava2.CompletableTest.completableFailure(retrofit2.adapter.rxjava2.CompletableTest) (19 ms)</li><li>retrofit2.adapter.rxjava2.ObservableTest.resultFailure(retrofit2.adapter.rxjava2.ObservableTest) (8 ms)</li><li>retrofit2.adapter.rxjava2.SingleTest.resultSuccess200(retrofit2.adapter.rxjava2.SingleTest) (11 ms)</li><li>retrofit2.adapter.rxjava2.SingleTest.responseSuccess200(retrofit2.adapter.rxjava2.SingleTest) (17 ms)</li><li>retrofit2.adapter.rxjava2.MaybeThrowingTest.responseThrowingInOnSuccessDeliveredToPlugin(retrofit2.adapter.rxjava2.MaybeThrowingTest) (18 ms)</li><li>retrofit2.adapter.rxjava2.ObservableThrowingTest.resultThrowingInOnCompletedDeliveredToPlugin(retrofit2.adapter.rxjava2.ObservableThrowingTest) (6 ms)</li><li>retrofit2.adapter.rxjava2.ObservableThrowingTest.bodyThrowingInOnNextDeliveredToError(retrofit2.adapter.rxjava2.ObservableThrowingTest) (10 ms)</li><li>retrofit2.adapter.rxjava2.ObservableThrowingTest.bodyThrowingInOnErrorDeliveredToPlugin(retrofit2.adapter.rxjava2.ObservableThrowingTest) (14 ms)</li><li>retrofit2.adapter.rxjava2.FlowableTest.bodyFailure(retrofit2.adapter.rxjava2.FlowableTest) (63 ms)</li><li>retrofit2.adapter.rxjava2.ObservableTest.bodyFailure(retrofit2.adapter.rxjava2.ObservableTest) (10 ms)</li><li>retrofit2.adapter.rxjava2.FlowableThrowingTest.resultThrowingInOnErrorDeliveredToPlugin(retrofit2.adapter.rxjava2.FlowableThrowingTest) (14 ms)</li><li>retrofit2.adapter.rxjava2.MaybeWithSchedulerTest.bodyUsesScheduler(retrofit2.adapter.rxjava2.MaybeWithSchedulerTest) (17 ms)</li><li>retrofit2.adapter.rxjava2.MaybeThrowingTest.responseThrowingInOnErrorDeliveredToPlugin(retrofit2.adapter.rxjava2.MaybeThrowingTest) (29 ms)</li><li>retrofit2.adapter.rxjava2.ObservableThrowingTest.resultThrowingInOnErrorDeliveredToPlugin(retrofit2.adapter.rxjava2.ObservableThrowingTest) (12 ms)</li><li>retrofit2.adapter.rxjava2.MaybeWithSchedulerTest.responseUsesScheduler(retrofit2.adapter.rxjava2.MaybeWithSchedulerTest) (13 ms)</li><li>retrofit2.adapter.rxjava2.ObservableTest.resultSuccess404(retrofit2.adapter.rxjava2.ObservableTest) (22 ms)</li><li>retrofit2.adapter.rxjava2.ObservableThrowingTest.resultThrowingInOnNextDeliveredToError(retrofit2.adapter.rxjava2.ObservableThrowingTest) (15 ms)</li><li>retrofit2.adapter.rxjava2.FlowableTest.resultSuccess200(retrofit2.adapter.rxjava2.FlowableTest) (13 ms)</li><li>retrofit2.adapter.rxjava2.FlowableWithSchedulerTest.bodyUsesScheduler(retrofit2.adapter.rxjava2.FlowableWithSchedulerTest) (17 ms)</li><li>retrofit2.adapter.rxjava2.FlowableThrowingTest.resultThrowingInOnNextDeliveredToError(retrofit2.adapter.rxjava2.FlowableThrowingTest) (10 ms)</li><li>retrofit2.adapter.rxjava2.FlowableTest.bodySuccess404(retrofit2.adapter.rxjava2.FlowableTest) (14 ms)</li><li>retrofit2.adapter.rxjava2.MaybeTest.bodySuccess404(retrofit2.adapter.rxjava2.MaybeTest) (18 ms)</li><li>retrofit2.adapter.rxjava2.SingleThrowingTest.resultThrowingInOnSuccessDeliveredToPlugin(retrofit2.adapter.rxjava2.SingleThrowingTest) (13 ms)</li><li>retrofit2.adapter.rxjava2.FlowableTest.responseSuccess200(retrofit2.adapter.rxjava2.FlowableTest) (24 ms)</li><li>retrofit2.adapter.rxjava2.ObservableWithSchedulerTest.bodyUsesScheduler(retrofit2.adapter.rxjava2.ObservableWithSchedulerTest) (14 ms)</li><li>retrofit2.adapter.rxjava2.FlowableTest.bodySuccess200(retrofit2.adapter.rxjava2.FlowableTest) (14 ms)</li><li>retrofit2.adapter.rxjava2.SingleTest.resultSuccess404(retrofit2.adapter.rxjava2.SingleTest) (12 ms)</li><li>retrofit2.adapter.rxjava2.ObservableWithSchedulerTest.resultUsesScheduler(retrofit2.adapter.rxjava2.ObservableWithSchedulerTest) (13 ms)</li><li>retrofit2.adapter.rxjava2.RxJava2CallAdapterFactoryTest.rawResultTypeThrows(retrofit2.adapter.rxjava2.RxJava2CallAdapterFactoryTest) (3 ms)</li><li>retrofit2.adapter.rxjava2.SingleTest.bodySuccess404(retrofit2.adapter.rxjava2.SingleTest) (6 ms)</li><li>retrofit2.adapter.rxjava2.CompletableThrowingTest.bodyThrowingInOnErrorDeliveredToPlugin(retrofit2.adapter.rxjava2.CompletableThrowingTest) (17 ms)</li><li>retrofit2.adapter.rxjava2.RxJava2CallAdapterFactoryTest.responseTypes(retrofit2.adapter.rxjava2.RxJava2CallAdapterFactoryTest) (8 ms)</li><li>retrofit2.adapter.rxjava2.FlowableWithSchedulerTest.responseUsesScheduler(retrofit2.adapter.rxjava2.FlowableWithSchedulerTest) (15 ms)</li><li>retrofit2.adapter.rxjava2.FlowableTest.responseRespectsBackpressure(retrofit2.adapter.rxjava2.FlowableTest) (27 ms)</li><li>retrofit2.adapter.rxjava2.ObservableThrowingTest.responseThrowingInOnCompleteDeliveredToPlugin(retrofit2.adapter.rxjava2.ObservableThrowingTest) (15 ms)</li><li>retrofit2.adapter.rxjava2.AsyncTest.failure(retrofit2.adapter.rxjava2.AsyncTest) (1023 ms)</li><li>retrofit2.adapter.rxjava2.SingleWithSchedulerTest.responseUsesScheduler(retrofit2.adapter.rxjava2.SingleWithSchedulerTest) (10 ms)</li><li>retrofit2.adapter.rxjava2.AsyncTest.bodyThrowingInOnErrorDeliveredToPlugin(retrofit2.adapter.rxjava2.AsyncTest) (581 ms)</li><li>retrofit2.adapter.rxjava2.MaybeThrowingTest.bodyThrowingInOnErrorDeliveredToPlugin(retrofit2.adapter.rxjava2.MaybeThrowingTest) (30 ms)</li><li>retrofit2.adapter.rxjava2.FlowableThrowingTest.responseThrowingInOnCompleteDeliveredToPlugin(retrofit2.adapter.rxjava2.FlowableThrowingTest) (18 ms)</li><li>retrofit2.adapter.rxjava2.FlowableThrowingTest.resultThrowingInOnCompletedDeliveredToPlugin(retrofit2.adapter.rxjava2.FlowableThrowingTest) (19 ms)</li><li>retrofit2.adapter.rxjava2.SingleTest.bodySuccess200(retrofit2.adapter.rxjava2.SingleTest) (7 ms)</li><li>retrofit2.adapter.rxjava2.SingleThrowingTest.bodyThrowingInOnSuccessDeliveredToPlugin(retrofit2.adapter.rxjava2.SingleThrowingTest) (12 ms)</li><li>retrofit2.adapter.rxjava2.MaybeTest.responseSuccess200(retrofit2.adapter.rxjava2.MaybeTest) (12 ms)</li><li>retrofit2.adapter.rxjava2.MaybeTest.bodySuccess200(retrofit2.adapter.rxjava2.MaybeTest) (7 ms)</li><li>retrofit2.adapter.rxjava2.ObservableThrowingTest.responseThrowingInOnNextDeliveredToError(retrofit2.adapter.rxjava2.ObservableThrowingTest) (10 ms)</li><li>retrofit2.adapter.rxjava2.RxJava2CallAdapterFactoryTest.nullSchedulerThrows(retrofit2.adapter.rxjava2.RxJava2CallAdapterFactoryTest) (2 ms)</li><li>retrofit2.adapter.rxjava2.ObservableThrowingTest.responseThrowingInOnErrorDeliveredToPlugin(retrofit2.adapter.rxjava2.ObservableThrowingTest) (11 ms)</li><li>retrofit2.adapter.rxjava2.ObservableTest.responseSuccess200(retrofit2.adapter.rxjava2.ObservableTest) (8 ms)</li><li>retrofit2.adapter.rxjava2.ObservableThrowingTest.bodyThrowingInOnCompleteDeliveredToPlugin(retrofit2.adapter.rxjava2.ObservableThrowingTest) (11 ms)</li><li>retrofit2.adapter.rxjava2.MaybeWithSchedulerTest.resultUsesScheduler(retrofit2.adapter.rxjava2.MaybeWithSchedulerTest) (11 ms)</li><li>retrofit2.adapter.rxjava2.SingleTest.bodyFailure(retrofit2.adapter.rxjava2.SingleTest) (28 ms)</li><li>retrofit2.adapter.rxjava2.FlowableTest.bodyRespectsBackpressure(retrofit2.adapter.rxjava2.FlowableTest) (41 ms)</li><li>retrofit2.adapter.rxjava2.CancelDisposeTest.disposeCancelsCall(retrofit2.adapter.rxjava2.CancelDisposeTest) (17 ms)</li><li>retrofit2.adapter.rxjava2.FlowableTest.resultFailure(retrofit2.adapter.rxjava2.FlowableTest) (12 ms)</li><li>retrofit2.adapter.rxjava2.AsyncTest.success(retrofit2.adapter.rxjava2.AsyncTest) (1012 ms)</li><li>retrofit2.adapter.rxjava2.RxJava2CallAdapterFactoryTest.rawResponseTypeThrows(retrofit2.adapter.rxjava2.RxJava2CallAdapterFactoryTest) (3 ms)</li><li>retrofit2.adapter.rxjava2.AsyncTest.throwingInOnCompleteDeliveredToPlugin(retrofit2.adapter.rxjava2.AsyncTest) (17 ms)</li><li>retrofit2.adapter.rxjava2.MaybeThrowingTest.bodyThrowingInOnSuccessDeliveredToPlugin(retrofit2.adapter.rxjava2.MaybeThrowingTest) (22 ms)</li><li>retrofit2.adapter.rxjava2.FlowableWithSchedulerTest.resultUsesScheduler(retrofit2.adapter.rxjava2.FlowableWithSchedulerTest) (10 ms)</li><li>retrofit2.adapter.rxjava2.MaybeTest.resultSuccess200(retrofit2.adapter.rxjava2.MaybeTest) (24 ms)</li><li>retrofit2.adapter.rxjava2.ObservableTest.responseFailure(retrofit2.adapter.rxjava2.ObservableTest) (16 ms)</li><li>retrofit2.adapter.rxjava2.CompletableWithSchedulerTest.completableUsesScheduler(retrofit2.adapter.rxjava2.CompletableWithSchedulerTest) (14 ms)</li><li>retrofit2.adapter.rxjava2.FlowableThrowingTest.bodyThrowingInOnNextDeliveredToError(retrofit2.adapter.rxjava2.FlowableThrowingTest) (10 ms)</li><li>retrofit2.adapter.rxjava2.RxJava2CallAdapterFactoryTest.rawBodyTypeThrows(retrofit2.adapter.rxjava2.RxJava2CallAdapterFactoryTest) (2 ms)</li><li>retrofit2.adapter.rxjava2.SingleThrowingTest.responseThrowingInOnErrorDeliveredToPlugin(retrofit2.adapter.rxjava2.SingleThrowingTest) (14 ms)</li><li>retrofit2.adapter.rxjava2.ObservableTest.bodySuccess404(retrofit2.adapter.rxjava2.ObservableTest) (12 ms)</li><li>retrofit2.adapter.rxjava2.ObservableWithSchedulerTest.responseUsesScheduler(retrofit2.adapter.rxjava2.ObservableWithSchedulerTest) (10 ms)</li><li>retrofit2.adapter.rxjava2.SingleTest.resultFailure(retrofit2.adapter.rxjava2.SingleTest) (16 ms)</li><li>retrofit2.adapter.rxjava2.SingleThrowingTest.responseThrowingInOnSuccessDeliveredToPlugin(retrofit2.adapter.rxjava2.SingleThrowingTest) (11 ms)</li><li>retrofit2.adapter.rxjava2.FlowableTest.resultSuccess404(retrofit2.adapter.rxjava2.FlowableTest) (11 ms)</li>
+</ul>
+
+<br/>
+
+Report generated by <a href='http://pitest.org'>PIT</a> 1.3.2
+
+</body>
+</html>

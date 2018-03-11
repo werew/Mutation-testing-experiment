@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RoundedJPanel.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">vectalign</a> &gt; <a href="index.source.html" class="el_package">com.bonnyfone.vectalign.viewer</a> &gt; <span class="el_source">RoundedJPanel.java</span></div><h1>RoundedJPanel.java</h1><pre class="source lang-java linenums">package com.bonnyfone.vectalign.viewer;
+
+import javax.swing.*;
+import java.awt.*;
+
+/*
+ *  Copyright 2010 De Gregorio Daniele.
+ *
+ *  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *  under the License.
+ */
+public class RoundedJPanel extends JPanel {
+<span class="nc" id="L23">    protected int strokeSize = 1;</span>
+<span class="nc" id="L24">    protected Color shadowColor = Color.GRAY;</span>
+<span class="nc" id="L25">    protected boolean shadow = true;</span>
+<span class="nc" id="L26">    protected boolean antiAlias = true;</span>
+<span class="nc" id="L27">    protected Dimension arcs = new Dimension(20, 20);</span>
+<span class="nc" id="L28">    protected int shadowGap = 5;</span>
+<span class="nc" id="L29">    protected int shadowOffset = 3;</span>
+<span class="nc" id="L30">    protected int shadowAlpha = 100;</span>
+
+    public RoundedJPanel() {
+<span class="nc" id="L33">        super(true);</span>
+<span class="nc" id="L34">        setOpaque(false);</span>
+<span class="nc" id="L35">    }</span>
+
+    public boolean isShadow() {
+<span class="nc" id="L38">        return shadow;</span>
+    }
+
+    public void setShadow(boolean shadow) {
+<span class="nc" id="L42">        this.shadow = shadow;</span>
+<span class="nc" id="L43">    }</span>
+
+    public boolean isAntiAlias() {
+<span class="nc" id="L46">        return antiAlias;</span>
+    }
+
+    public void setAntiAlias(boolean antiAlias) {
+<span class="nc" id="L50">        this.antiAlias = antiAlias;</span>
+<span class="nc" id="L51">    }</span>
+
+    @Override
+    protected void paintComponent(Graphics g) {
+<span class="nc" id="L55">        super.paintComponent(g);</span>
+<span class="nc" id="L56">        int width = getWidth();</span>
+<span class="nc" id="L57">        int height = getHeight();</span>
+<span class="nc" id="L58">        int shadowGap = this.shadowGap;</span>
+<span class="nc" id="L59">        Color shadowColorA = new Color(shadowColor.getRed(), shadowColor.getGreen(), shadowColor.getBlue(), shadowAlpha);</span>
+<span class="nc" id="L60">        Graphics2D graphics = (Graphics2D) g;</span>
+
+<span class="nc bnc" id="L62" title="All 2 branches missed.">        if (antiAlias) {</span>
+<span class="nc" id="L63">            graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);</span>
+        }
+
+        //Draws shadow borders if any.
+<span class="nc bnc" id="L67" title="All 2 branches missed.">        if (shadow) {</span>
+<span class="nc" id="L68">            graphics.setColor(shadowColorA);</span>
+<span class="nc" id="L69">            graphics.fillRoundRect(</span>
+                    shadowOffset,// X position
+                    shadowOffset,// Y position
+                    width - strokeSize - shadowOffset, // width
+                    height - strokeSize - shadowOffset, // height
+                    arcs.width, arcs.height);// arc Dimension
+        } else {
+<span class="nc" id="L76">            shadowGap = 1;</span>
+        }
+
+        //Draws the rounded opaque panel with borders.
+<span class="nc" id="L80">        graphics.setColor(getBackground());</span>
+<span class="nc" id="L81">        graphics.fillRoundRect(0, 0, width - shadowGap, height - shadowGap, arcs.width, arcs.height);</span>
+<span class="nc" id="L82">        graphics.setColor(getForeground());</span>
+<span class="nc" id="L83">        graphics.setStroke(new BasicStroke(strokeSize));</span>
+<span class="nc" id="L84">        graphics.drawRoundRect(0, 0, width - shadowGap, height - shadowGap, arcs.width, arcs.height);</span>
+
+        //Sets strokes to default, is better.
+<span class="nc" id="L87">        graphics.setStroke(new BasicStroke());</span>
+<span class="nc" id="L88">    }</span>
+} 
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

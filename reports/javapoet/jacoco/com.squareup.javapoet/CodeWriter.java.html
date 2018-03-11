@@ -1,0 +1,502 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CodeWriter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JavaPoet</a> &gt; <a href="index.source.html" class="el_package">com.squareup.javapoet</a> &gt; <span class="el_source">CodeWriter.java</span></div><h1>CodeWriter.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2015 Square, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.squareup.javapoet;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import javax.lang.model.SourceVersion;
+import javax.lang.model.element.Modifier;
+
+import static com.squareup.javapoet.Util.checkArgument;
+import static com.squareup.javapoet.Util.checkNotNull;
+import static com.squareup.javapoet.Util.checkState;
+import static com.squareup.javapoet.Util.stringLiteralWithDoubleQuotes;
+import static java.lang.String.join;
+
+/**
+ * Converts a {@link JavaFile} to a string suitable to both human- and javac-consumption. This
+ * honors imports, indentation, and deferred variable names.
+ */
+final class CodeWriter {
+  /** Sentinel value that indicates that no user-provided package has been set. */
+<span class="fc" id="L45">  private static final String NO_PACKAGE = new String();</span>
+
+  private final String indent;
+  private final LineWrapper out;
+  private int indentLevel;
+
+<span class="fc" id="L51">  private boolean javadoc = false;</span>
+<span class="fc" id="L52">  private boolean comment = false;</span>
+<span class="fc" id="L53">  private String packageName = NO_PACKAGE;</span>
+<span class="fc" id="L54">  private final List&lt;TypeSpec&gt; typeSpecStack = new ArrayList&lt;&gt;();</span>
+  private final Set&lt;String&gt; staticImportClassNames;
+  private final Set&lt;String&gt; staticImports;
+  private final Map&lt;String, ClassName&gt; importedTypes;
+<span class="fc" id="L58">  private final Map&lt;String, ClassName&gt; importableTypes = new LinkedHashMap&lt;&gt;();</span>
+<span class="fc" id="L59">  private final Set&lt;String&gt; referencedNames = new LinkedHashSet&lt;&gt;();</span>
+  private boolean trailingNewline;
+
+  /**
+   * When emitting a statement, this is the line of the statement currently being written. The first
+   * line of a statement is indented normally and subsequent wrapped lines are double-indented. This
+   * is -1 when the currently-written line isn't part of a statement.
+   */
+<span class="fc" id="L67">  int statementLine = -1;</span>
+
+  CodeWriter(Appendable out) {
+<span class="fc" id="L70">    this(out, &quot;  &quot;, Collections.emptySet());</span>
+<span class="fc" id="L71">  }</span>
+
+  CodeWriter(Appendable out, String indent, Set&lt;String&gt; staticImports) {
+<span class="fc" id="L74">    this(out, indent, Collections.emptyMap(), staticImports);</span>
+<span class="fc" id="L75">  }</span>
+
+  CodeWriter(Appendable out, String indent, Map&lt;String, ClassName&gt; importedTypes,
+<span class="fc" id="L78">      Set&lt;String&gt; staticImports) {</span>
+<span class="fc" id="L79">    this.out = new LineWrapper(out, indent, 100);</span>
+<span class="fc" id="L80">    this.indent = checkNotNull(indent, &quot;indent == null&quot;);</span>
+<span class="fc" id="L81">    this.importedTypes = checkNotNull(importedTypes, &quot;importedTypes == null&quot;);</span>
+<span class="fc" id="L82">    this.staticImports = checkNotNull(staticImports, &quot;staticImports == null&quot;);</span>
+<span class="fc" id="L83">    this.staticImportClassNames = new LinkedHashSet&lt;&gt;();</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">    for (String signature : staticImports) {</span>
+<span class="fc" id="L85">      staticImportClassNames.add(signature.substring(0, signature.lastIndexOf('.')));</span>
+<span class="fc" id="L86">    }</span>
+<span class="fc" id="L87">  }</span>
+
+  public Map&lt;String, ClassName&gt; importedTypes() {
+<span class="fc" id="L90">    return importedTypes;</span>
+  }
+
+  public CodeWriter indent() {
+<span class="fc" id="L94">    return indent(1);</span>
+  }
+
+  public CodeWriter indent(int levels) {
+<span class="fc" id="L98">    indentLevel += levels;</span>
+<span class="fc" id="L99">    return this;</span>
+  }
+
+  public CodeWriter unindent() {
+<span class="fc" id="L103">    return unindent(1);</span>
+  }
+
+  public CodeWriter unindent(int levels) {
+<span class="pc bpc" id="L107" title="1 of 2 branches missed.">    checkArgument(indentLevel - levels &gt;= 0, &quot;cannot unindent %s from %s&quot;, levels, indentLevel);</span>
+<span class="fc" id="L108">    indentLevel -= levels;</span>
+<span class="fc" id="L109">    return this;</span>
+  }
+
+  public CodeWriter pushPackage(String packageName) {
+<span class="pc bpc" id="L113" title="1 of 2 branches missed.">    checkState(this.packageName == NO_PACKAGE, &quot;package already set: %s&quot;, this.packageName);</span>
+<span class="fc" id="L114">    this.packageName = checkNotNull(packageName, &quot;packageName == null&quot;);</span>
+<span class="fc" id="L115">    return this;</span>
+  }
+
+  public CodeWriter popPackage() {
+<span class="pc bpc" id="L119" title="1 of 2 branches missed.">    checkState(this.packageName != NO_PACKAGE, &quot;package not set&quot;);</span>
+<span class="fc" id="L120">    this.packageName = NO_PACKAGE;</span>
+<span class="fc" id="L121">    return this;</span>
+  }
+
+  public CodeWriter pushType(TypeSpec type) {
+<span class="fc" id="L125">    this.typeSpecStack.add(type);</span>
+<span class="fc" id="L126">    return this;</span>
+  }
+
+  public CodeWriter popType() {
+<span class="fc" id="L130">    this.typeSpecStack.remove(typeSpecStack.size() - 1);</span>
+<span class="fc" id="L131">    return this;</span>
+  }
+
+  public void emitComment(CodeBlock codeBlock) throws IOException {
+<span class="fc" id="L135">    trailingNewline = true; // Force the '//' prefix for the comment.</span>
+<span class="fc" id="L136">    comment = true;</span>
+    try {
+<span class="fc" id="L138">      emit(codeBlock);</span>
+<span class="fc" id="L139">      emit(&quot;\n&quot;);</span>
+    } finally {
+<span class="fc" id="L141">      comment = false;</span>
+    }
+<span class="fc" id="L143">  }</span>
+
+  public void emitJavadoc(CodeBlock javadocCodeBlock) throws IOException {
+<span class="fc bfc" id="L146" title="All 2 branches covered.">    if (javadocCodeBlock.isEmpty()) return;</span>
+
+<span class="fc" id="L148">    emit(&quot;/**\n&quot;);</span>
+<span class="fc" id="L149">    javadoc = true;</span>
+    try {
+<span class="fc" id="L151">      emit(javadocCodeBlock);</span>
+    } finally {
+<span class="fc" id="L153">      javadoc = false;</span>
+    }
+<span class="fc" id="L155">    emit(&quot; */\n&quot;);</span>
+<span class="fc" id="L156">  }</span>
+
+  public void emitAnnotations(List&lt;AnnotationSpec&gt; annotations, boolean inline) throws IOException {
+<span class="fc bfc" id="L159" title="All 2 branches covered.">    for (AnnotationSpec annotationSpec : annotations) {</span>
+<span class="fc" id="L160">      annotationSpec.emit(this, inline);</span>
+<span class="fc bfc" id="L161" title="All 2 branches covered.">      emit(inline ? &quot; &quot; : &quot;\n&quot;);</span>
+<span class="fc" id="L162">    }</span>
+<span class="fc" id="L163">  }</span>
+
+  /**
+   * Emits {@code modifiers} in the standard order. Modifiers in {@code implicitModifiers} will not
+   * be emitted.
+   */
+  public void emitModifiers(Set&lt;Modifier&gt; modifiers, Set&lt;Modifier&gt; implicitModifiers)
+      throws IOException {
+<span class="fc bfc" id="L171" title="All 2 branches covered.">    if (modifiers.isEmpty()) return;</span>
+<span class="fc bfc" id="L172" title="All 2 branches covered.">    for (Modifier modifier : EnumSet.copyOf(modifiers)) {</span>
+<span class="fc bfc" id="L173" title="All 2 branches covered.">      if (implicitModifiers.contains(modifier)) continue;</span>
+<span class="fc" id="L174">      emitAndIndent(modifier.name().toLowerCase(Locale.US));</span>
+<span class="fc" id="L175">      emitAndIndent(&quot; &quot;);</span>
+<span class="fc" id="L176">    }</span>
+<span class="fc" id="L177">  }</span>
+
+  public void emitModifiers(Set&lt;Modifier&gt; modifiers) throws IOException {
+<span class="fc" id="L180">    emitModifiers(modifiers, Collections.emptySet());</span>
+<span class="fc" id="L181">  }</span>
+
+  /**
+   * Emit type variables with their bounds. This should only be used when declaring type variables;
+   * everywhere else bounds are omitted.
+   */
+  public void emitTypeVariables(List&lt;TypeVariableName&gt; typeVariables) throws IOException {
+<span class="fc bfc" id="L188" title="All 2 branches covered.">    if (typeVariables.isEmpty()) return;</span>
+
+<span class="fc" id="L190">    emit(&quot;&lt;&quot;);</span>
+<span class="fc" id="L191">    boolean firstTypeVariable = true;</span>
+<span class="fc bfc" id="L192" title="All 2 branches covered.">    for (TypeVariableName typeVariable : typeVariables) {</span>
+<span class="fc bfc" id="L193" title="All 2 branches covered.">      if (!firstTypeVariable) emit(&quot;, &quot;);</span>
+<span class="fc" id="L194">      emitAnnotations(typeVariable.annotations, true);</span>
+<span class="fc" id="L195">      emit(&quot;$L&quot;, typeVariable.name);</span>
+<span class="fc" id="L196">      boolean firstBound = true;</span>
+<span class="fc bfc" id="L197" title="All 2 branches covered.">      for (TypeName bound : typeVariable.bounds) {</span>
+<span class="fc bfc" id="L198" title="All 2 branches covered.">        emit(firstBound ? &quot; extends $T&quot; : &quot; &amp; $T&quot;, bound);</span>
+<span class="fc" id="L199">        firstBound = false;</span>
+<span class="fc" id="L200">      }</span>
+<span class="fc" id="L201">      firstTypeVariable = false;</span>
+<span class="fc" id="L202">    }</span>
+<span class="fc" id="L203">    emit(&quot;&gt;&quot;);</span>
+<span class="fc" id="L204">  }</span>
+
+  public CodeWriter emit(String s) throws IOException {
+<span class="fc" id="L207">    return emitAndIndent(s);</span>
+  }
+
+  public CodeWriter emit(String format, Object... args) throws IOException {
+<span class="fc" id="L211">    return emit(CodeBlock.of(format, args));</span>
+  }
+
+  public CodeWriter emit(CodeBlock codeBlock) throws IOException {
+<span class="fc" id="L215">    int a = 0;</span>
+<span class="fc" id="L216">    ClassName deferredTypeName = null; // used by &quot;import static&quot; logic</span>
+<span class="fc" id="L217">    ListIterator&lt;String&gt; partIterator = codeBlock.formatParts.listIterator();</span>
+<span class="fc bfc" id="L218" title="All 2 branches covered.">    while (partIterator.hasNext()) {</span>
+<span class="fc" id="L219">      String part = partIterator.next();</span>
+<span class="fc bfc" id="L220" title="All 12 branches covered.">      switch (part) {</span>
+        case &quot;$L&quot;:
+<span class="fc" id="L222">          emitLiteral(codeBlock.args.get(a++));</span>
+<span class="fc" id="L223">          break;</span>
+
+        case &quot;$N&quot;:
+<span class="fc" id="L226">          emitAndIndent((String) codeBlock.args.get(a++));</span>
+<span class="fc" id="L227">          break;</span>
+
+        case &quot;$S&quot;:
+<span class="fc" id="L230">          String string = (String) codeBlock.args.get(a++);</span>
+          // Emit null as a literal null: no quotes.
+<span class="fc bfc" id="L232" title="All 2 branches covered.">          emitAndIndent(string != null</span>
+<span class="fc" id="L233">              ? stringLiteralWithDoubleQuotes(string, indent)</span>
+<span class="fc" id="L234">              : &quot;null&quot;);</span>
+<span class="fc" id="L235">          break;</span>
+
+        case &quot;$T&quot;:
+<span class="fc" id="L238">          TypeName typeName = (TypeName) codeBlock.args.get(a++);</span>
+<span class="fc bfc" id="L239" title="All 2 branches covered.">          if (typeName.isAnnotated()) {</span>
+<span class="fc" id="L240">            typeName.emitAnnotations(this);</span>
+<span class="fc" id="L241">            typeName = typeName.withoutAnnotations();</span>
+          }
+          // defer &quot;typeName.emit(this)&quot; if next format part will be handled by the default case
+<span class="fc bfc" id="L244" title="All 4 branches covered.">          if (typeName instanceof ClassName &amp;&amp; partIterator.hasNext()) {</span>
+<span class="fc bfc" id="L245" title="All 2 branches covered.">            if (!codeBlock.formatParts.get(partIterator.nextIndex()).startsWith(&quot;$&quot;)) {</span>
+<span class="fc" id="L246">              ClassName candidate = (ClassName) typeName;</span>
+<span class="fc bfc" id="L247" title="All 2 branches covered.">              if (staticImportClassNames.contains(candidate.canonicalName)) {</span>
+<span class="pc bpc" id="L248" title="1 of 2 branches missed.">                checkState(deferredTypeName == null, &quot;pending type for static import?!&quot;);</span>
+<span class="fc" id="L249">                deferredTypeName = candidate;</span>
+<span class="fc" id="L250">                break;</span>
+              }
+            }
+          }
+<span class="fc" id="L254">          typeName.emit(this);</span>
+<span class="fc" id="L255">          break;</span>
+
+        case &quot;$$&quot;:
+<span class="fc" id="L258">          emitAndIndent(&quot;$&quot;);</span>
+<span class="fc" id="L259">          break;</span>
+
+        case &quot;$&gt;&quot;:
+<span class="fc" id="L262">          indent();</span>
+<span class="fc" id="L263">          break;</span>
+
+        case &quot;$&lt;&quot;:
+<span class="fc" id="L266">          unindent();</span>
+<span class="fc" id="L267">          break;</span>
+
+        case &quot;$[&quot;:
+<span class="fc bfc" id="L270" title="All 2 branches covered.">          checkState(statementLine == -1, &quot;statement enter $[ followed by statement enter $[&quot;);</span>
+<span class="fc" id="L271">          statementLine = 0;</span>
+<span class="fc" id="L272">          break;</span>
+
+        case &quot;$]&quot;:
+<span class="fc bfc" id="L275" title="All 2 branches covered.">          checkState(statementLine != -1, &quot;statement exit $] has no matching statement enter $[&quot;);</span>
+<span class="fc bfc" id="L276" title="All 2 branches covered.">          if (statementLine &gt; 0) {</span>
+<span class="fc" id="L277">            unindent(2); // End a multi-line statement. Decrease the indentation level.</span>
+          }
+<span class="fc" id="L279">          statementLine = -1;</span>
+<span class="fc" id="L280">          break;</span>
+
+        case &quot;$W&quot;:
+<span class="fc" id="L283">          out.wrappingSpace(indentLevel + 2);</span>
+<span class="fc" id="L284">          break;</span>
+
+        case &quot;$Z&quot;:
+<span class="fc" id="L287">          out.zeroWidthSpace(indentLevel + 2);</span>
+<span class="fc" id="L288">          break;</span>
+
+        default:
+          // handle deferred type
+<span class="fc bfc" id="L292" title="All 2 branches covered.">          if (deferredTypeName != null) {</span>
+<span class="fc bfc" id="L293" title="All 2 branches covered.">            if (part.startsWith(&quot;.&quot;)) {</span>
+<span class="fc bfc" id="L294" title="All 2 branches covered.">              if (emitStaticImportMember(deferredTypeName.canonicalName, part)) {</span>
+                // okay, static import hit and all was emitted, so clean-up and jump to next part
+<span class="fc" id="L296">                deferredTypeName = null;</span>
+<span class="fc" id="L297">                break;</span>
+              }
+            }
+<span class="fc" id="L300">            deferredTypeName.emit(this);</span>
+<span class="fc" id="L301">            deferredTypeName = null;</span>
+          }
+<span class="fc" id="L303">          emitAndIndent(part);</span>
+          break;
+      }
+<span class="fc" id="L306">    }</span>
+<span class="fc" id="L307">    return this;</span>
+  }
+
+  public CodeWriter emitWrappingSpace() throws IOException {
+<span class="fc" id="L311">    out.wrappingSpace(indentLevel + 2);</span>
+<span class="fc" id="L312">    return this;</span>
+  }
+
+  private static String extractMemberName(String part) {
+<span class="fc" id="L316">    checkArgument(Character.isJavaIdentifierStart(part.charAt(0)), &quot;not an identifier: %s&quot;, part);</span>
+<span class="fc bfc" id="L317" title="All 2 branches covered.">    for (int i = 1; i &lt;= part.length(); i++) {</span>
+<span class="fc bfc" id="L318" title="All 2 branches covered.">      if (!SourceVersion.isIdentifier(part.substring(0, i))) {</span>
+<span class="fc" id="L319">        return part.substring(0, i - 1);</span>
+      }
+    }
+<span class="fc" id="L322">    return part;</span>
+  }
+
+  private boolean emitStaticImportMember(String canonical, String part) throws IOException {
+<span class="fc" id="L326">    String partWithoutLeadingDot = part.substring(1);</span>
+<span class="fc bfc" id="L327" title="All 2 branches covered.">    if (partWithoutLeadingDot.isEmpty()) return false;</span>
+<span class="fc" id="L328">    char first = partWithoutLeadingDot.charAt(0);</span>
+<span class="fc bfc" id="L329" title="All 2 branches covered.">    if (!Character.isJavaIdentifierStart(first)) return false;</span>
+<span class="fc" id="L330">    String explicit = canonical + &quot;.&quot; + extractMemberName(partWithoutLeadingDot);</span>
+<span class="fc" id="L331">    String wildcard = canonical + &quot;.*&quot;;</span>
+<span class="fc bfc" id="L332" title="All 4 branches covered.">    if (staticImports.contains(explicit) || staticImports.contains(wildcard)) {</span>
+<span class="fc" id="L333">      emitAndIndent(partWithoutLeadingDot);</span>
+<span class="fc" id="L334">      return true;</span>
+    }
+<span class="fc" id="L336">    return false;</span>
+  }
+
+  private void emitLiteral(Object o) throws IOException {
+<span class="fc bfc" id="L340" title="All 2 branches covered.">    if (o instanceof TypeSpec) {</span>
+<span class="fc" id="L341">      TypeSpec typeSpec = (TypeSpec) o;</span>
+<span class="fc" id="L342">      typeSpec.emit(this, null, Collections.emptySet());</span>
+<span class="fc bfc" id="L343" title="All 2 branches covered.">    } else if (o instanceof AnnotationSpec) {</span>
+<span class="fc" id="L344">      AnnotationSpec annotationSpec = (AnnotationSpec) o;</span>
+<span class="fc" id="L345">      annotationSpec.emit(this, true);</span>
+<span class="fc bfc" id="L346" title="All 2 branches covered.">    } else if (o instanceof CodeBlock) {</span>
+<span class="fc" id="L347">      CodeBlock codeBlock = (CodeBlock) o;</span>
+<span class="fc" id="L348">      emit(codeBlock);</span>
+<span class="fc" id="L349">    } else {</span>
+<span class="fc" id="L350">      emitAndIndent(String.valueOf(o));</span>
+    }
+<span class="fc" id="L352">  }</span>
+
+  /**
+   * Returns the best name to identify {@code className} with in the current context. This uses the
+   * available imports and the current scope to find the shortest name available. It does not honor
+   * names visible due to inheritance.
+   */
+  String lookupName(ClassName className) {
+    // Find the shortest suffix of className that resolves to className. This uses both local type
+    // names (so `Entry` in `Map` refers to `Map.Entry`). Also uses imports.
+<span class="fc" id="L362">    boolean nameResolved = false;</span>
+<span class="fc bfc" id="L363" title="All 2 branches covered.">    for (ClassName c = className; c != null; c = c.enclosingClassName()) {</span>
+<span class="fc" id="L364">      ClassName resolved = resolve(c.simpleName());</span>
+<span class="fc bfc" id="L365" title="All 2 branches covered.">      nameResolved = resolved != null;</span>
+
+<span class="fc bfc" id="L367" title="All 4 branches covered.">      if (resolved != null &amp;&amp; Objects.equals(resolved.canonicalName, c.canonicalName)) {</span>
+<span class="fc" id="L368">        int suffixOffset = c.simpleNames().size() - 1;</span>
+<span class="fc" id="L369">        return join(&quot;.&quot;, className.simpleNames().subList(</span>
+<span class="fc" id="L370">            suffixOffset, className.simpleNames().size()));</span>
+      }
+    }
+
+    // If the name resolved but wasn't a match, we're stuck with the fully qualified name.
+<span class="fc bfc" id="L375" title="All 2 branches covered.">    if (nameResolved) {</span>
+<span class="fc" id="L376">      return className.canonicalName;</span>
+    }
+
+    // If the class is in the same package, we're done.
+<span class="fc bfc" id="L380" title="All 2 branches covered.">    if (Objects.equals(packageName, className.packageName())) {</span>
+<span class="fc" id="L381">      referencedNames.add(className.topLevelClassName().simpleName());</span>
+<span class="fc" id="L382">      return join(&quot;.&quot;, className.simpleNames());</span>
+    }
+
+    // We'll have to use the fully-qualified name. Mark the type as importable for a future pass.
+<span class="fc bfc" id="L386" title="All 2 branches covered.">    if (!javadoc) {</span>
+<span class="fc" id="L387">      importableType(className);</span>
+    }
+
+<span class="fc" id="L390">    return className.canonicalName;</span>
+  }
+
+  private void importableType(ClassName className) {
+<span class="fc bfc" id="L394" title="All 2 branches covered.">    if (className.packageName().isEmpty()) {</span>
+<span class="fc" id="L395">      return;</span>
+    }
+<span class="fc" id="L397">    ClassName topLevelClassName = className.topLevelClassName();</span>
+<span class="fc" id="L398">    String simpleName = topLevelClassName.simpleName();</span>
+<span class="fc" id="L399">    ClassName replaced = importableTypes.put(simpleName, topLevelClassName);</span>
+<span class="fc bfc" id="L400" title="All 2 branches covered.">    if (replaced != null) {</span>
+<span class="fc" id="L401">      importableTypes.put(simpleName, replaced); // On collision, prefer the first inserted.</span>
+    }
+<span class="fc" id="L403">  }</span>
+
+  /**
+   * Returns the class referenced by {@code simpleName}, using the current nesting context and
+   * imports.
+   */
+  // TODO(jwilson): also honor superclass members when resolving names.
+  private ClassName resolve(String simpleName) {
+    // Match a child of the current (potentially nested) class.
+<span class="fc bfc" id="L412" title="All 2 branches covered.">    for (int i = typeSpecStack.size() - 1; i &gt;= 0; i--) {</span>
+<span class="fc" id="L413">      TypeSpec typeSpec = typeSpecStack.get(i);</span>
+<span class="fc bfc" id="L414" title="All 2 branches covered.">      for (TypeSpec visibleChild : typeSpec.typeSpecs) {</span>
+<span class="fc bfc" id="L415" title="All 2 branches covered.">        if (Objects.equals(visibleChild.name, simpleName)) {</span>
+<span class="fc" id="L416">          return stackClassName(i, simpleName);</span>
+        }
+<span class="fc" id="L418">      }</span>
+    }
+
+    // Match the top-level class.
+<span class="fc bfc" id="L422" title="All 4 branches covered.">    if (typeSpecStack.size() &gt; 0 &amp;&amp; Objects.equals(typeSpecStack.get(0).name, simpleName)) {</span>
+<span class="fc" id="L423">      return ClassName.get(packageName, simpleName);</span>
+    }
+
+    // Match an imported type.
+<span class="fc" id="L427">    ClassName importedType = importedTypes.get(simpleName);</span>
+<span class="fc bfc" id="L428" title="All 2 branches covered.">    if (importedType != null) return importedType;</span>
+
+    // No match.
+<span class="fc" id="L431">    return null;</span>
+  }
+
+  /** Returns the class named {@code simpleName} when nested in the class at {@code stackDepth}. */
+  private ClassName stackClassName(int stackDepth, String simpleName) {
+<span class="fc" id="L436">    ClassName className = ClassName.get(packageName, typeSpecStack.get(0).name);</span>
+<span class="fc bfc" id="L437" title="All 2 branches covered.">    for (int i = 1; i &lt;= stackDepth; i++) {</span>
+<span class="fc" id="L438">      className = className.nestedClass(typeSpecStack.get(i).name);</span>
+    }
+<span class="fc" id="L440">    return className.nestedClass(simpleName);</span>
+  }
+
+  /**
+   * Emits {@code s} with indentation as required. It's important that all code that writes to
+   * {@link #out} does it through here, since we emit indentation lazily in order to avoid
+   * unnecessary trailing whitespace.
+   */
+  CodeWriter emitAndIndent(String s) throws IOException {
+<span class="fc" id="L449">    boolean first = true;</span>
+<span class="fc bfc" id="L450" title="All 2 branches covered.">    for (String line : s.split(&quot;\n&quot;, -1)) {</span>
+      // Emit a newline character. Make sure blank lines in Javadoc &amp; comments look good.
+<span class="fc bfc" id="L452" title="All 2 branches covered.">      if (!first) {</span>
+<span class="fc bfc" id="L453" title="All 6 branches covered.">        if ((javadoc || comment) &amp;&amp; trailingNewline) {</span>
+<span class="fc" id="L454">          emitIndentation();</span>
+<span class="fc bfc" id="L455" title="All 2 branches covered.">          out.append(javadoc ? &quot; *&quot; : &quot;//&quot;);</span>
+        }
+<span class="fc" id="L457">        out.append(&quot;\n&quot;);</span>
+<span class="fc" id="L458">        trailingNewline = true;</span>
+<span class="fc bfc" id="L459" title="All 2 branches covered.">        if (statementLine != -1) {</span>
+<span class="fc bfc" id="L460" title="All 2 branches covered.">          if (statementLine == 0) {</span>
+<span class="fc" id="L461">            indent(2); // Begin multiple-line statement. Increase the indentation level.</span>
+          }
+<span class="fc" id="L463">          statementLine++;</span>
+        }
+      }
+
+<span class="fc" id="L467">      first = false;</span>
+<span class="fc bfc" id="L468" title="All 2 branches covered.">      if (line.isEmpty()) continue; // Don't indent empty lines.</span>
+
+      // Emit indentation and comment prefix if necessary.
+<span class="fc bfc" id="L471" title="All 2 branches covered.">      if (trailingNewline) {</span>
+<span class="fc" id="L472">        emitIndentation();</span>
+<span class="fc bfc" id="L473" title="All 2 branches covered.">        if (javadoc) {</span>
+<span class="fc" id="L474">          out.append(&quot; * &quot;);</span>
+<span class="fc bfc" id="L475" title="All 2 branches covered.">        } else if (comment) {</span>
+<span class="fc" id="L476">          out.append(&quot;// &quot;);</span>
+        }
+      }
+
+<span class="fc" id="L480">      out.append(line);</span>
+<span class="fc" id="L481">      trailingNewline = false;</span>
+    }
+<span class="fc" id="L483">    return this;</span>
+  }
+
+  private void emitIndentation() throws IOException {
+<span class="fc bfc" id="L487" title="All 2 branches covered.">    for (int j = 0; j &lt; indentLevel; j++) {</span>
+<span class="fc" id="L488">      out.append(indent);</span>
+    }
+<span class="fc" id="L490">  }</span>
+
+  /**
+   * Returns the types that should have been imported for this code. If there were any simple name
+   * collisions, that type's first use is imported.
+   */
+  Map&lt;String, ClassName&gt; suggestedImports() {
+<span class="fc" id="L497">    Map&lt;String, ClassName&gt; result = new LinkedHashMap&lt;&gt;(importableTypes);</span>
+<span class="fc" id="L498">    result.keySet().removeAll(referencedNames);</span>
+<span class="fc" id="L499">    return result;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BaseDescription.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JavaHamcrest</a> &gt; <a href="index.source.html" class="el_package">org.hamcrest</a> &gt; <span class="el_source">BaseDescription.java</span></div><h1>BaseDescription.java</h1><pre class="source lang-java linenums">package org.hamcrest;
+
+import org.hamcrest.internal.ArrayIterator;
+import org.hamcrest.internal.SelfDescribingValueIterator;
+
+import java.util.Arrays;
+import java.util.Iterator;
+
+import static java.lang.String.valueOf;
+
+/**
+ * A {@link Description} that is stored as a string.
+ */
+<span class="fc" id="L14">public abstract class BaseDescription implements Description {</span>
+
+    @Override
+    public Description appendText(String text) {
+<span class="fc" id="L18">        append(text);</span>
+<span class="fc" id="L19">        return this;</span>
+    }
+    
+    @Override
+    public Description appendDescriptionOf(SelfDescribing value) {
+<span class="fc" id="L24">        value.describeTo(this);</span>
+<span class="fc" id="L25">        return this;</span>
+    }
+    
+    @Override
+    public Description appendValue(Object value) {
+<span class="fc bfc" id="L30" title="All 2 branches covered.">        if (value == null) {</span>
+<span class="fc" id="L31">            append(&quot;null&quot;);</span>
+<span class="fc bfc" id="L32" title="All 2 branches covered.">        } else if (value instanceof String) {</span>
+<span class="fc" id="L33">            toJavaSyntax((String) value);</span>
+<span class="fc bfc" id="L34" title="All 2 branches covered.">        } else if (value instanceof Character) {</span>
+<span class="fc" id="L35">            append('&quot;');</span>
+<span class="fc" id="L36">            toJavaSyntax((Character) value);</span>
+<span class="fc" id="L37">            append('&quot;');</span>
+<span class="fc bfc" id="L38" title="All 2 branches covered.">        } else if (value instanceof Short) {</span>
+<span class="fc" id="L39">            append('&lt;');</span>
+<span class="fc" id="L40">            append(descriptionOf(value));</span>
+<span class="fc" id="L41">            append(&quot;s&gt;&quot;);</span>
+<span class="fc bfc" id="L42" title="All 2 branches covered.">        } else if (value instanceof Long) {</span>
+<span class="fc" id="L43">            append('&lt;');</span>
+<span class="fc" id="L44">            append(descriptionOf(value));</span>
+<span class="fc" id="L45">            append(&quot;L&gt;&quot;);</span>
+<span class="fc bfc" id="L46" title="All 2 branches covered.">        } else if (value instanceof Float) {</span>
+<span class="fc" id="L47">            append('&lt;');</span>
+<span class="fc" id="L48">            append(descriptionOf(value));</span>
+<span class="fc" id="L49">            append(&quot;F&gt;&quot;);</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">        } else if (value.getClass().isArray()) {</span>
+<span class="fc" id="L51">            appendValueList(&quot;[&quot;,&quot;, &quot;,&quot;]&quot;, new ArrayIterator(value));</span>
+        } else {
+<span class="fc" id="L53">            append('&lt;');</span>
+<span class="fc" id="L54">            append(descriptionOf(value));</span>
+<span class="fc" id="L55">            append('&gt;');</span>
+        }
+<span class="fc" id="L57">        return this;</span>
+    }
+
+    private String descriptionOf(Object value) {
+        try {
+<span class="fc" id="L62">            return valueOf(value);</span>
+        }
+<span class="fc" id="L64">        catch (Exception e) {</span>
+<span class="fc" id="L65">            return value.getClass().getName() + &quot;@&quot; + Integer.toHexString(value.hashCode());</span>
+        }
+    }
+
+    @SafeVarargs
+    @Override
+    public final &lt;T&gt; Description appendValueList(String start, String separator, String end, T... values) {
+<span class="nc" id="L72">        return appendValueList(start, separator, end, Arrays.asList(values));</span>
+    }
+    
+    @Override
+    public &lt;T&gt; Description appendValueList(String start, String separator, String end, Iterable&lt;T&gt; values) {
+<span class="fc" id="L77">        return appendValueList(start, separator, end, values.iterator());</span>
+    }
+    
+    private &lt;T&gt; Description appendValueList(String start, String separator, String end, Iterator&lt;T&gt; values) {
+<span class="fc" id="L81">        return appendList(start, separator, end, new SelfDescribingValueIterator&lt;&gt;(values));</span>
+    }
+    
+    @Override
+    public Description appendList(String start, String separator, String end, Iterable&lt;? extends SelfDescribing&gt; values) {
+<span class="fc" id="L86">        return appendList(start, separator, end, values.iterator());</span>
+    }
+
+    private Description appendList(String start, String separator, String end, Iterator&lt;? extends SelfDescribing&gt; i) {
+<span class="fc" id="L90">        boolean separate = false;</span>
+        
+<span class="fc" id="L92">        append(start);</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">        while (i.hasNext()) {</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">            if (separate) append(separator);</span>
+<span class="fc" id="L95">            appendDescriptionOf(i.next());</span>
+<span class="fc" id="L96">            separate = true;</span>
+        }
+<span class="fc" id="L98">        append(end);</span>
+        
+<span class="fc" id="L100">        return this;</span>
+    }
+
+    /**
+     * Append the String &lt;var&gt;str&lt;/var&gt; to the description.  
+     * The default implementation passes every character to {@link #append(char)}.  
+     * Override in subclasses to provide an efficient implementation.
+     */
+    protected void append(String str) {
+<span class="fc bfc" id="L109" title="All 2 branches covered.">        for (int i = 0; i &lt; str.length(); i++) {</span>
+<span class="fc" id="L110">            append(str.charAt(i));</span>
+        }
+<span class="fc" id="L112">    }</span>
+    
+    /**
+     * Append the char &lt;var&gt;c&lt;/var&gt; to the description.  
+     */
+    protected abstract void append(char c);
+
+    private void toJavaSyntax(String unformatted) {
+<span class="fc" id="L120">        append('&quot;');</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">        for (int i = 0; i &lt; unformatted.length(); i++) {</span>
+<span class="fc" id="L122">            toJavaSyntax(unformatted.charAt(i));</span>
+        }
+<span class="fc" id="L124">        append('&quot;');</span>
+<span class="fc" id="L125">    }</span>
+
+    private void toJavaSyntax(char ch) {
+<span class="fc bfc" id="L128" title="All 6 branches covered.">        switch (ch) {</span>
+            case '&quot;':
+<span class="fc" id="L130">                append(&quot;\\\&quot;&quot;);</span>
+<span class="fc" id="L131">                break;</span>
+            case '\n':
+<span class="fc" id="L133">                append(&quot;\\n&quot;);</span>
+<span class="fc" id="L134">                break;</span>
+            case '\r':
+<span class="fc" id="L136">                append(&quot;\\r&quot;);</span>
+<span class="fc" id="L137">                break;</span>
+            case '\t':
+<span class="fc" id="L139">                append(&quot;\\t&quot;);</span>
+<span class="fc" id="L140">                break;</span>
+            case '\\':
+<span class="fc" id="L142">                append(&quot;\\\\&quot;);</span>
+<span class="fc" id="L143">                break;</span>
+            default:
+<span class="fc" id="L145">                append(ch);</span>
+        }
+<span class="fc" id="L147">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

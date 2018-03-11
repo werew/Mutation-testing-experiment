@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ArrayMatching.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JavaHamcrest</a> &gt; <a href="index.source.html" class="el_package">org.hamcrest.collection</a> &gt; <span class="el_source">ArrayMatching.java</span></div><h1>ArrayMatching.java</h1><pre class="source lang-java linenums">package org.hamcrest.collection;
+
+import org.hamcrest.Matcher;
+import org.hamcrest.internal.NullSafety;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import static java.util.Arrays.asList;
+import static org.hamcrest.core.IsEqual.equalTo;
+
+/**
+ * @author Steve Freeman 2016 http://www.hamcrest.com
+ * Collected helper code for converting matchers between lists and iterables.
+ */
+<span class="nc" id="L17">public class ArrayMatching {</span>
+
+
+  /**
+   * Creates a matcher for arrays that matches when the examined array contains at least one item
+   * that is matched by the specified &lt;code&gt;elementMatcher&lt;/code&gt;.  Whilst matching, the traversal
+   * of the examined array will stop as soon as a matching element is found.
+   * For example:
+   * &lt;pre&gt;assertThat(new String[] {&quot;foo&quot;, &quot;bar&quot;}, hasItemInArray(startsWith(&quot;ba&quot;)))&lt;/pre&gt;
+   *
+   * @param elementMatcher
+   *     the matcher to apply to elements in examined arrays
+   */
+  public static &lt;T&gt; Matcher&lt;T[]&gt; hasItemInArray(Matcher&lt;? super T&gt; elementMatcher) {
+<span class="fc" id="L31">      return new HasItemInArray&lt;&gt;(elementMatcher);</span>
+  }
+
+  /**
+   * A shortcut to the frequently used &lt;code&gt;hasItemInArray(equalTo(x))&lt;/code&gt;.
+   * For example:
+   * &lt;pre&gt;assertThat(hasItemInArray(x))&lt;/pre&gt;
+   * instead of:
+   * &lt;pre&gt;assertThat(hasItemInArray(equalTo(x)))&lt;/pre&gt;
+   *
+   * @param element
+   *     the element that should be present in examined arrays
+   */
+  public static &lt;T&gt; Matcher&lt;T[]&gt; hasItemInArray(T element) {
+<span class="fc" id="L45">    return hasItemInArray(equalTo(element));</span>
+  }
+
+  /**
+   * &lt;p&gt;
+   * Creates an order agnostic matcher for arrays that matches when each item in the
+   * examined array satisfies one matcher anywhere in the specified matchers.
+   * For a positive match, the examined array must be of the same length as the number of
+   * specified matchers.
+   * &lt;/p&gt;
+   * &lt;p&gt;
+   * N.B. each of the specified matchers will only be used once during a given examination, so be
+   * careful when specifying matchers that may be satisfied by more than one entry in an examined
+   * array.
+   * &lt;/p&gt;
+   * &lt;p&gt;
+   * For example:
+   * &lt;/p&gt;
+   * &lt;pre&gt;assertThat(new String[]{&quot;foo&quot;, &quot;bar&quot;}, arrayContainingInAnyOrder(equalTo(&quot;bar&quot;), equalTo(&quot;foo&quot;)))&lt;/pre&gt;
+   *
+   * @param itemMatchers
+   *     a list of matchers, each of which must be satisfied by an entry in an examined array
+   */
+  @SafeVarargs
+  public static &lt;E&gt; Matcher&lt;E[]&gt; arrayContainingInAnyOrder(Matcher&lt;? super E&gt;... itemMatchers) {
+<span class="fc" id="L70">      return arrayContainingInAnyOrder(asList(itemMatchers));</span>
+  }
+
+  /**
+   * &lt;p&gt;
+   * Creates an order agnostic matcher for arrays that matches when each item in the
+   * examined array satisfies one matcher anywhere in the specified collection of matchers.
+   * For a positive match, the examined array must be of the same length as the specified collection
+   * of matchers.
+   * &lt;/p&gt;
+   * &lt;p&gt;
+   * N.B. each matcher in the specified collection will only be used once during a given
+   * examination, so be careful when specifying matchers that may be satisfied by more than
+   * one entry in an examined array.
+   * &lt;/p&gt;
+   * &lt;p&gt;
+   * For example:
+   * &lt;/p&gt;
+   * &lt;pre&gt;assertThat(new String[]{&quot;foo&quot;, &quot;bar&quot;}, arrayContainingInAnyOrder(Arrays.asList(equalTo(&quot;bar&quot;), equalTo(&quot;foo&quot;))))&lt;/pre&gt;
+   *
+   * @param itemMatchers
+   *     a list of matchers, each of which must be satisfied by an item provided by an examined array
+   */
+  public static &lt;E&gt; Matcher&lt;E[]&gt; arrayContainingInAnyOrder(Collection&lt;Matcher&lt;? super E&gt;&gt; itemMatchers) {
+<span class="fc" id="L94">    return new ArrayAsIterableMatcher&lt;&gt;(new IsIterableContainingInAnyOrder&lt;&gt;(itemMatchers), itemMatchers, &quot;in any order&quot;);</span>
+  }
+
+  /**
+   * &lt;p&gt;Creates an order agnostic matcher for arrays that matches when each item in the
+   * examined array is logically equal to one item anywhere in the specified items.
+   * For a positive match, the examined array must be of the same length as the number of
+   * specified items.
+   * &lt;/p&gt;
+   * &lt;p&gt;N.B. each of the specified items will only be used once during a given examination, so be
+   * careful when specifying items that may be equal to more than one entry in an examined
+   * array.
+   * &lt;/p&gt;
+   * &lt;p&gt;
+   * For example:
+   * &lt;/p&gt;
+   * &lt;pre&gt;assertThat(new String[]{&quot;foo&quot;, &quot;bar&quot;}, containsInAnyOrder(&quot;bar&quot;, &quot;foo&quot;))&lt;/pre&gt;
+   *
+   * @param items
+   *     the items that must equal the entries of an examined array, in any order
+   */
+  @SafeVarargs
+  public static &lt;E&gt; Matcher&lt;E[]&gt; arrayContainingInAnyOrder(E... items) {
+<span class="fc" id="L117">    return arrayContainingInAnyOrder(asEqualMatchers(items));</span>
+  }
+
+  /**
+   * Creates a matcher for arrays that matches when each item in the examined array is
+   * logically equal to the corresponding item in the specified items.  For a positive match,
+   * the examined array must be of the same length as the number of specified items.
+   * For example:
+   * &lt;pre&gt;assertThat(new String[]{&quot;foo&quot;, &quot;bar&quot;}, contains(&quot;foo&quot;, &quot;bar&quot;))&lt;/pre&gt;
+   *
+   * @param items
+   *     the items that must equal the items within an examined array
+   */
+  @SafeVarargs
+  public static &lt;E&gt; Matcher&lt;E[]&gt; arrayContaining(E... items) {
+<span class="fc" id="L132">    return arrayContaining(asEqualMatchers(items));</span>
+  }
+  /**
+   * Creates a matcher for arrays that matches when each item in the examined array satisfies the
+   * corresponding matcher in the specified matchers.  For a positive match, the examined array
+   * must be of the same length as the number of specified matchers.
+   * For example:
+   * &lt;pre&gt;assertThat(new String[]{&quot;foo&quot;, &quot;bar&quot;}, arrayContaining(equalTo(&quot;foo&quot;), equalTo(&quot;bar&quot;)))&lt;/pre&gt;
+   *
+   * @param itemMatchers
+   *     the matchers that must be satisfied by the items in the examined array
+   */
+  @SafeVarargs
+  public static &lt;E&gt; Matcher&lt;E[]&gt; arrayContaining(Matcher&lt;? super E&gt;... itemMatchers) {
+      //required for JDK 1.6
+      //noinspection RedundantTypeArguments
+<span class="fc" id="L148">      final List&lt;Matcher&lt;? super E&gt;&gt; nullSafeWithExplicitTypeMatchers = NullSafety.&lt;E&gt;nullSafe(itemMatchers);</span>
+
+<span class="fc" id="L150">      return arrayContaining(nullSafeWithExplicitTypeMatchers);</span>
+  }
+
+  /**
+   * Creates a matcher for arrays that matches when each item in the examined array satisfies the
+   * corresponding matcher in the specified list of matchers.  For a positive match, the examined array
+   * must be of the same length as the specified list of matchers.
+   * For example:
+   * &lt;pre&gt;assertThat(new String[]{&quot;foo&quot;, &quot;bar&quot;}, arrayContaining(Arrays.asList(equalTo(&quot;foo&quot;), equalTo(&quot;bar&quot;))))&lt;/pre&gt;
+   *
+   * @param itemMatchers
+   *     a list of matchers, each of which must be satisfied by the corresponding item in an examined array
+   */
+  public static &lt;E&gt; Matcher&lt;E[]&gt; arrayContaining(List&lt;Matcher&lt;? super E&gt;&gt; itemMatchers) {
+<span class="fc" id="L164">      return new ArrayAsIterableMatcher&lt;&gt;(new IsIterableContainingInOrder&lt;&gt;(itemMatchers), itemMatchers, &quot;&quot;);</span>
+  }
+
+  public static &lt;E&gt; List&lt;Matcher&lt;? super E&gt;&gt; asEqualMatchers(E[] items) {
+<span class="fc" id="L168">    final List&lt;Matcher&lt;? super E&gt;&gt; matchers = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L169" title="All 2 branches covered.">    for (E item : items) {</span>
+<span class="fc" id="L170">      matchers.add(equalTo(item));</span>
+    }
+<span class="fc" id="L172">    return matchers;</span>
+  }
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

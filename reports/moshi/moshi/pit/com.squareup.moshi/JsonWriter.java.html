@@ -1,0 +1,5274 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="../style.css">
+</head>
+<body>
+
+
+<h1>JsonWriter.java</h1>
+
+<table class="src">
+
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_1'/>
+1
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_1'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>/*</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_2'/>
+2
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_2'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * Copyright (C) 2010 Google Inc.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_3'/>
+3
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_3'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_4'/>
+4
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_4'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_5'/>
+5
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_5'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * you may not use this file except in compliance with the License.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_6'/>
+6
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_6'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * You may obtain a copy of the License at</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_7'/>
+7
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_7'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_8'/>
+8
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_8'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *      http://www.apache.org/licenses/LICENSE-2.0</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_9'/>
+9
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_9'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_10'/>
+10
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_10'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * Unless required by applicable law or agreed to in writing, software</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_11'/>
+11
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_11'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * distributed under the License is distributed on an &#34;AS IS&#34; BASIS,</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_12'/>
+12
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_12'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_13'/>
+13
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_13'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * See the License for the specific language governing permissions and</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_14'/>
+14
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_14'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * limitations under the License.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_15'/>
+15
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_15'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> */</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_16'/>
+16
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_16'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>package com.squareup.moshi;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_17'/>
+17
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_17'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_18'/>
+18
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_18'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.io.Closeable;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_19'/>
+19
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_19'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.io.Flushable;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_20'/>
+20
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_20'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.io.IOException;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_21'/>
+21
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_21'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.util.Arrays;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_22'/>
+22
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_22'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import javax.annotation.CheckReturnValue;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_23'/>
+23
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_23'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import javax.annotation.Nullable;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_24'/>
+24
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_24'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import okio.BufferedSink;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_25'/>
+25
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_25'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_26'/>
+26
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_26'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import static com.squareup.moshi.JsonScope.EMPTY_OBJECT;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_27'/>
+27
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_27'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import static com.squareup.moshi.JsonScope.NONEMPTY_OBJECT;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_28'/>
+28
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_28'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_29'/>
+29
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_29'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>/**</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_30'/>
+30
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_30'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * Writes a JSON (&#60;a href=&#34;http://www.ietf.org/rfc/rfc7159.txt&#34;&#62;RFC 7159&#60;/a&#62;)</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_31'/>
+31
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_31'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * encoded value to a stream, one token at a time. The stream includes both</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_32'/>
+32
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_32'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * literal values (strings, numbers, booleans and nulls) as well as the begin</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_33'/>
+33
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_33'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * and end delimiters of objects and arrays.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_34'/>
+34
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_34'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_35'/>
+35
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_35'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * &#60;h3&#62;Encoding JSON&#60;/h3&#62;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_36'/>
+36
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_36'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * To encode your data as JSON, create a new {@code JsonWriter}. Each JSON</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_37'/>
+37
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_37'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * document must contain one top-level array or object. Call methods on the</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_38'/>
+38
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_38'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * writer as you walk the structure&#39;s contents, nesting arrays and objects as</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_39'/>
+39
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_39'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * necessary:</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_40'/>
+40
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_40'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * &#60;ul&#62;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_41'/>
+41
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_41'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *   &#60;li&#62;To write &#60;strong&#62;arrays&#60;/strong&#62;, first call {@link #beginArray()}.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_42'/>
+42
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_42'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *       Write each of the array&#39;s elements with the appropriate {@link #value}</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_43'/>
+43
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_43'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *       methods or by nesting other arrays and objects. Finally close the array</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_44'/>
+44
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_44'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *       using {@link #endArray()}.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_45'/>
+45
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_45'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *   &#60;li&#62;To write &#60;strong&#62;objects&#60;/strong&#62;, first call {@link #beginObject()}.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_46'/>
+46
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_46'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *       Write each of the object&#39;s properties by alternating calls to</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_47'/>
+47
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_47'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *       {@link #name} with the property&#39;s value. Write property values with the</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_48'/>
+48
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_48'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *       appropriate {@link #value} method or by nesting other objects or arrays.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_49'/>
+49
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_49'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *       Finally close the object using {@link #endObject()}.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_50'/>
+50
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_50'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * &#60;/ul&#62;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_51'/>
+51
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_51'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_52'/>
+52
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_52'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * &#60;h3&#62;Example&#60;/h3&#62;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_53'/>
+53
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_53'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * Suppose we&#39;d like to encode a stream of messages such as the following: &#60;pre&#62; {@code</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_54'/>
+54
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_54'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * [</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_55'/>
+55
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_55'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *   {</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_56'/>
+56
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_56'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *     &#34;id&#34;: 912345678901,</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_57'/>
+57
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_57'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *     &#34;text&#34;: &#34;How do I stream JSON in Java?&#34;,</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_58'/>
+58
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_58'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *     &#34;geo&#34;: null,</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_59'/>
+59
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_59'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *     &#34;user&#34;: {</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_60'/>
+60
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_60'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *       &#34;name&#34;: &#34;json_newb&#34;,</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_61'/>
+61
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_61'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *       &#34;followers_count&#34;: 41</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_62'/>
+62
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_62'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *      }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_63'/>
+63
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_63'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *   },</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_64'/>
+64
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_64'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *   {</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_65'/>
+65
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_65'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *     &#34;id&#34;: 912345678902,</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_66'/>
+66
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_66'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *     &#34;text&#34;: &#34;@json_newb just use JsonWriter!&#34;,</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_67'/>
+67
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_67'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *     &#34;geo&#34;: [50.454722, -104.606667],</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_68'/>
+68
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_68'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *     &#34;user&#34;: {</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_69'/>
+69
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_69'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *       &#34;name&#34;: &#34;jesse&#34;,</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_70'/>
+70
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_70'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *       &#34;followers_count&#34;: 2</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_71'/>
+71
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_71'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *     }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_72'/>
+72
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_72'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *   }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_73'/>
+73
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_73'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * ]}&#60;/pre&#62;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_74'/>
+74
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_74'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * This code encodes the above structure: &#60;pre&#62;   {@code</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_75'/>
+75
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_75'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *   public void writeJsonStream(BufferedSink sink, List&#60;Message&#62; messages) throws IOException {</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_76'/>
+76
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_76'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *     JsonWriter writer = JsonWriter.of(sink);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_77'/>
+77
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_77'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *     writer.setIndent(&#34;  &#34;);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_78'/>
+78
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_78'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *     writeMessagesArray(writer, messages);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_79'/>
+79
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_79'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *     writer.close();</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_80'/>
+80
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_80'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *   }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_81'/>
+81
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_81'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_82'/>
+82
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_82'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *   public void writeMessagesArray(JsonWriter writer, List&#60;Message&#62; messages) throws IOException {</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_83'/>
+83
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_83'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *     writer.beginArray();</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_84'/>
+84
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_84'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *     for (Message message : messages) {</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_85'/>
+85
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_85'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *       writeMessage(writer, message);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_86'/>
+86
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_86'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *     }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_87'/>
+87
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_87'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *     writer.endArray();</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_88'/>
+88
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_88'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *   }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_89'/>
+89
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_89'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_90'/>
+90
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_90'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *   public void writeMessage(JsonWriter writer, Message message) throws IOException {</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_91'/>
+91
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_91'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *     writer.beginObject();</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_92'/>
+92
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_92'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *     writer.name(&#34;id&#34;).value(message.getId());</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_93'/>
+93
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_93'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *     writer.name(&#34;text&#34;).value(message.getText());</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_94'/>
+94
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_94'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *     if (message.getGeo() != null) {</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_95'/>
+95
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_95'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *       writer.name(&#34;geo&#34;);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_96'/>
+96
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_96'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *       writeDoublesArray(writer, message.getGeo());</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_97'/>
+97
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_97'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *     } else {</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_98'/>
+98
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_98'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *       writer.name(&#34;geo&#34;).nullValue();</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_99'/>
+99
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_99'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *     }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_100'/>
+100
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_100'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *     writer.name(&#34;user&#34;);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_101'/>
+101
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_101'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *     writeUser(writer, message.getUser());</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_102'/>
+102
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_102'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *     writer.endObject();</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_103'/>
+103
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_103'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *   }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_104'/>
+104
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_104'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_105'/>
+105
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_105'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *   public void writeUser(JsonWriter writer, User user) throws IOException {</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_106'/>
+106
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_106'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *     writer.beginObject();</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_107'/>
+107
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_107'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *     writer.name(&#34;name&#34;).value(user.getName());</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_108'/>
+108
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_108'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *     writer.name(&#34;followers_count&#34;).value(user.getFollowersCount());</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_109'/>
+109
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_109'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *     writer.endObject();</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_110'/>
+110
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_110'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *   }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_111'/>
+111
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_111'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_112'/>
+112
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_112'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *   public void writeDoublesArray(JsonWriter writer, List&#60;Double&#62; doubles) throws IOException {</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_113'/>
+113
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_113'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *     writer.beginArray();</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_114'/>
+114
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_114'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *     for (Double value : doubles) {</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_115'/>
+115
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_115'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *       writer.value(value);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_116'/>
+116
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_116'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *     }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_117'/>
+117
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_117'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *     writer.endArray();</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_118'/>
+118
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_118'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *   }}&#60;/pre&#62;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_119'/>
+119
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_119'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_120'/>
+120
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_120'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * &#60;p&#62;Each {@code JsonWriter} may be used to write a single JSON stream.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_121'/>
+121
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_121'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * Instances of this class are not thread safe. Calls that would result in a</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_122'/>
+122
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_122'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * malformed JSON string will fail with an {@link IllegalStateException}.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_123'/>
+123
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_123'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> */</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_124'/>
+124
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_124'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>public abstract class JsonWriter implements Closeable, Flushable {</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_125'/>
+125
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_125'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  // The nesting stack. Using a manual array rather than an ArrayList saves 20%. This stack will</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_126'/>
+126
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_126'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  // grow itself up to 256 levels of nesting including the top-level document. Deeper nesting is</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_127'/>
+127
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_127'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  // prone to trigger StackOverflowErrors.</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_128'/>
+128
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_128'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>  int stackSize = 0;</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_129'/>
+129
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_129'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>  int[] scopes = new int[32];</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_130'/>
+130
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_130'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>  String[] pathNames = new String[32];</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_131'/>
+131
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_131'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>  int[] pathIndices = new int[32];</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_132'/>
+132
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_132'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_133'/>
+133
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_133'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  /**</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_134'/>
+134
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_134'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * A string containing a full set of spaces for a single level of indentation, or null for no</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_135'/>
+135
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_135'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * pretty printing.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_136'/>
+136
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_136'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   */</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_137'/>
+137
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_137'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  String indent;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_138'/>
+138
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_138'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  boolean lenient;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_139'/>
+139
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_139'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  boolean serializeNulls;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_140'/>
+140
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_140'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  boolean promoteValueToName;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_141'/>
+141
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_141'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_142'/>
+142
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_142'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  /** Returns a new instance that writes UTF-8 encoded JSON to {@code sink}. */</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_143'/>
+143
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_143'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  @CheckReturnValue public static JsonWriter of(BufferedSink sink) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_144'/>
+144
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_144'>1</a>
+<span>
+1. of : mutated return of Object value for com/squareup/moshi/JsonWriter::of to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    return new JsonUtf8Writer(sink);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_145'/>
+145
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_145'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_146'/>
+146
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_146'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_147'/>
+147
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_147'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>  JsonWriter() {</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_148'/>
+148
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_148'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    // Package-private to control subclasses.</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_149'/>
+149
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_149'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_150'/>
+150
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_150'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_151'/>
+151
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_151'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  /** Returns the scope on the top of the stack. */</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_152'/>
+152
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_152'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  final int peekScope() {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_153'/>
+153
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_153'>1</a>
+<span>
+1. peekScope : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    if (stackSize == 0) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_154'/>
+154
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_154'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      throw new IllegalStateException(&#34;JsonWriter is closed.&#34;);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_155'/>
+155
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_155'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_156'/>
+156
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_156'>2</a>
+<span>
+1. peekScope : Replaced integer subtraction with addition &rarr; KILLED<br/>
+2. peekScope : replaced return of integer sized value with (x == 0 ? 1 : 0) &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    return scopes[stackSize - 1];</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_157'/>
+157
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_157'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_158'/>
+158
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_158'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_159'/>
+159
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_159'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  /** Before pushing a value on the stack this confirms that the stack has capacity. */</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_160'/>
+160
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_160'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  final boolean checkStack() {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_161'/>
+161
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_161'>2</a>
+<span>
+1. checkStack : replaced return of integer sized value with (x == 0 ? 1 : 0) &rarr; SURVIVED<br/>
+2. checkStack : negated conditional &rarr; MEMORY_ERROR<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>    if (stackSize != scopes.length) return false;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_162'/>
+162
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_162'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_163'/>
+163
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_163'>1</a>
+<span>
+1. checkStack : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    if (stackSize == 256) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_164'/>
+164
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_164'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      throw new JsonDataException(&#34;Nesting too deep at &#34; + getPath() + &#34;: circular reference?&#34;);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_165'/>
+165
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_165'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_166'/>
+166
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_166'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_167'/>
+167
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_167'>1</a>
+<span>
+1. checkStack : Replaced integer multiplication with division &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    scopes = Arrays.copyOf(scopes, scopes.length * 2);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_168'/>
+168
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_168'>1</a>
+<span>
+1. checkStack : Replaced integer multiplication with division &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    pathNames = Arrays.copyOf(pathNames, pathNames.length * 2);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_169'/>
+169
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_169'>1</a>
+<span>
+1. checkStack : Replaced integer multiplication with division &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    pathIndices = Arrays.copyOf(pathIndices, pathIndices.length * 2);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_170'/>
+170
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_170'>1</a>
+<span>
+1. checkStack : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    if (this instanceof JsonValueWriter) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_171'/>
+171
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_171'>1</a>
+<span>
+1. checkStack : Replaced integer multiplication with division &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      ((JsonValueWriter) this).stack =</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_172'/>
+172
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_172'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>          Arrays.copyOf(((JsonValueWriter) this).stack, ((JsonValueWriter) this).stack.length * 2);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_173'/>
+173
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_173'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_174'/>
+174
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_174'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_175'/>
+175
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_175'>1</a>
+<span>
+1. checkStack : replaced return of integer sized value with (x == 0 ? 1 : 0) &rarr; SURVIVED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>    return true;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_176'/>
+176
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_176'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_177'/>
+177
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_177'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_178'/>
+178
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_178'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  final void pushScope(int newTop) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_179'/>
+179
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_179'>1</a>
+<span>
+1. pushScope : Replaced integer addition with subtraction &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    scopes[stackSize++] = newTop;</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_180'/>
+180
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_180'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_181'/>
+181
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_181'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_182'/>
+182
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_182'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  /** Replace the value on the top of the stack with the given value. */</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_183'/>
+183
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_183'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  final void replaceTop(int topOfStack) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_184'/>
+184
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_184'>1</a>
+<span>
+1. replaceTop : Replaced integer subtraction with addition &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    scopes[stackSize - 1] = topOfStack;</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_185'/>
+185
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_185'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_186'/>
+186
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_186'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_187'/>
+187
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_187'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  /**</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_188'/>
+188
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_188'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * Sets the indentation string to be repeated for each level of indentation</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_189'/>
+189
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_189'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * in the encoded document. If {@code indent.isEmpty()} the encoded document</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_190'/>
+190
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_190'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * will be compact. Otherwise the encoded document will be more</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_191'/>
+191
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_191'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * human-readable.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_192'/>
+192
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_192'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   *</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_193'/>
+193
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_193'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * @param indent a string containing only whitespace.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_194'/>
+194
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_194'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   */</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_195'/>
+195
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_195'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public void setIndent(String indent) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_196'/>
+196
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_196'>1</a>
+<span>
+1. setIndent : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    this.indent = !indent.isEmpty() ? indent : null;</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_197'/>
+197
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_197'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_198'/>
+198
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_198'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_199'/>
+199
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_199'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  /**</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_200'/>
+200
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_200'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * Returns a string containing only whitespace, used for each level of</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_201'/>
+201
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_201'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * indentation. If empty, the encoded document will be compact.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_202'/>
+202
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_202'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   */</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_203'/>
+203
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_203'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  @CheckReturnValue public final String getIndent() {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_204'/>
+204
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_204'>2</a>
+<span>
+1. getIndent : negated conditional &rarr; KILLED<br/>
+2. getIndent : mutated return of Object value for com/squareup/moshi/JsonWriter::getIndent to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    return indent != null ? indent : &#34;&#34;;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_205'/>
+205
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_205'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_206'/>
+206
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_206'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_207'/>
+207
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_207'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  /**</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_208'/>
+208
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_208'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * Configure this writer to relax its syntax rules. By default, this writer</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_209'/>
+209
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_209'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * only emits well-formed JSON as specified by &#60;a</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_210'/>
+210
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_210'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * href=&#34;http://www.ietf.org/rfc/rfc7159.txt&#34;&#62;RFC 7159&#60;/a&#62;. Setting the writer</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_211'/>
+211
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_211'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * to lenient permits the following:</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_212'/>
+212
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_212'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * &#60;ul&#62;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_213'/>
+213
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_213'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   *   &#60;li&#62;Top-level values of any type. With strict writing, the top-level</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_214'/>
+214
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_214'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   *       value must be an object or an array.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_215'/>
+215
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_215'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   *   &#60;li&#62;Numbers may be {@linkplain Double#isNaN() NaNs} or {@linkplain</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_216'/>
+216
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_216'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   *       Double#isInfinite() infinities}.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_217'/>
+217
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_217'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * &#60;/ul&#62;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_218'/>
+218
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_218'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   */</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_219'/>
+219
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_219'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public final void setLenient(boolean lenient) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_220'/>
+220
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_220'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    this.lenient = lenient;</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_221'/>
+221
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_221'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_222'/>
+222
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_222'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_223'/>
+223
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_223'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  /**</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_224'/>
+224
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_224'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * Returns true if this writer has relaxed syntax rules.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_225'/>
+225
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_225'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   */</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_226'/>
+226
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_226'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  @CheckReturnValue public final boolean isLenient() {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_227'/>
+227
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_227'>1</a>
+<span>
+1. isLenient : replaced return of integer sized value with (x == 0 ? 1 : 0) &rarr; SURVIVED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>    return lenient;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_228'/>
+228
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_228'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_229'/>
+229
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_229'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_230'/>
+230
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_230'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  /**</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_231'/>
+231
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_231'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * Sets whether object members are serialized when their value is null.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_232'/>
+232
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_232'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * This has no impact on array elements. The default is false.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_233'/>
+233
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_233'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   */</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_234'/>
+234
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_234'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public final void setSerializeNulls(boolean serializeNulls) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_235'/>
+235
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_235'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    this.serializeNulls = serializeNulls;</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_236'/>
+236
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_236'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_237'/>
+237
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_237'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_238'/>
+238
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_238'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  /**</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_239'/>
+239
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_239'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * Returns true if object members are serialized when their value is null.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_240'/>
+240
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_240'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * This has no impact on array elements. The default is false.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_241'/>
+241
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_241'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   */</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_242'/>
+242
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_242'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  @CheckReturnValue public final boolean getSerializeNulls() {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_243'/>
+243
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_243'>1</a>
+<span>
+1. getSerializeNulls : replaced return of integer sized value with (x == 0 ? 1 : 0) &rarr; SURVIVED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>    return serializeNulls;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_244'/>
+244
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_244'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_245'/>
+245
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_245'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_246'/>
+246
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_246'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  /**</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_247'/>
+247
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_247'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * Begins encoding a new array. Each call to this method must be paired with</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_248'/>
+248
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_248'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * a call to {@link #endArray}.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_249'/>
+249
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_249'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   *</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_250'/>
+250
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_250'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * @return this writer.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_251'/>
+251
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_251'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   */</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_252'/>
+252
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_252'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public abstract JsonWriter beginArray() throws IOException;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_253'/>
+253
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_253'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_254'/>
+254
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_254'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  /**</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_255'/>
+255
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_255'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * Ends encoding the current array.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_256'/>
+256
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_256'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   *</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_257'/>
+257
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_257'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * @return this writer.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_258'/>
+258
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_258'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   */</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_259'/>
+259
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_259'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public abstract JsonWriter endArray() throws IOException;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_260'/>
+260
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_260'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_261'/>
+261
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_261'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  /**</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_262'/>
+262
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_262'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * Begins encoding a new object. Each call to this method must be paired</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_263'/>
+263
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_263'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * with a call to {@link #endObject}.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_264'/>
+264
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_264'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   *</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_265'/>
+265
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_265'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * @return this writer.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_266'/>
+266
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_266'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   */</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_267'/>
+267
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_267'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public abstract JsonWriter beginObject() throws IOException;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_268'/>
+268
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_268'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_269'/>
+269
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_269'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  /**</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_270'/>
+270
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_270'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * Ends encoding the current object.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_271'/>
+271
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_271'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   *</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_272'/>
+272
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_272'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * @return this writer.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_273'/>
+273
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_273'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   */</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_274'/>
+274
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_274'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public abstract JsonWriter endObject() throws IOException;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_275'/>
+275
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_275'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_276'/>
+276
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_276'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  /**</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_277'/>
+277
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_277'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * Encodes the property name.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_278'/>
+278
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_278'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   *</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_279'/>
+279
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_279'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * @param name the name of the forthcoming value. Must not be null.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_280'/>
+280
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_280'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * @return this writer.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_281'/>
+281
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_281'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   */</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_282'/>
+282
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_282'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public abstract JsonWriter name(String name) throws IOException;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_283'/>
+283
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_283'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_284'/>
+284
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_284'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  /**</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_285'/>
+285
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_285'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * Encodes {@code value}.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_286'/>
+286
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_286'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   *</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_287'/>
+287
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_287'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * @param value the literal string value, or null to encode a null literal.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_288'/>
+288
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_288'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * @return this writer.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_289'/>
+289
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_289'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   */</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_290'/>
+290
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_290'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public abstract JsonWriter value(@Nullable String value) throws IOException;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_291'/>
+291
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_291'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_292'/>
+292
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_292'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  /**</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_293'/>
+293
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_293'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * Encodes {@code null}.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_294'/>
+294
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_294'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   *</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_295'/>
+295
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_295'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * @return this writer.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_296'/>
+296
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_296'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   */</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_297'/>
+297
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_297'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public abstract JsonWriter nullValue() throws IOException;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_298'/>
+298
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_298'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_299'/>
+299
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_299'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  /**</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_300'/>
+300
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_300'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * Encodes {@code value}.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_301'/>
+301
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_301'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   *</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_302'/>
+302
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_302'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * @return this writer.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_303'/>
+303
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_303'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   */</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_304'/>
+304
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_304'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public abstract JsonWriter value(boolean value) throws IOException;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_305'/>
+305
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_305'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_306'/>
+306
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_306'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  /**</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_307'/>
+307
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_307'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * Encodes {@code value}.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_308'/>
+308
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_308'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   *</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_309'/>
+309
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_309'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * @return this writer.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_310'/>
+310
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_310'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   */</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_311'/>
+311
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_311'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public abstract JsonWriter value(@Nullable Boolean value) throws IOException;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_312'/>
+312
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_312'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_313'/>
+313
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_313'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  /**</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_314'/>
+314
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_314'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * Encodes {@code value}.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_315'/>
+315
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_315'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   *</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_316'/>
+316
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_316'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * @param value a finite value. May not be {@linkplain Double#isNaN() NaNs} or</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_317'/>
+317
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_317'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   *     {@linkplain Double#isInfinite() infinities}.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_318'/>
+318
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_318'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * @return this writer.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_319'/>
+319
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_319'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   */</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_320'/>
+320
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_320'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public abstract JsonWriter value(double value) throws IOException;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_321'/>
+321
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_321'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_322'/>
+322
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_322'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  /**</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_323'/>
+323
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_323'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * Encodes {@code value}.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_324'/>
+324
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_324'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   *</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_325'/>
+325
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_325'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * @return this writer.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_326'/>
+326
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_326'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   */</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_327'/>
+327
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_327'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public abstract JsonWriter value(long value) throws IOException;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_328'/>
+328
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_328'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_329'/>
+329
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_329'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  /**</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_330'/>
+330
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_330'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * Encodes {@code value}.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_331'/>
+331
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_331'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   *</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_332'/>
+332
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_332'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * @param value a finite value. May not be {@linkplain Double#isNaN() NaNs} or</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_333'/>
+333
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_333'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   *     {@linkplain Double#isInfinite() infinities}.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_334'/>
+334
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_334'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * @return this writer.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_335'/>
+335
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_335'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   */</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_336'/>
+336
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_336'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public abstract JsonWriter value(@Nullable Number value) throws IOException;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_337'/>
+337
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_337'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_338'/>
+338
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_338'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  /**</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_339'/>
+339
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_339'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * Changes the writer to treat the next value as a string name. This is useful for map adapters so</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_340'/>
+340
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_340'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * that arbitrary type adapters can use {@link #value} to write a name value.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_341'/>
+341
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_341'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   */</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_342'/>
+342
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_342'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  final void promoteValueToName() throws IOException {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_343'/>
+343
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_343'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    int context = peekScope();</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_344'/>
+344
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_344'>2</a>
+<span>
+1. promoteValueToName : negated conditional &rarr; KILLED<br/>
+2. promoteValueToName : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    if (context != NONEMPTY_OBJECT &#38;&#38; context != EMPTY_OBJECT) {</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_345'/>
+345
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_345'></a>
+<span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>      throw new IllegalStateException(&#34;Nesting problem.&#34;);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_346'/>
+346
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_346'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_347'/>
+347
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_347'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    promoteValueToName = true;</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_348'/>
+348
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_348'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_349'/>
+349
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_349'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_350'/>
+350
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_350'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  /**</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_351'/>
+351
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_351'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * Returns a &#60;a href=&#34;http://goessner.net/articles/JsonPath/&#34;&#62;JsonPath&#60;/a&#62; to</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_352'/>
+352
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_352'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * the current location in the JSON value.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_353'/>
+353
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_353'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   */</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_354'/>
+354
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_354'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  @CheckReturnValue public final String getPath() {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_355'/>
+355
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_355'>1</a>
+<span>
+1. getPath : mutated return of Object value for com/squareup/moshi/JsonWriter::getPath to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    return JsonScope.getPath(stackSize, scopes, pathNames, pathIndices);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_356'/>
+356
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_356'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6313f15e_357'/>
+357
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_357'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>}</span></pre></td></tr>
+
+
+
+<tr><td></td><td></td><td><h2>Mutations</h2></td></tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@6313f15e_144'>144</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_144'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>of<br/><b>Killed by : </b>com.squareup.moshi.JsonWriterTest.topLevelNull[Value](com.squareup.moshi.JsonWriterTest)</span></span> mutated return of Object value for com/squareup/moshi/JsonWriter::of to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@6313f15e_153'>153</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_153'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>peekScope<br/><b>Killed by : </b>com.squareup.moshi.JsonWriterTest.badNestingArray[Value](com.squareup.moshi.JsonWriterTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@6313f15e_156'>156</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_156'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>peekScope<br/><b>Killed by : </b>com.squareup.moshi.JsonWriterTest.badNestingArray[Value](com.squareup.moshi.JsonWriterTest)</span></span> Replaced integer subtraction with addition &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>peekScope<br/><b>Killed by : </b>com.squareup.moshi.JsonWriterTest.badNestingArray[Value](com.squareup.moshi.JsonWriterTest)</span></span> replaced return of integer sized value with (x == 0 ? 1 : 0) &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@6313f15e_161'>161</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_161'/> 
+
+<p class='MEMORY_ERROR'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>checkStack<br/><b>Killed by : </b>none</span></span> negated conditional &rarr; MEMORY_ERROR</p> <p class='SURVIVED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>checkStack<br/><b>Killed by : </b>none</span></span> replaced return of integer sized value with (x == 0 ? 1 : 0) &rarr; SURVIVED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@6313f15e_163'>163</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_163'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>checkStack<br/><b>Killed by : </b>com.squareup.moshi.JsonWriterTest.tooDeeplyNestingArrays[Value](com.squareup.moshi.JsonWriterTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@6313f15e_167'>167</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_167'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>checkStack<br/><b>Killed by : </b>com.squareup.moshi.JsonWriterTest.tooDeeplyNestingArrays[Value](com.squareup.moshi.JsonWriterTest)</span></span> Replaced integer multiplication with division &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@6313f15e_168'>168</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_168'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>checkStack<br/><b>Killed by : </b>com.squareup.moshi.JsonWriterTest.deepNestingArrays[Utf8](com.squareup.moshi.JsonWriterTest)</span></span> Replaced integer multiplication with division &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@6313f15e_169'>169</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_169'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>checkStack<br/><b>Killed by : </b>com.squareup.moshi.JsonWriterTest.tooDeeplyNestingArrays[Value](com.squareup.moshi.JsonWriterTest)</span></span> Replaced integer multiplication with division &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@6313f15e_170'>170</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_170'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>checkStack<br/><b>Killed by : </b>com.squareup.moshi.JsonWriterTest.tooDeeplyNestingArrays[Value](com.squareup.moshi.JsonWriterTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@6313f15e_171'>171</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_171'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>checkStack<br/><b>Killed by : </b>com.squareup.moshi.JsonWriterTest.tooDeeplyNestingArrays[Value](com.squareup.moshi.JsonWriterTest)</span></span> Replaced integer multiplication with division &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@6313f15e_175'>175</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_175'/> 
+
+<p class='SURVIVED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>checkStack<br/><b>Killed by : </b>none</span></span> replaced return of integer sized value with (x == 0 ? 1 : 0) &rarr; SURVIVED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@6313f15e_179'>179</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_179'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>pushScope<br/><b>Killed by : </b>com.squareup.moshi.JsonWriterTest.badNestingArray[Value](com.squareup.moshi.JsonWriterTest)</span></span> Replaced integer addition with subtraction &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@6313f15e_184'>184</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_184'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>replaceTop<br/><b>Killed by : </b>com.squareup.moshi.JsonWriterTest.topLevelInt[Utf8](com.squareup.moshi.JsonWriterTest)</span></span> Replaced integer subtraction with addition &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@6313f15e_196'>196</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_196'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>setIndent<br/><b>Killed by : </b>com.squareup.moshi.JsonUtf8WriterTest.prettyPrintArray(com.squareup.moshi.JsonUtf8WriterTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@6313f15e_204'>204</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_204'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>getIndent<br/><b>Killed by : </b>com.squareup.moshi.JsonAdapterTest.indent[Utf8](com.squareup.moshi.JsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>getIndent<br/><b>Killed by : </b>com.squareup.moshi.JsonAdapterTest.indent[Utf8](com.squareup.moshi.JsonAdapterTest)</span></span> mutated return of Object value for com/squareup/moshi/JsonWriter::getIndent to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@6313f15e_227'>227</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_227'/> 
+
+<p class='SURVIVED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>isLenient<br/><b>Killed by : </b>none</span></span> replaced return of integer sized value with (x == 0 ? 1 : 0) &rarr; SURVIVED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@6313f15e_243'>243</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_243'/> 
+
+<p class='SURVIVED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>getSerializeNulls<br/><b>Killed by : </b>none</span></span> replaced return of integer sized value with (x == 0 ? 1 : 0) &rarr; SURVIVED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@6313f15e_344'>344</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_344'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>promoteValueToName<br/><b>Killed by : </b>com.squareup.moshi.JsonWriterTest.objectsInArrays[Value](com.squareup.moshi.JsonWriterTest)</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>promoteValueToName<br/><b>Killed by : </b>com.squareup.moshi.JsonWriterTest.nullStringValue[Value](com.squareup.moshi.JsonWriterTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@6313f15e_355'>355</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@6313f15e_355'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>getPath<br/><b>Killed by : </b>com.squareup.moshi.JsonWriterTest.tooDeeplyNestingArrays[Value](com.squareup.moshi.JsonWriterTest)</span></span> mutated return of Object value for com/squareup/moshi/JsonWriter::getPath to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED</p> 
+</td>
+</tr>
+
+</table>
+
+
+<h2>Active mutators</h2>
+<ul>
+<li class='mutator'>INCREMENTS_MUTATOR</li>
+<li class='mutator'>VOID_METHOD_CALL_MUTATOR</li>
+<li class='mutator'>RETURN_VALS_MUTATOR</li>
+<li class='mutator'>MATH_MUTATOR</li>
+<li class='mutator'>NEGATE_CONDITIONALS_MUTATOR</li>
+<li class='mutator'>INVERT_NEGS_MUTATOR</li>
+<li class='mutator'>CONDITIONALS_BOUNDARY_MUTATOR</li>
+
+</ul>
+
+<h2>Tests examined</h2>
+<ul>
+<li>com.squareup.moshi.MoshiTest.byteAdapter(com.squareup.moshi.MoshiTest) (1 ms)</li><li>com.squareup.moshi.ClassJsonAdapterTest.fieldNameCollisionWithTransientFieldIsOkay(com.squareup.moshi.ClassJsonAdapterTest) (2 ms)</li><li>com.squareup.moshi.ClassJsonAdapterTest.privateFields(com.squareup.moshi.ClassJsonAdapterTest) (5 ms)</li><li>com.squareup.moshi.JsonWriterPathTest.multipleTopLevelValuesInOneDocument[Utf8](com.squareup.moshi.JsonWriterPathTest) (0 ms)</li><li>com.squareup.moshi.JsonWriterTest.nullName[Utf8](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.PromoteNameToValueTest.writerUnusedPromotionDoesntPersist[Utf8](com.squareup.moshi.PromoteNameToValueTest) (1 ms)</li><li>com.squareup.moshi.JsonWriterTest.doubles[Value](com.squareup.moshi.JsonWriterTest) (2 ms)</li><li>com.squareup.moshi.JsonWriterTest.nonFiniteBoxedDoubles[Utf8](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.MoshiTest.primitiveArray(com.squareup.moshi.MoshiTest) (2 ms)</li><li>com.squareup.moshi.MoshiTest.BooleanAdapter(com.squareup.moshi.MoshiTest) (1 ms)</li><li>com.squareup.moshi.JsonWriterTest.twoNames[Utf8](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.MoshiTest.referenceCyclesOnArrays(com.squareup.moshi.MoshiTest) (3 ms)</li><li>com.squareup.moshi.MoshiTest.listJsonAdapter(com.squareup.moshi.MoshiTest) (1 ms)</li><li>com.squareup.moshi.JsonWriterTest.tooDeeplyNestingArrays[Value](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.JsonValueWriterTest.otherNumberTypesEmitBigDecimal(com.squareup.moshi.JsonValueWriterTest) (2 ms)</li><li>com.squareup.moshi.MoshiTest.nullEnum(com.squareup.moshi.MoshiTest) (1 ms)</li><li>com.squareup.moshi.JsonWriterTest.nullNumbers[Utf8](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.MoshiTest.classAdapterToObjectAndFromObject(com.squareup.moshi.MoshiTest) (1 ms)</li><li>com.squareup.moshi.MoshiTest.composingJsonAdapterFactory(com.squareup.moshi.MoshiTest) (1 ms)</li><li>com.squareup.moshi.PromoteNameToValueTest.writerIntegerValue[Value](com.squareup.moshi.PromoteNameToValueTest) (0 ms)</li><li>com.squareup.moshi.JsonWriterPathTest.objectPath[Value](com.squareup.moshi.JsonWriterPathTest) (1 ms)</li><li>com.squareup.moshi.JsonQualifiersTest.builtInTypesWithMultipleAnnotations(com.squareup.moshi.JsonQualifiersTest) (3 ms)</li><li>com.squareup.moshi.MapJsonAdapterTest.mapWithNonStringKeys(com.squareup.moshi.MapJsonAdapterTest) (4 ms)</li><li>com.squareup.moshi.AdapterMethodsTest.toAndFromNullNotNullable(com.squareup.moshi.AdapterMethodsTest) (1 ms)</li><li>com.squareup.moshi.JsonWriterTest.numbers[Utf8](com.squareup.moshi.JsonWriterTest) (2 ms)</li><li>com.squareup.moshi.PromoteNameToValueTest.writerMultipleValueObject[Utf8](com.squareup.moshi.PromoteNameToValueTest) (0 ms)</li><li>com.squareup.moshi.ObjectAdapterTest.toJsonUsesRuntimeType(com.squareup.moshi.ObjectAdapterTest) (1 ms)</li><li>com.squareup.moshi.JsonWriterTest.strictWriterDoesNotPermitMultipleTopLevelValues[Value](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.JsonQualifiersTest.basicTypesAnnotationDelegating(com.squareup.moshi.JsonQualifiersTest) (3 ms)</li><li>com.squareup.moshi.JsonWriterTest.topLevelString[Utf8](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.PromoteNameToValueTest.writerLongValue[Value](com.squareup.moshi.PromoteNameToValueTest) (1 ms)</li><li>com.squareup.moshi.JsonWriterTest.topLevelInt[Utf8](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.JsonWriterTest.invalidTopLevelTypes[Utf8](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.JsonWriterTest.topLevelBoolean[Utf8](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.AdapterMethodsTest.toAndFromWithIntermediateWithQualifier(com.squareup.moshi.AdapterMethodsTest) (1 ms)</li><li>com.squareup.moshi.ClassJsonAdapterTest.transientFieldsOmitted(com.squareup.moshi.ClassJsonAdapterTest) (5 ms)</li><li>com.squareup.moshi.PromoteNameToValueTest.writerStringValue[Utf8](com.squareup.moshi.PromoteNameToValueTest) (1 ms)</li><li>com.squareup.moshi.JsonQualifiersTest.readerWriterWithMultipleAnnotations(com.squareup.moshi.JsonQualifiersTest) (2 ms)</li><li>com.squareup.moshi.AdapterMethodsTest.adapterThrows(com.squareup.moshi.AdapterMethodsTest) (3 ms)</li><li>com.squareup.moshi.JsonWriterTest.arraysInObjects[Value](com.squareup.moshi.JsonWriterTest) (2 ms)</li><li>com.squareup.moshi.JsonWriterPathTest.objectPath[Utf8](com.squareup.moshi.JsonWriterPathTest) (1 ms)</li><li>com.squareup.moshi.JsonUtf8WriterTest.prettyPrintObject(com.squareup.moshi.JsonUtf8WriterTest) (0 ms)</li><li>com.squareup.moshi.MoshiTest.booleanAdapter(com.squareup.moshi.MoshiTest) (1 ms)</li><li>com.squareup.moshi.JsonWriterTest.emptyObject[Utf8](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.JsonQualifiersTest.annotationWithoutJsonQualifierIsIgnoredByAdapterMethods(com.squareup.moshi.JsonQualifiersTest) (10 ms)</li><li>com.squareup.moshi.JsonWriterTest.topLevelNull[Value](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.JsonWriterTest.badNestingArray[Value](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.JsonWriterTest.badNestingObject[Value](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.JsonWriterTest.closedWriterThrowsOnValue[Value](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.ObjectAdapterTest.toJsonJavaLangObject(com.squareup.moshi.ObjectAdapterTest) (0 ms)</li><li>com.squareup.moshi.JsonQualifiersTest.readerWriterJsonAdapter(com.squareup.moshi.JsonQualifiersTest) (2 ms)</li><li>com.squareup.moshi.JsonWriterTest.longs[Value](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.MoshiTest.registerJsonAdapterForAnnotatedType(com.squareup.moshi.MoshiTest) (1 ms)</li><li>com.squareup.moshi.ClassJsonAdapterTest.fieldsAreAlphabeticalAcrossFlattenedHierarchy(com.squareup.moshi.ClassJsonAdapterTest) (8 ms)</li><li>com.squareup.moshi.MoshiTest.annotatedEnum(com.squareup.moshi.MoshiTest) (1 ms)</li><li>com.squareup.moshi.JsonWriterPathTest.arrayOfArrays[Utf8](com.squareup.moshi.JsonWriterPathTest) (0 ms)</li><li>com.squareup.moshi.JsonWriterTest.objectsInArrays[Utf8](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.JsonValueWriterTest.valueCustomNumberTypeEmitsLongOrBigDecimal(com.squareup.moshi.JsonValueWriterTest) (1 ms)</li><li>com.squareup.moshi.MoshiTest.floatAdapter(com.squareup.moshi.MoshiTest) (1 ms)</li><li>com.squareup.moshi.JsonValueWriterTest.valueLongEmitsLong(com.squareup.moshi.JsonValueWriterTest) (1 ms)</li><li>com.squareup.moshi.JsonQualifiersTest.builtInTypes(com.squareup.moshi.JsonQualifiersTest) (1 ms)</li><li>com.squareup.moshi.JsonWriterTest.closedWriterThrowsOnStructure[Utf8](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.PromoteNameToValueTest.writerBooleanValue[Utf8](com.squareup.moshi.PromoteNameToValueTest) (0 ms)</li><li>com.squareup.moshi.JsonWriterTest.strictWriterDoesNotPermitMultipleTopLevelValues[Utf8](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.JsonWriterTest.nullStringValue[Value](com.squareup.moshi.JsonWriterTest) (2 ms)</li><li>com.squareup.moshi.ClassJsonAdapterTest.platformSuperclassProtectedFieldIsIncluded(com.squareup.moshi.ClassJsonAdapterTest) (10 ms)</li><li>com.squareup.moshi.MoshiTest.ShortAdapter(com.squareup.moshi.MoshiTest) (1 ms)</li><li>com.squareup.moshi.MapJsonAdapterTest.nullMap(com.squareup.moshi.MapJsonAdapterTest) (0 ms)</li><li>com.squareup.moshi.JsonWriterTest.invalidTopLevelTypes[Value](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.JsonWriterPathTest.arrayOfArrays[Value](com.squareup.moshi.JsonWriterPathTest) (0 ms)</li><li>com.squareup.moshi.JsonAdapterTest.serializeNulls[Utf8](com.squareup.moshi.JsonAdapterTest) (1 ms)</li><li>com.squareup.moshi.PromoteNameToValueTest.writerEmptyValueObject[Value](com.squareup.moshi.PromoteNameToValueTest) (1 ms)</li><li>com.squareup.moshi.MoshiTest.stringAdapter(com.squareup.moshi.MoshiTest) (1 ms)</li><li>com.squareup.moshi.JsonWriterPathTest.skipNulls[Utf8](com.squareup.moshi.JsonWriterPathTest) (0 ms)</li><li>com.squareup.moshi.AdapterMethodsTest.toAndFromJsonWithWriterAndReader(com.squareup.moshi.AdapterMethodsTest) (2 ms)</li><li>com.squareup.moshi.MoshiTest.shortAdapter(com.squareup.moshi.MoshiTest) (1 ms)</li><li>com.squareup.moshi.JsonWriterTest.topLevelDouble[Value](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.PromoteNameToValueTest.writerUnusedPromotionDoesntPersist[Value](com.squareup.moshi.PromoteNameToValueTest) (1 ms)</li><li>com.squareup.moshi.AdapterMethodsTest.parameterizedTypeEqualsNotUsed(com.squareup.moshi.AdapterMethodsTest) (8 ms)</li><li>com.squareup.moshi.PromoteNameToValueTest.writerNullValue[Utf8](com.squareup.moshi.PromoteNameToValueTest) (1 ms)</li><li>com.squareup.moshi.PromoteNameToValueTest.writerBooleanValue[Value](com.squareup.moshi.PromoteNameToValueTest) (1 ms)</li><li>com.squareup.moshi.ObjectAdapterTest.toJsonCoercesRuntimeTypeForSets(com.squareup.moshi.ObjectAdapterTest) (1 ms)</li><li>com.squareup.moshi.MapJsonAdapterTest.emptyMap(com.squareup.moshi.MapJsonAdapterTest) (1 ms)</li><li>com.squareup.moshi.MoshiTest.DoubleAdapter(com.squareup.moshi.MoshiTest) (1 ms)</li><li>com.squareup.moshi.JsonAdapterTest.serializeNulls[Value](com.squareup.moshi.JsonAdapterTest) (1 ms)</li><li>com.squareup.moshi.JsonWriterTest.nulls[Utf8](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.PromoteNameToValueTest.writerIntegerValue[Utf8](com.squareup.moshi.PromoteNameToValueTest) (1 ms)</li><li>com.squareup.moshi.JsonWriterTest.topLevelDouble[Utf8](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.JsonWriterTest.nullName[Value](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.ClassJsonAdapterTest.basicClassAdapter(com.squareup.moshi.ClassJsonAdapterTest) (10 ms)</li><li>com.squareup.moshi.MapJsonAdapterTest.orderIsRetained(com.squareup.moshi.MapJsonAdapterTest) (1 ms)</li><li>com.squareup.moshi.PromoteNameToValueTest.writerMultipleValueObject[Value](com.squareup.moshi.PromoteNameToValueTest) (0 ms)</li><li>com.squareup.moshi.JsonWriterTest.multipleTopLevelValues[Value](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.JsonWriterTest.closedWriterThrowsOnName[Utf8](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.JsonWriterTest.doubles[Utf8](com.squareup.moshi.JsonWriterTest) (2 ms)</li><li>com.squareup.moshi.JsonWriterTest.tooDeeplyNestingObjects[Value](com.squareup.moshi.JsonWriterTest) (3 ms)</li><li>com.squareup.moshi.MoshiTest.adaptersRegisteredInOrderOfPrecedence(com.squareup.moshi.MoshiTest) (1 ms)</li><li>com.squareup.moshi.JsonWriterTest.badNestingObject[Utf8](com.squareup.moshi.JsonWriterTest) (2 ms)</li><li>com.squareup.moshi.JsonWriterTest.deepNestingArrays[Utf8](com.squareup.moshi.JsonWriterTest) (2 ms)</li><li>com.squareup.moshi.JsonWriterPathTest.nestedObjects[Value](com.squareup.moshi.JsonWriterPathTest) (1 ms)</li><li>com.squareup.moshi.MoshiTest.referenceCyclesOnMixedTypes(com.squareup.moshi.MoshiTest) (2 ms)</li><li>com.squareup.moshi.JsonWriterTest.longs[Utf8](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.MoshiTest.doubleAdapter(com.squareup.moshi.MoshiTest) (2 ms)</li><li>com.squareup.moshi.JsonWriterTest.topLevelInt[Value](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.MoshiTest.objectArray(com.squareup.moshi.MoshiTest) (2 ms)</li><li>com.squareup.moshi.JsonWriterTest.closedWriterThrowsOnValue[Utf8](com.squareup.moshi.JsonWriterTest) (2 ms)</li><li>com.squareup.moshi.ClassJsonAdapterTest.typeHierarchy(com.squareup.moshi.ClassJsonAdapterTest) (1 ms)</li><li>com.squareup.moshi.ObjectAdapterTest.toJsonCoercesRuntimeTypeForCollections(com.squareup.moshi.ObjectAdapterTest) (0 ms)</li><li>com.squareup.moshi.JsonWriterPathTest.skipNulls[Value](com.squareup.moshi.JsonWriterPathTest) (0 ms)</li><li>com.squareup.moshi.AdapterMethodsTest.fromJsonOnly(com.squareup.moshi.AdapterMethodsTest) (2 ms)</li><li>com.squareup.moshi.JsonWriterTest.nonFiniteDoubles[Utf8](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.MoshiTest.ByteAdapter(com.squareup.moshi.MoshiTest) (0 ms)</li><li>com.squareup.moshi.MoshiTest.setJsonAdapter(com.squareup.moshi.MoshiTest) (1 ms)</li><li>com.squareup.moshi.MoshiTest.indent(com.squareup.moshi.MoshiTest) (1 ms)</li><li>com.squareup.moshi.JsonWriterTest.nullsValuesNotSerializedByDefault[Value](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.AdapterMethodsTest.writerAndReaderTakingMultipleJsonAdapterParameters(com.squareup.moshi.AdapterMethodsTest) (4 ms)</li><li>com.squareup.moshi.PromoteNameToValueTest.writerStringValue[Value](com.squareup.moshi.PromoteNameToValueTest) (1 ms)</li><li>com.squareup.moshi.MoshiTest.customJsonAdapterToObjectAndFromObject(com.squareup.moshi.MoshiTest) (1 ms)</li><li>com.squareup.moshi.JsonWriterTest.writerCloseIsIdempotent[Value](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.AdapterMethodsTest.multipleLayersOfAdapters(com.squareup.moshi.AdapterMethodsTest) (2 ms)</li><li>com.squareup.moshi.CircularAdaptersTest.circularAdapters(com.squareup.moshi.CircularAdaptersTest) (5 ms)</li><li>com.squareup.moshi.JsonWriterPathTest.arrayPath[Utf8](com.squareup.moshi.JsonWriterPathTest) (1 ms)</li><li>com.squareup.moshi.PromoteNameToValueTest.writerDoubleValue[Value](com.squareup.moshi.PromoteNameToValueTest) (1 ms)</li><li>com.squareup.moshi.JsonWriterTest.tooDeeplyNestingArrays[Utf8](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.JsonWriterTest.deepNestingObjects[Value](com.squareup.moshi.JsonWriterTest) (8 ms)</li><li>com.squareup.moshi.JsonWriterTest.nulls[Value](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.PromoteNameToValueTest.writerDoubleValue[Utf8](com.squareup.moshi.PromoteNameToValueTest) (1 ms)</li><li>com.squareup.moshi.ClassJsonAdapterTest.jsonAnnotationHonored(com.squareup.moshi.ClassJsonAdapterTest) (7 ms)</li><li>com.squareup.moshi.JsonWriterTest.emptyObject[Value](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.JsonWriterTest.emptyArray[Utf8](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.AdapterMethodsTest.adaptedTypeIsEnclosedParameterizedType(com.squareup.moshi.AdapterMethodsTest) (69 ms)</li><li>com.squareup.moshi.PromoteNameToValueTest.writerNullValue[Value](com.squareup.moshi.PromoteNameToValueTest) (1 ms)</li><li>com.squareup.moshi.JsonWriterTest.twoNames[Value](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.JsonWriterTest.unicodeLineBreaksEscaped[Value](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.JsonWriterTest.boxedBooleans[Utf8](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.JsonUtf8WriterTest.repeatedNameIgnored(com.squareup.moshi.JsonUtf8WriterTest) (0 ms)</li><li>com.squareup.moshi.ClassJsonAdapterTest.nullRootObject(com.squareup.moshi.ClassJsonAdapterTest) (1 ms)</li><li>com.squareup.moshi.JsonWriterTest.booleans[Utf8](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.JsonWriterTest.strings[Utf8](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.JsonValueWriterTest.repeatedNameThrows(com.squareup.moshi.JsonValueWriterTest) (0 ms)</li><li>com.squareup.moshi.JsonWriterTest.badNestingArray[Utf8](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.AdapterMethodsTest.genericArrayTypes(com.squareup.moshi.AdapterMethodsTest) (3 ms)</li><li>com.squareup.moshi.JsonWriterTest.strings[Value](com.squareup.moshi.JsonWriterTest) (2 ms)</li><li>com.squareup.moshi.JsonWriterTest.nullsValuesSerializedWhenConfigured[Value](com.squareup.moshi.JsonWriterTest) (2 ms)</li><li>com.squareup.moshi.AdapterMethodsTest.toAndFromJsonViaListOfIntegers(com.squareup.moshi.AdapterMethodsTest) (3 ms)</li><li>com.squareup.moshi.JsonWriterTest.writerCloseIsIdempotent[Utf8](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.MapJsonAdapterTest.map(com.squareup.moshi.MapJsonAdapterTest) (1 ms)</li><li>com.squareup.moshi.JsonQualifiersTest.readerWriterAnnotationDelegating(com.squareup.moshi.JsonQualifiersTest) (2 ms)</li><li>com.squareup.moshi.JsonWriterTest.topLevelNull[Utf8](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.MoshiTest.charAdapter(com.squareup.moshi.MoshiTest) (398 ms)</li><li>com.squareup.moshi.AdapterMethodsTest.toAndFromNullJsonWithWriterAndReader(com.squareup.moshi.AdapterMethodsTest) (7 ms)</li><li>com.squareup.moshi.JsonUtf8WriterTest.prettyPrintArray(com.squareup.moshi.JsonUtf8WriterTest) (0 ms)</li><li>com.squareup.moshi.JsonWriterTest.nullNumbers[Value](com.squareup.moshi.JsonWriterTest) (2 ms)</li><li>com.squareup.moshi.JsonValueWriterTest.valueDoubleEmitsDouble(com.squareup.moshi.JsonValueWriterTest) (0 ms)</li><li>com.squareup.moshi.JsonWriterTest.multipleTopLevelValues[Utf8](com.squareup.moshi.JsonWriterTest) (2 ms)</li><li>com.squareup.moshi.AdapterMethodsTest.toJsonOnly(com.squareup.moshi.AdapterMethodsTest) (2 ms)</li><li>com.squareup.moshi.AdapterMethodsTest.toAndFromWithDelegateWithQualifier(com.squareup.moshi.AdapterMethodsTest) (4 ms)</li><li>com.squareup.moshi.JsonWriterTest.nonFiniteDoubles[Value](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.JsonValueWriterTest.primitiveIntegerTypesEmitLong(com.squareup.moshi.JsonValueWriterTest) (1 ms)</li><li>com.squareup.moshi.AdapterMethodsTest.writerAndReaderTakingJsonAdapterParameter(com.squareup.moshi.AdapterMethodsTest) (3 ms)</li><li>com.squareup.moshi.JsonWriterTest.nonFiniteBoxedDoubles[Value](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.JsonWriterTest.booleans[Value](com.squareup.moshi.JsonWriterTest) (2 ms)</li><li>com.squareup.moshi.MoshiTest.collectionJsonAdapter(com.squareup.moshi.MoshiTest) (1 ms)</li><li>com.squareup.moshi.JsonWriterTest.nullsValuesSerializedWhenConfigured[Utf8](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.JsonAdapterTest.nullSafe[Value](com.squareup.moshi.JsonAdapterTest) (2 ms)</li><li>com.squareup.moshi.JsonWriterTest.lenientWriterPermitsMultipleTopLevelValues[Utf8](com.squareup.moshi.JsonWriterTest) (2 ms)</li><li>com.squareup.moshi.PromoteNameToValueTest.writerLongValue[Utf8](com.squareup.moshi.PromoteNameToValueTest) (1 ms)</li><li>com.squareup.moshi.ClassJsonAdapterTest.nullFieldValues(com.squareup.moshi.ClassJsonAdapterTest) (1 ms)</li><li>com.squareup.moshi.JsonWriterTest.deepNestingArrays[Value](com.squareup.moshi.JsonWriterTest) (7 ms)</li><li>com.squareup.moshi.PromoteNameToValueTest.writerEmptyValueObject[Utf8](com.squareup.moshi.PromoteNameToValueTest) (0 ms)</li><li>com.squareup.moshi.JsonWriterPathTest.nestedArrays[Utf8](com.squareup.moshi.JsonWriterPathTest) (1 ms)</li><li>com.squareup.moshi.JsonWriterTest.boxedBooleans[Value](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.JsonAdapterTest.indent[Utf8](com.squareup.moshi.JsonAdapterTest) (4 ms)</li><li>com.squareup.moshi.JsonWriterPathTest.arrayOfObjects[Utf8](com.squareup.moshi.JsonWriterPathTest) (1 ms)</li><li>com.squareup.moshi.MoshiTest.intAdapter(com.squareup.moshi.MoshiTest) (1 ms)</li><li>com.squareup.moshi.JsonValueWriterTest.array(com.squareup.moshi.JsonValueWriterTest) (2 ms)</li><li>com.squareup.moshi.JsonWriterTest.deepNestingObjects[Utf8](com.squareup.moshi.JsonWriterTest) (4 ms)</li><li>com.squareup.moshi.ClassJsonAdapterTest.platformSuperclassPrivateFieldIsExcluded(com.squareup.moshi.ClassJsonAdapterTest) (5 ms)</li><li>com.squareup.moshi.JsonAdapterTest.nullSafe[Utf8](com.squareup.moshi.JsonAdapterTest) (1 ms)</li><li>com.squareup.moshi.JsonWriterPathTest.path[Utf8](com.squareup.moshi.JsonWriterPathTest) (0 ms)</li><li>com.squareup.moshi.MoshiTest.enumAdapter(com.squareup.moshi.MoshiTest) (0 ms)</li><li>com.squareup.moshi.CircularAdaptersTest.circularAdaptersAndAnnotations(com.squareup.moshi.CircularAdaptersTest) (4 ms)</li><li>com.squareup.moshi.JsonQualifiersTest.manualJsonAdapter(com.squareup.moshi.JsonQualifiersTest) (2 ms)</li><li>com.squareup.moshi.MoshiTest.referenceCyclesOnObjects(com.squareup.moshi.MoshiTest) (6 ms)</li><li>com.squareup.moshi.JsonAdapterTest.lenient[Utf8](com.squareup.moshi.JsonAdapterTest) (10 ms)</li><li>com.squareup.moshi.JsonAdapterTest.lenient[Value](com.squareup.moshi.JsonAdapterTest) (2 ms)</li><li>com.squareup.moshi.JsonWriterTest.closedWriterThrowsOnStructure[Value](com.squareup.moshi.JsonWriterTest) (2 ms)</li><li>com.squareup.moshi.AdapterMethodsTest.toAndFromWithDelegate(com.squareup.moshi.AdapterMethodsTest) (3 ms)</li><li>com.squareup.moshi.ClassJsonAdapterTest.staticFieldsOmitted(com.squareup.moshi.ClassJsonAdapterTest) (2 ms)</li><li>com.squareup.moshi.JsonWriterTest.closedWriterThrowsOnFlush[Value](com.squareup.moshi.JsonWriterTest) (7 ms)</li><li>com.squareup.moshi.MoshiTest.qualifierWithElements(com.squareup.moshi.MoshiTest) (1 ms)</li><li>com.squareup.moshi.ObjectAdapterTest.toJsonCoercesRuntimeTypeForLists(com.squareup.moshi.ObjectAdapterTest) (1 ms)</li><li>com.squareup.moshi.MoshiTest.IntegerAdapter(com.squareup.moshi.MoshiTest) (1 ms)</li><li>com.squareup.moshi.JsonWriterTest.closedWriterThrowsOnName[Value](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.JsonWriterTest.tooDeeplyNestingObjects[Utf8](com.squareup.moshi.JsonWriterTest) (2 ms)</li><li>com.squareup.moshi.JsonWriterPathTest.nestedArrays[Value](com.squareup.moshi.JsonWriterPathTest) (0 ms)</li><li>com.squareup.moshi.JsonWriterTest.nameWithoutValue[Value](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.MoshiTest.unindent(com.squareup.moshi.MoshiTest) (1 ms)</li><li>com.squareup.moshi.JsonWriterTest.unicodeLineBreaksEscaped[Utf8](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.MoshiTest.customJsonAdapter(com.squareup.moshi.MoshiTest) (0 ms)</li><li>com.squareup.moshi.MoshiTest.CharacterAdapter(com.squareup.moshi.MoshiTest) (4 ms)</li><li>com.squareup.moshi.JsonWriterTest.nullStringValue[Utf8](com.squareup.moshi.JsonWriterTest) (2 ms)</li><li>com.squareup.moshi.JsonWriterPathTest.nestedObjects[Utf8](com.squareup.moshi.JsonWriterPathTest) (1 ms)</li><li>com.squareup.moshi.MoshiTest.delegatingJsonAdapterFactory(com.squareup.moshi.MoshiTest) (1 ms)</li><li>com.squareup.moshi.JsonWriterTest.topLevelString[Value](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.AdapterMethodsTest.writerAndReaderTakingAnnotatedJsonAdapterParameter(com.squareup.moshi.AdapterMethodsTest) (3 ms)</li><li>com.squareup.moshi.MoshiTest.LongAdapter(com.squareup.moshi.MoshiTest) (1 ms)</li><li>com.squareup.moshi.JsonWriterTest.emptyArray[Value](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.JsonWriterTest.nullsValuesNotSerializedByDefault[Utf8](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.JsonWriterTest.objectsInArrays[Value](com.squareup.moshi.JsonWriterTest) (2 ms)</li><li>com.squareup.moshi.JsonWriterPathTest.arrayPath[Value](com.squareup.moshi.JsonWriterPathTest) (0 ms)</li><li>com.squareup.moshi.ObjectAdapterTest.toJsonUsesTypeAdapters(com.squareup.moshi.ObjectAdapterTest) (1 ms)</li><li>com.squareup.moshi.JsonWriterTest.nameWithoutValue[Utf8](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.JsonWriterPathTest.path[Value](com.squareup.moshi.JsonWriterPathTest) (1 ms)</li><li>com.squareup.moshi.MoshiTest.FloatAdapter(com.squareup.moshi.MoshiTest) (4 ms)</li><li>com.squareup.moshi.AdapterMethodsTest.toAndFromWithIntermediate(com.squareup.moshi.AdapterMethodsTest) (2 ms)</li><li>com.squareup.moshi.AdapterMethodsTest.toAndFromNullNullable(com.squareup.moshi.AdapterMethodsTest) (5 ms)</li><li>com.squareup.moshi.JsonWriterTest.closedWriterThrowsOnFlush[Utf8](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.JsonValueWriterTest.primitiveFloatingPointTypesEmitDouble(com.squareup.moshi.JsonValueWriterTest) (0 ms)</li><li>com.squareup.moshi.JsonValueWriterTest.object(com.squareup.moshi.JsonValueWriterTest) (4 ms)</li><li>com.squareup.moshi.MapJsonAdapterTest.mapWithNonStringKeysToJsonObject(com.squareup.moshi.MapJsonAdapterTest) (0 ms)</li><li>com.squareup.moshi.MapJsonAdapterTest.mapWithNullKeyFailsToEmit(com.squareup.moshi.MapJsonAdapterTest) (1 ms)</li><li>com.squareup.moshi.JsonWriterTest.arraysInObjects[Utf8](com.squareup.moshi.JsonWriterTest) (5 ms)</li><li>com.squareup.moshi.JsonWriterTest.valueWithoutName[Utf8](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.ClassJsonAdapterTest.parameterizedType(com.squareup.moshi.ClassJsonAdapterTest) (2 ms)</li><li>com.squareup.moshi.MoshiTest.longAdapter(com.squareup.moshi.MoshiTest) (1 ms)</li><li>com.squareup.moshi.JsonWriterTest.topLevelBoolean[Value](com.squareup.moshi.JsonWriterTest) (1 ms)</li><li>com.squareup.moshi.JsonWriterPathTest.arrayOfObjects[Value](com.squareup.moshi.JsonWriterPathTest) (0 ms)</li><li>com.squareup.moshi.JsonWriterTest.valueWithoutName[Value](com.squareup.moshi.JsonWriterTest) (1 ms)</li>
+</ul>
+
+<br/>
+
+Report generated by <a href='http://pitest.org'>PIT</a> 1.3.2
+
+</body>
+</html>

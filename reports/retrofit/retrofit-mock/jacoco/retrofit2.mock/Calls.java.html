@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Calls.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Retrofit Mock Adapter</a> &gt; <a href="index.source.html" class="el_package">retrofit2.mock</a> &gt; <span class="el_source">Calls.java</span></div><h1>Calls.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2015 Square, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package retrofit2.mock;
+
+import java.io.IOException;
+import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicBoolean;
+import javax.annotation.Nullable;
+import okhttp3.Request;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+/** Factory methods for creating {@link Call} instances which immediately respond or fail. */
+public final class Calls {
+  /**
+   * Invokes {@code callable} once for the returned {@link Call} and once for each instance that is
+   * obtained from {@linkplain Call#clone() cloning} the returned {@link Call}.
+   */
+  public static &lt;T&gt; Call&lt;T&gt; defer(Callable&lt;Call&lt;T&gt;&gt; callable) {
+<span class="fc" id="L34">    return new DeferredCall&lt;&gt;(callable);</span>
+  }
+
+  public static &lt;T&gt; Call&lt;T&gt; response(@Nullable T successValue) {
+<span class="fc" id="L38">    return new FakeCall&lt;&gt;(Response.success(successValue), null);</span>
+  }
+
+  public static &lt;T&gt; Call&lt;T&gt; response(Response&lt;T&gt; response) {
+<span class="fc" id="L42">    return new FakeCall&lt;&gt;(response, null);</span>
+  }
+
+  public static &lt;T&gt; Call&lt;T&gt; failure(IOException failure) {
+<span class="fc" id="L46">    return new FakeCall&lt;&gt;(null, failure);</span>
+  }
+
+<span class="nc" id="L49">  private Calls() {</span>
+<span class="nc" id="L50">    throw new AssertionError(&quot;No instances.&quot;);</span>
+  }
+
+  static final class FakeCall&lt;T&gt; implements Call&lt;T&gt; {
+    private final Response&lt;T&gt; response;
+    private final IOException error;
+<span class="fc" id="L56">    private final AtomicBoolean canceled = new AtomicBoolean();</span>
+<span class="fc" id="L57">    private final AtomicBoolean executed = new AtomicBoolean();</span>
+
+<span class="fc" id="L59">    FakeCall(@Nullable Response&lt;T&gt; response, @Nullable IOException error) {</span>
+<span class="pc bpc" id="L60" title="1 of 6 branches missed.">      if ((response == null) == (error == null)) {</span>
+<span class="nc" id="L61">        throw new AssertionError(&quot;Only one of response or error can be set.&quot;);</span>
+      }
+<span class="fc" id="L63">      this.response = response;</span>
+<span class="fc" id="L64">      this.error = error;</span>
+<span class="fc" id="L65">    }</span>
+
+    @Override public Response&lt;T&gt; execute() throws IOException {
+<span class="fc bfc" id="L68" title="All 2 branches covered.">      if (!executed.compareAndSet(false, true)) {</span>
+<span class="fc" id="L69">        throw new IllegalStateException(&quot;Already executed&quot;);</span>
+      }
+<span class="fc bfc" id="L71" title="All 2 branches covered.">      if (canceled.get()) {</span>
+<span class="fc" id="L72">        throw new IOException(&quot;canceled&quot;);</span>
+      }
+<span class="fc bfc" id="L74" title="All 2 branches covered.">      if (response != null) {</span>
+<span class="fc" id="L75">        return response;</span>
+      }
+<span class="fc" id="L77">      throw error;</span>
+    }
+
+    @SuppressWarnings(&quot;ConstantConditions&quot;) // Guarding public API nullability.
+    @Override public void enqueue(Callback&lt;T&gt; callback) {
+<span class="fc bfc" id="L82" title="All 2 branches covered.">      if (callback == null) {</span>
+<span class="fc" id="L83">        throw new NullPointerException(&quot;callback == null&quot;);</span>
+      }
+<span class="fc bfc" id="L85" title="All 2 branches covered.">      if (!executed.compareAndSet(false, true)) {</span>
+<span class="fc" id="L86">        throw new IllegalStateException(&quot;Already executed&quot;);</span>
+      }
+<span class="fc bfc" id="L88" title="All 2 branches covered.">      if (canceled.get()) {</span>
+<span class="fc" id="L89">        callback.onFailure(this, new IOException(&quot;canceled&quot;));</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">      } else if (response != null) {</span>
+<span class="fc" id="L91">        callback.onResponse(this, response);</span>
+      } else {
+<span class="fc" id="L93">        callback.onFailure(this, error);</span>
+      }
+<span class="fc" id="L95">    }</span>
+
+    @Override public boolean isExecuted() {
+<span class="fc" id="L98">      return executed.get();</span>
+    }
+
+    @Override public void cancel() {
+<span class="fc" id="L102">      canceled.set(true);</span>
+<span class="fc" id="L103">    }</span>
+
+    @Override public boolean isCanceled() {
+<span class="fc" id="L106">      return canceled.get();</span>
+    }
+
+    @Override public Call&lt;T&gt; clone() {
+<span class="fc" id="L110">      return new FakeCall&lt;&gt;(response, error);</span>
+    }
+
+    @Override public Request request() {
+<span class="nc bnc" id="L114" title="All 2 branches missed.">      if (response != null) {</span>
+<span class="nc" id="L115">        return response.raw().request();</span>
+      }
+<span class="nc" id="L117">      return new Request.Builder().url(&quot;http://localhost&quot;).build();</span>
+    }
+  }
+
+  static final class DeferredCall&lt;T&gt; implements Call&lt;T&gt; {
+    private final Callable&lt;Call&lt;T&gt;&gt; callable;
+    private Call&lt;T&gt; delegate;
+
+<span class="fc" id="L125">    DeferredCall(Callable&lt;Call&lt;T&gt;&gt; callable) {</span>
+<span class="fc" id="L126">      this.callable = callable;</span>
+<span class="fc" id="L127">    }</span>
+
+    private synchronized Call&lt;T&gt; getDelegate() {
+<span class="fc" id="L130">      Call&lt;T&gt; delegate = this.delegate;</span>
+<span class="pc bpc" id="L131" title="1 of 2 branches missed.">      if (delegate == null) {</span>
+        try {
+<span class="fc" id="L133">          delegate = callable.call();</span>
+<span class="fc" id="L134">        } catch (IOException e) {</span>
+<span class="fc" id="L135">          delegate = failure(e);</span>
+<span class="nc" id="L136">        } catch (Exception e) {</span>
+<span class="nc" id="L137">          throw new IllegalStateException(&quot;Callable threw unrecoverable exception&quot;, e);</span>
+<span class="fc" id="L138">        }</span>
+<span class="fc" id="L139">        this.delegate = delegate;</span>
+      }
+<span class="fc" id="L141">      return delegate;</span>
+    }
+
+    @Override public Response&lt;T&gt; execute() throws IOException {
+<span class="fc" id="L145">      return getDelegate().execute();</span>
+    }
+
+    @Override public void enqueue(Callback&lt;T&gt; callback) {
+<span class="fc" id="L149">      getDelegate().enqueue(callback);</span>
+<span class="fc" id="L150">    }</span>
+
+    @Override public boolean isExecuted() {
+<span class="nc" id="L153">      return getDelegate().isExecuted();</span>
+    }
+
+    @Override public void cancel() {
+<span class="nc" id="L157">      getDelegate().cancel();</span>
+<span class="nc" id="L158">    }</span>
+
+    @Override public boolean isCanceled() {
+<span class="nc" id="L161">      return getDelegate().isCanceled();</span>
+    }
+
+    @Override public Call&lt;T&gt; clone() {
+<span class="fc" id="L165">      return new DeferredCall&lt;&gt;(callable);</span>
+    }
+
+    @Override public Request request() {
+<span class="nc" id="L169">      return getDelegate().request();</span>
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

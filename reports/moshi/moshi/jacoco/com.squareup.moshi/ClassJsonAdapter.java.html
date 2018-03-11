@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ClassJsonAdapter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Moshi</a> &gt; <a href="index.source.html" class="el_package">com.squareup.moshi</a> &gt; <span class="el_source">ClassJsonAdapter.java</span></div><h1>ClassJsonAdapter.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2015 Square, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.squareup.moshi;
+
+import com.squareup.moshi.internal.Util;
+import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import javax.annotation.Nullable;
+
+/**
+ * Emits a regular class as a JSON object by mapping Java fields to JSON object properties.
+ *
+ * &lt;h3&gt;Platform Types&lt;/h3&gt;
+ * Fields from platform classes are omitted from both serialization and deserialization unless
+ * they are either public or protected. This includes the following packages and their subpackages:
+ *
+ * &lt;ul&gt;
+ *   &lt;li&gt;android.*
+ *   &lt;li&gt;java.*
+ *   &lt;li&gt;javax.*
+ *   &lt;li&gt;kotlin.*
+ *   &lt;li&gt;scala.*
+ * &lt;/ul&gt;
+ */
+final class ClassJsonAdapter&lt;T&gt; extends JsonAdapter&lt;T&gt; {
+<span class="fc" id="L47">  public static final JsonAdapter.Factory FACTORY = new JsonAdapter.Factory() {</span>
+    @Override public @Nullable JsonAdapter&lt;?&gt; create(
+        Type type, Set&lt;? extends Annotation&gt; annotations, Moshi moshi) {
+<span class="fc bfc" id="L50" title="All 4 branches covered.">      if (!(type instanceof Class) &amp;&amp; !(type instanceof ParameterizedType)) {</span>
+<span class="fc" id="L51">        return null;</span>
+      }
+<span class="fc" id="L53">      Class&lt;?&gt; rawType = Types.getRawType(type);</span>
+<span class="pc bpc" id="L54" title="1 of 4 branches missed.">      if (rawType.isInterface() || rawType.isEnum()) return null;</span>
+<span class="fc bfc" id="L55" title="All 4 branches covered.">      if (Util.isPlatformType(rawType) &amp;&amp; !Types.isAllowedPlatformType(rawType)) {</span>
+<span class="fc" id="L56">        throw new IllegalArgumentException(&quot;Platform &quot;</span>
+            + type
+            + &quot; annotated &quot;
+            + annotations
+            + &quot; requires explicit JsonAdapter to be registered&quot;);
+      }
+<span class="fc bfc" id="L62" title="All 2 branches covered.">      if (!annotations.isEmpty()) return null;</span>
+
+<span class="fc bfc" id="L64" title="All 2 branches covered.">      if (rawType.isAnonymousClass()) {</span>
+<span class="fc" id="L65">        throw new IllegalArgumentException(&quot;Cannot serialize anonymous class &quot; + rawType.getName());</span>
+      }
+<span class="fc bfc" id="L67" title="All 2 branches covered.">      if (rawType.isLocalClass()) {</span>
+<span class="fc" id="L68">        throw new IllegalArgumentException(&quot;Cannot serialize local class &quot; + rawType.getName());</span>
+      }
+<span class="pc bpc" id="L70" title="1 of 4 branches missed.">      if (rawType.getEnclosingClass() != null &amp;&amp; !Modifier.isStatic(rawType.getModifiers())) {</span>
+<span class="fc" id="L71">        throw new IllegalArgumentException(</span>
+<span class="fc" id="L72">            &quot;Cannot serialize non-static nested class &quot; + rawType.getName());</span>
+      }
+<span class="fc bfc" id="L74" title="All 2 branches covered.">      if (Modifier.isAbstract(rawType.getModifiers())) {</span>
+<span class="fc" id="L75">        throw new IllegalArgumentException(&quot;Cannot serialize abstract class &quot; + rawType.getName());</span>
+      }
+
+<span class="fc" id="L78">      ClassFactory&lt;Object&gt; classFactory = ClassFactory.get(rawType);</span>
+<span class="fc" id="L79">      Map&lt;String, FieldBinding&lt;?&gt;&gt; fields = new TreeMap&lt;&gt;();</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">      for (Type t = type; t != Object.class; t = Types.getGenericSuperclass(t)) {</span>
+<span class="fc" id="L81">        createFieldBindings(moshi, t, fields);</span>
+      }
+<span class="fc" id="L83">      return new ClassJsonAdapter&lt;&gt;(classFactory, fields).nullSafe();</span>
+    }
+
+    /** Creates a field binding for each of declared field of {@code type}. */
+    private void createFieldBindings(
+        Moshi moshi, Type type, Map&lt;String, FieldBinding&lt;?&gt;&gt; fieldBindings) {
+<span class="fc" id="L89">      Class&lt;?&gt; rawType = Types.getRawType(type);</span>
+<span class="fc" id="L90">      boolean platformType = Util.isPlatformType(rawType);</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">      for (Field field : rawType.getDeclaredFields()) {</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">        if (!includeField(platformType, field.getModifiers())) continue;</span>
+
+        // Look up a type adapter for this type.
+<span class="fc" id="L95">        Type fieldType = Types.resolve(type, rawType, field.getGenericType());</span>
+<span class="fc" id="L96">        Set&lt;? extends Annotation&gt; annotations = Util.jsonAnnotations(field);</span>
+<span class="fc" id="L97">        JsonAdapter&lt;Object&gt; adapter = moshi.adapter(fieldType, annotations);</span>
+
+        // Create the binding between field and JSON.
+<span class="fc" id="L100">        field.setAccessible(true);</span>
+
+        // Store it using the field's name. If there was already a field with this name, fail!
+<span class="fc" id="L103">        Json jsonAnnotation = field.getAnnotation(Json.class);</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">        String name = jsonAnnotation != null ? jsonAnnotation.name() : field.getName();</span>
+<span class="fc" id="L105">        FieldBinding&lt;Object&gt; fieldBinding = new FieldBinding&lt;&gt;(name, field, adapter);</span>
+<span class="fc" id="L106">        FieldBinding&lt;?&gt; replaced = fieldBindings.put(name, fieldBinding);</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">        if (replaced != null) {</span>
+<span class="fc" id="L108">          throw new IllegalArgumentException(&quot;Conflicting fields:\n&quot;</span>
+              + &quot;    &quot; + replaced.field + &quot;\n&quot;
+              + &quot;    &quot; + fieldBinding.field);
+        }
+      }
+<span class="fc" id="L113">    }</span>
+
+    /** Returns true if fields with {@code modifiers} are included in the emitted JSON. */
+    private boolean includeField(boolean platformType, int modifiers) {
+<span class="fc bfc" id="L117" title="All 4 branches covered.">      if (Modifier.isStatic(modifiers) || Modifier.isTransient(modifiers)) return false;</span>
+<span class="pc bpc" id="L118" title="1 of 6 branches missed.">      return Modifier.isPublic(modifiers) || Modifier.isProtected(modifiers) || !platformType;</span>
+    }
+  };
+
+  private final ClassFactory&lt;T&gt; classFactory;
+  private final FieldBinding&lt;?&gt;[] fieldsArray;
+  private final JsonReader.Options options;
+
+<span class="fc" id="L126">  ClassJsonAdapter(ClassFactory&lt;T&gt; classFactory, Map&lt;String, FieldBinding&lt;?&gt;&gt; fieldsMap) {</span>
+<span class="fc" id="L127">    this.classFactory = classFactory;</span>
+<span class="fc" id="L128">    this.fieldsArray = fieldsMap.values().toArray(new FieldBinding[fieldsMap.size()]);</span>
+<span class="fc" id="L129">    this.options = JsonReader.Options.of(</span>
+<span class="fc" id="L130">        fieldsMap.keySet().toArray(new String[fieldsMap.size()]));</span>
+<span class="fc" id="L131">  }</span>
+
+  @Override public T fromJson(JsonReader reader) throws IOException {
+    T result;
+    try {
+<span class="fc" id="L136">      result = classFactory.newInstance();</span>
+<span class="nc" id="L137">    } catch (InstantiationException e) {</span>
+<span class="nc" id="L138">      throw new RuntimeException(e);</span>
+<span class="fc" id="L139">    } catch (InvocationTargetException e) {</span>
+<span class="fc" id="L140">      Throwable targetException = e.getTargetException();</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">      if (targetException instanceof RuntimeException) throw (RuntimeException) targetException;</span>
+<span class="pc bpc" id="L142" title="1 of 2 branches missed.">      if (targetException instanceof Error) throw (Error) targetException;</span>
+<span class="fc" id="L143">      throw new RuntimeException(targetException);</span>
+<span class="nc" id="L144">    } catch (IllegalAccessException e) {</span>
+<span class="nc" id="L145">      throw new AssertionError();</span>
+<span class="fc" id="L146">    }</span>
+
+    try {
+<span class="fc" id="L149">      reader.beginObject();</span>
+<span class="fc bfc" id="L150" title="All 2 branches covered.">      while (reader.hasNext()) {</span>
+<span class="fc" id="L151">        int index = reader.selectName(options);</span>
+<span class="fc bfc" id="L152" title="All 2 branches covered.">        if (index == -1) {</span>
+<span class="fc" id="L153">          reader.nextName();</span>
+<span class="fc" id="L154">          reader.skipValue();</span>
+<span class="fc" id="L155">          continue;</span>
+        }
+<span class="fc" id="L157">        fieldsArray[index].read(reader, result);</span>
+<span class="fc" id="L158">      }</span>
+<span class="fc" id="L159">      reader.endObject();</span>
+<span class="fc" id="L160">      return result;</span>
+<span class="nc" id="L161">    } catch (IllegalAccessException e) {</span>
+<span class="nc" id="L162">      throw new AssertionError();</span>
+    }
+  }
+
+  @Override public void toJson(JsonWriter writer, T value) throws IOException {
+    try {
+<span class="fc" id="L168">      writer.beginObject();</span>
+<span class="fc bfc" id="L169" title="All 2 branches covered.">      for (FieldBinding&lt;?&gt; fieldBinding : fieldsArray) {</span>
+<span class="fc" id="L170">        writer.name(fieldBinding.name);</span>
+<span class="fc" id="L171">        fieldBinding.write(writer, value);</span>
+      }
+<span class="fc" id="L173">      writer.endObject();</span>
+<span class="nc" id="L174">    } catch (IllegalAccessException e) {</span>
+<span class="nc" id="L175">      throw new AssertionError();</span>
+<span class="fc" id="L176">    }</span>
+<span class="fc" id="L177">  }</span>
+
+  @Override public String toString() {
+<span class="nc" id="L180">    return &quot;JsonAdapter(&quot; + classFactory + &quot;)&quot;;</span>
+  }
+
+  static class FieldBinding&lt;T&gt; {
+    final String name;
+    final Field field;
+    final JsonAdapter&lt;T&gt; adapter;
+
+<span class="fc" id="L188">    FieldBinding(String name, Field field, JsonAdapter&lt;T&gt; adapter) {</span>
+<span class="fc" id="L189">      this.name = name;</span>
+<span class="fc" id="L190">      this.field = field;</span>
+<span class="fc" id="L191">      this.adapter = adapter;</span>
+<span class="fc" id="L192">    }</span>
+
+    void read(JsonReader reader, Object value) throws IOException, IllegalAccessException {
+<span class="fc" id="L195">      T fieldValue = adapter.fromJson(reader);</span>
+<span class="fc" id="L196">      field.set(value, fieldValue);</span>
+<span class="fc" id="L197">    }</span>
+
+    @SuppressWarnings(&quot;unchecked&quot;) // We require that field's values are of type T.
+    void write(JsonWriter writer, Object value) throws IllegalAccessException, IOException {
+<span class="fc" id="L201">      T fieldValue = (T) field.get(value);</span>
+<span class="fc" id="L202">      adapter.toJson(writer, fieldValue);</span>
+<span class="fc" id="L203">    }</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NetworkBehavior.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Retrofit Mock Adapter</a> &gt; <a href="index.source.html" class="el_package">retrofit2.mock</a> &gt; <span class="el_source">NetworkBehavior.java</span></div><h1>NetworkBehavior.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2013 Square, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package retrofit2.mock;
+
+import java.io.IOException;
+import java.util.Random;
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
+import okhttp3.ResponseBody;
+import retrofit2.Response;
+
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+
+/**
+ * A simple emulation of the behavior of network calls.
+ * &lt;p&gt;
+ * This class models three properties of a network:
+ * &lt;ul&gt;
+ * &lt;li&gt;Delay – the time it takes before a response is received (successful or otherwise).&lt;/li&gt;
+ * &lt;li&gt;Variance – the amount of fluctuation of the delay to be faster or slower.&lt;/li&gt;
+ * &lt;li&gt;Failure - the percentage of operations which fail (such as {@link IOException}).&lt;/li&gt;
+ * &lt;/ul&gt;
+ * Behavior can be applied to a Retrofit interface with {@link MockRetrofit}. Behavior can also
+ * be applied elsewhere using {@link #calculateDelay(TimeUnit)} and {@link #calculateIsFailure()}.
+ * &lt;p&gt;
+ * By default, instances of this class will use a 2 second delay with 40% variance. Failures
+ * will occur 3% of the time. HTTP errors will occur 0% of the time.
+ */
+public final class NetworkBehavior {
+  private static final int DEFAULT_DELAY_MS = 2000; // Network calls will take 2 seconds.
+  private static final int DEFAULT_VARIANCE_PERCENT = 40; // Network delay varies by ±40%.
+  private static final int DEFAULT_FAILURE_PERCENT = 3; // 3% of network calls will fail.
+  private static final int DEFAULT_ERROR_PERCENT = 0; // 0% of network calls will return errors.
+
+  /** Create an instance with default behavior. */
+  public static NetworkBehavior create() {
+<span class="fc" id="L50">    return new NetworkBehavior(new Random());</span>
+  }
+
+  /**
+   * Create an instance with default behavior which uses {@code random} to control variance and
+   * failure calculation.
+   */
+  @SuppressWarnings(&quot;ConstantConditions&quot;) // Guarding public API nullability.
+  public static NetworkBehavior create(Random random) {
+<span class="pc bpc" id="L59" title="1 of 2 branches missed.">    if (random == null) throw new NullPointerException(&quot;random == null&quot;);</span>
+<span class="fc" id="L60">    return new NetworkBehavior(random);</span>
+  }
+
+  private final Random random;
+
+<span class="fc" id="L65">  private volatile long delayMs = DEFAULT_DELAY_MS;</span>
+<span class="fc" id="L66">  private volatile int variancePercent = DEFAULT_VARIANCE_PERCENT;</span>
+<span class="fc" id="L67">  private volatile int failurePercent = DEFAULT_FAILURE_PERCENT;</span>
+  private volatile Throwable failureException;
+<span class="fc" id="L69">  private volatile int errorPercent = DEFAULT_ERROR_PERCENT;</span>
+<span class="fc" id="L70">  private volatile Callable&lt;Response&lt;?&gt;&gt; errorFactory = new Callable&lt;Response&lt;?&gt;&gt;() {</span>
+    @Override public Response&lt;?&gt; call() {
+<span class="nc" id="L72">      return Response.error(500, ResponseBody.create(null, new byte[0]));</span>
+    }
+  };
+
+<span class="fc" id="L76">  private NetworkBehavior(Random random) {</span>
+<span class="fc" id="L77">    this.random = random;</span>
+
+<span class="fc" id="L79">    failureException = new MockRetrofitIOException();</span>
+<span class="fc" id="L80">    failureException.setStackTrace(new StackTraceElement[0]);</span>
+<span class="fc" id="L81">  }</span>
+
+  /** Set the network round trip delay. */
+  public void setDelay(long amount, TimeUnit unit) {
+<span class="fc bfc" id="L85" title="All 2 branches covered.">    if (amount &lt; 0) {</span>
+<span class="fc" id="L86">      throw new IllegalArgumentException(&quot;Amount must be positive value.&quot;);</span>
+    }
+<span class="fc" id="L88">    this.delayMs = unit.toMillis(amount);</span>
+<span class="fc" id="L89">  }</span>
+
+  /** The network round trip delay. */
+  public long delay(TimeUnit unit) {
+<span class="nc" id="L93">    return MILLISECONDS.convert(delayMs, unit);</span>
+  }
+
+  /** Set the plus-or-minus variance percentage of the network round trip delay. */
+  public void setVariancePercent(int variancePercent) {
+<span class="fc" id="L98">    checkPercentageValidity(variancePercent, &quot;Variance percentage must be between 0 and 100.&quot;);</span>
+<span class="fc" id="L99">    this.variancePercent = variancePercent;</span>
+<span class="fc" id="L100">  }</span>
+
+  /** The plus-or-minus variance percentage of the network round trip delay. */
+  public int variancePercent() {
+<span class="nc" id="L104">    return variancePercent;</span>
+  }
+
+  /** Set the percentage of calls to {@link #calculateIsFailure()} that return {@code true}. */
+  public void setFailurePercent(int failurePercent) {
+<span class="fc" id="L109">    checkPercentageValidity(failurePercent, &quot;Failure percentage must be between 0 and 100.&quot;);</span>
+<span class="fc" id="L110">    this.failurePercent = failurePercent;</span>
+<span class="fc" id="L111">  }</span>
+
+  /** The percentage of calls to {@link #calculateIsFailure()} that return {@code true}. */
+  public int failurePercent() {
+<span class="nc" id="L115">    return failurePercent;</span>
+  }
+
+  /**
+   * Set the exception to be used when a failure is triggered.
+   * &lt;p&gt;
+   * It is a best practice to remove the stack trace from {@code exception} since it can
+   * misleadingly point to code unrelated to this class.
+   */
+  @SuppressWarnings(&quot;ConstantConditions&quot;) // Guarding public API nullability.
+  public void setFailureException(Throwable exception) {
+<span class="pc bpc" id="L126" title="1 of 2 branches missed.">    if (exception == null) {</span>
+<span class="fc" id="L127">      throw new NullPointerException(&quot;exception == null&quot;);</span>
+    }
+<span class="nc" id="L129">    this.failureException = exception;</span>
+<span class="nc" id="L130">  }</span>
+
+  /** The exception to be used when a failure is triggered. */
+  public Throwable failureException() {
+<span class="fc" id="L134">    return failureException;</span>
+  }
+
+  /** The percentage of calls to {@link #calculateIsError()} that return {@code true}. */
+  public int errorPercent() {
+<span class="nc" id="L139">    return errorPercent;</span>
+  }
+
+  /** Set the percentage of calls to {@link #calculateIsError()} that return {@code true}. */
+  public void setErrorPercent(int errorPercent) {
+<span class="fc" id="L144">    checkPercentageValidity(errorPercent, &quot;Error percentage must be between 0 and 100.&quot;);</span>
+<span class="fc" id="L145">    this.errorPercent = errorPercent;</span>
+<span class="fc" id="L146">  }</span>
+
+  /**
+   * Set the error response factory to be used when an error is triggered. This factory may only
+   * return responses for which {@link Response#isSuccessful()} returns false.
+   */
+  @SuppressWarnings(&quot;ConstantConditions&quot;) // Guarding public API nullability.
+  public void setErrorFactory(Callable&lt;Response&lt;?&gt;&gt; errorFactory) {
+<span class="fc bfc" id="L154" title="All 2 branches covered.">    if (errorFactory == null) {</span>
+<span class="fc" id="L155">      throw new NullPointerException(&quot;errorFactory == null&quot;);</span>
+    }
+<span class="fc" id="L157">    this.errorFactory = errorFactory;</span>
+<span class="fc" id="L158">  }</span>
+
+  /** The HTTP error to be used when an error is triggered. */
+  public Response&lt;?&gt; createErrorResponse() {
+    Response&lt;?&gt; call;
+    try {
+<span class="fc" id="L164">      call = errorFactory.call();</span>
+<span class="fc" id="L165">    } catch (Exception e) {</span>
+<span class="fc" id="L166">      throw new IllegalStateException(&quot;Error factory threw an exception.&quot;, e);</span>
+<span class="fc" id="L167">    }</span>
+<span class="fc bfc" id="L168" title="All 2 branches covered.">    if (call == null) {</span>
+<span class="fc" id="L169">      throw new IllegalStateException(&quot;Error factory returned null.&quot;);</span>
+    }
+<span class="fc bfc" id="L171" title="All 2 branches covered.">    if (call.isSuccessful()) {</span>
+<span class="fc" id="L172">      throw new IllegalStateException(&quot;Error factory returned successful response.&quot;);</span>
+    }
+<span class="fc" id="L174">    return call;</span>
+  }
+
+  /**
+   * Randomly determine whether this call should result in a network failure in accordance with
+   * configured behavior. When true, {@link #failureException()} should be thrown.
+   */
+  public boolean calculateIsFailure() {
+<span class="fc bfc" id="L182" title="All 2 branches covered.">    return random.nextInt(100) &lt; failurePercent;</span>
+  }
+
+  /**
+   * Randomly determine whether this call should result in an HTTP error in accordance with
+   * configured behavior. When true, {@link #createErrorResponse()} should be returned.
+   */
+  public boolean calculateIsError() {
+<span class="fc bfc" id="L190" title="All 2 branches covered.">    return random.nextInt(100) &lt; errorPercent;</span>
+  }
+
+  /**
+   * Get the delay that should be used for delaying a response in accordance with configured
+   * behavior.
+   */
+  public long calculateDelay(TimeUnit unit) {
+<span class="fc" id="L198">    float delta = variancePercent / 100f; // e.g., 20 / 100f == 0.2f</span>
+<span class="fc" id="L199">    float lowerBound = 1f - delta; // 0.2f --&gt; 0.8f</span>
+<span class="fc" id="L200">    float upperBound = 1f + delta; // 0.2f --&gt; 1.2f</span>
+<span class="fc" id="L201">    float bound = upperBound - lowerBound; // 1.2f - 0.8f == 0.4f</span>
+<span class="fc" id="L202">    float delayPercent = lowerBound + (random.nextFloat() * bound); // 0.8 + (rnd * 0.4)</span>
+<span class="fc" id="L203">    long callDelayMs = (long) (delayMs * delayPercent);</span>
+<span class="fc" id="L204">    return MILLISECONDS.convert(callDelayMs, unit);</span>
+  }
+
+  private static void checkPercentageValidity(int percentage, String message) {
+<span class="fc bfc" id="L208" title="All 4 branches covered.">    if (percentage &lt; 0 || percentage &gt; 100) {</span>
+<span class="fc" id="L209">      throw new IllegalArgumentException(message);</span>
+    }
+<span class="fc" id="L211">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

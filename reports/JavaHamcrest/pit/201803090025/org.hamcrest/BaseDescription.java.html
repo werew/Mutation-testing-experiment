@@ -1,0 +1,2743 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="../style.css">
+</head>
+<body>
+
+
+<h1>BaseDescription.java</h1>
+
+<table class="src">
+
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_1'/>
+1
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_1'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>package org.hamcrest;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_2'/>
+2
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_2'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_3'/>
+3
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_3'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import org.hamcrest.internal.ArrayIterator;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_4'/>
+4
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_4'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import org.hamcrest.internal.SelfDescribingValueIterator;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_5'/>
+5
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_5'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_6'/>
+6
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_6'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.util.Arrays;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_7'/>
+7
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_7'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.util.Iterator;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_8'/>
+8
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_8'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_9'/>
+9
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_9'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import static java.lang.String.valueOf;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_10'/>
+10
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_10'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_11'/>
+11
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_11'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>/**</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_12'/>
+12
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_12'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * A {@link Description} that is stored as a string.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_13'/>
+13
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_13'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> */</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_14'/>
+14
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_14'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>public abstract class BaseDescription implements Description {</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_15'/>
+15
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_15'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_16'/>
+16
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_16'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    @Override</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_17'/>
+17
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_17'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    public Description appendText(String text) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_18'/>
+18
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_18'>1</a>
+<span>
+1. appendText : removed call to org/hamcrest/BaseDescription::append &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        append(text);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_19'/>
+19
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_19'>1</a>
+<span>
+1. appendText : mutated return of Object value for org/hamcrest/BaseDescription::appendText to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return this;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_20'/>
+20
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_20'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_21'/>
+21
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_21'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    </span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_22'/>
+22
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_22'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    @Override</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_23'/>
+23
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_23'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    public Description appendDescriptionOf(SelfDescribing value) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_24'/>
+24
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_24'>1</a>
+<span>
+1. appendDescriptionOf : removed call to org/hamcrest/SelfDescribing::describeTo &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        value.describeTo(this);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_25'/>
+25
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_25'>1</a>
+<span>
+1. appendDescriptionOf : mutated return of Object value for org/hamcrest/BaseDescription::appendDescriptionOf to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return this;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_26'/>
+26
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_26'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_27'/>
+27
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_27'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    </span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_28'/>
+28
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_28'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    @Override</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_29'/>
+29
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_29'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    public Description appendValue(Object value) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_30'/>
+30
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_30'>1</a>
+<span>
+1. appendValue : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        if (value == null) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_31'/>
+31
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_31'>1</a>
+<span>
+1. appendValue : removed call to org/hamcrest/BaseDescription::append &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>            append(&#34;null&#34;);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_32'/>
+32
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_32'>1</a>
+<span>
+1. appendValue : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        } else if (value instanceof String) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_33'/>
+33
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_33'>1</a>
+<span>
+1. appendValue : removed call to org/hamcrest/BaseDescription::toJavaSyntax &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>            toJavaSyntax((String) value);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_34'/>
+34
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_34'>1</a>
+<span>
+1. appendValue : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        } else if (value instanceof Character) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_35'/>
+35
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_35'>1</a>
+<span>
+1. appendValue : removed call to org/hamcrest/BaseDescription::append &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>            append(&#39;&#34;&#39;);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_36'/>
+36
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_36'>1</a>
+<span>
+1. appendValue : removed call to org/hamcrest/BaseDescription::toJavaSyntax &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>            toJavaSyntax((Character) value);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_37'/>
+37
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_37'>1</a>
+<span>
+1. appendValue : removed call to org/hamcrest/BaseDescription::append &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>            append(&#39;&#34;&#39;);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_38'/>
+38
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_38'>1</a>
+<span>
+1. appendValue : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        } else if (value instanceof Short) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_39'/>
+39
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_39'>1</a>
+<span>
+1. appendValue : removed call to org/hamcrest/BaseDescription::append &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>            append(&#39;&#60;&#39;);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_40'/>
+40
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_40'>1</a>
+<span>
+1. appendValue : removed call to org/hamcrest/BaseDescription::append &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>            append(descriptionOf(value));</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_41'/>
+41
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_41'>1</a>
+<span>
+1. appendValue : removed call to org/hamcrest/BaseDescription::append &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>            append(&#34;s&#62;&#34;);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_42'/>
+42
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_42'>1</a>
+<span>
+1. appendValue : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        } else if (value instanceof Long) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_43'/>
+43
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_43'>1</a>
+<span>
+1. appendValue : removed call to org/hamcrest/BaseDescription::append &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>            append(&#39;&#60;&#39;);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_44'/>
+44
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_44'>1</a>
+<span>
+1. appendValue : removed call to org/hamcrest/BaseDescription::append &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>            append(descriptionOf(value));</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_45'/>
+45
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_45'>1</a>
+<span>
+1. appendValue : removed call to org/hamcrest/BaseDescription::append &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>            append(&#34;L&#62;&#34;);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_46'/>
+46
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_46'>1</a>
+<span>
+1. appendValue : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        } else if (value instanceof Float) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_47'/>
+47
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_47'>1</a>
+<span>
+1. appendValue : removed call to org/hamcrest/BaseDescription::append &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>            append(&#39;&#60;&#39;);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_48'/>
+48
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_48'>1</a>
+<span>
+1. appendValue : removed call to org/hamcrest/BaseDescription::append &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>            append(descriptionOf(value));</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_49'/>
+49
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_49'>1</a>
+<span>
+1. appendValue : removed call to org/hamcrest/BaseDescription::append &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>            append(&#34;F&#62;&#34;);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_50'/>
+50
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_50'>1</a>
+<span>
+1. appendValue : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        } else if (value.getClass().isArray()) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_51'/>
+51
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_51'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>            appendValueList(&#34;[&#34;,&#34;, &#34;,&#34;]&#34;, new ArrayIterator(value));</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_52'/>
+52
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_52'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        } else {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_53'/>
+53
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_53'>1</a>
+<span>
+1. appendValue : removed call to org/hamcrest/BaseDescription::append &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>            append(&#39;&#60;&#39;);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_54'/>
+54
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_54'>1</a>
+<span>
+1. appendValue : removed call to org/hamcrest/BaseDescription::append &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>            append(descriptionOf(value));</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_55'/>
+55
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_55'>1</a>
+<span>
+1. appendValue : removed call to org/hamcrest/BaseDescription::append &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>            append(&#39;&#62;&#39;);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_56'/>
+56
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_56'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_57'/>
+57
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_57'>1</a>
+<span>
+1. appendValue : mutated return of Object value for org/hamcrest/BaseDescription::appendValue to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return this;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_58'/>
+58
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_58'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_59'/>
+59
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_59'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_60'/>
+60
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_60'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    private String descriptionOf(Object value) {</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_61'/>
+61
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_61'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        try {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_62'/>
+62
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_62'>1</a>
+<span>
+1. descriptionOf : mutated return of Object value for org/hamcrest/BaseDescription::descriptionOf to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>            return valueOf(value);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_63'/>
+63
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_63'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_64'/>
+64
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_64'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>        catch (Exception e) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_65'/>
+65
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_65'>1</a>
+<span>
+1. descriptionOf : mutated return of Object value for org/hamcrest/BaseDescription::descriptionOf to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>            return value.getClass().getName() + &#34;@&#34; + Integer.toHexString(value.hashCode());</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_66'/>
+66
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_66'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_67'/>
+67
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_67'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_68'/>
+68
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_68'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_69'/>
+69
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_69'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    @SafeVarargs</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_70'/>
+70
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_70'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    @Override</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_71'/>
+71
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_71'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    public final &#60;T&#62; Description appendValueList(String start, String separator, String end, T... values) {</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_72'/>
+72
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_72'>1</a>
+<span>
+1. appendValueList : mutated return of Object value for org/hamcrest/BaseDescription::appendValueList to ( if (x != null) null else throw new RuntimeException ) &rarr; NO_COVERAGE<br/>
+
+</span>
+</td>
+<td class='uncovered'><pre><span  class='survived'>        return appendValueList(start, separator, end, Arrays.asList(values));</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_73'/>
+73
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_73'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_74'/>
+74
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_74'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    </span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_75'/>
+75
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_75'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    @Override</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_76'/>
+76
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_76'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    public &#60;T&#62; Description appendValueList(String start, String separator, String end, Iterable&#60;T&#62; values) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_77'/>
+77
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_77'>1</a>
+<span>
+1. appendValueList : mutated return of Object value for org/hamcrest/BaseDescription::appendValueList to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return appendValueList(start, separator, end, values.iterator());</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_78'/>
+78
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_78'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_79'/>
+79
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_79'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    </span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_80'/>
+80
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_80'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    private &#60;T&#62; Description appendValueList(String start, String separator, String end, Iterator&#60;T&#62; values) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_81'/>
+81
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_81'>1</a>
+<span>
+1. appendValueList : mutated return of Object value for org/hamcrest/BaseDescription::appendValueList to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return appendList(start, separator, end, new SelfDescribingValueIterator&#60;&#62;(values));</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_82'/>
+82
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_82'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_83'/>
+83
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_83'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    </span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_84'/>
+84
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_84'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    @Override</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_85'/>
+85
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_85'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    public Description appendList(String start, String separator, String end, Iterable&#60;? extends SelfDescribing&#62; values) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_86'/>
+86
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_86'>1</a>
+<span>
+1. appendList : mutated return of Object value for org/hamcrest/BaseDescription::appendList to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return appendList(start, separator, end, values.iterator());</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_87'/>
+87
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_87'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_88'/>
+88
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_88'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_89'/>
+89
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_89'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    private Description appendList(String start, String separator, String end, Iterator&#60;? extends SelfDescribing&#62; i) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_90'/>
+90
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_90'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>        boolean separate = false;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_91'/>
+91
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_91'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        </span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_92'/>
+92
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_92'>1</a>
+<span>
+1. appendList : removed call to org/hamcrest/BaseDescription::append &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        append(start);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_93'/>
+93
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_93'>1</a>
+<span>
+1. appendList : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        while (i.hasNext()) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_94'/>
+94
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_94'>2</a>
+<span>
+1. appendList : negated conditional &rarr; KILLED<br/>
+2. appendList : removed call to org/hamcrest/BaseDescription::append &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>            if (separate) append(separator);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_95'/>
+95
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_95'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>            appendDescriptionOf(i.next());</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_96'/>
+96
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_96'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>            separate = true;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_97'/>
+97
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_97'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_98'/>
+98
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_98'>1</a>
+<span>
+1. appendList : removed call to org/hamcrest/BaseDescription::append &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        append(end);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_99'/>
+99
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_99'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        </span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_100'/>
+100
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_100'>1</a>
+<span>
+1. appendList : mutated return of Object value for org/hamcrest/BaseDescription::appendList to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return this;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_101'/>
+101
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_101'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_102'/>
+102
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_102'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_103'/>
+103
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_103'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    /**</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_104'/>
+104
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_104'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>     * Append the String &#60;var&#62;str&#60;/var&#62; to the description.  </span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_105'/>
+105
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_105'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>     * The default implementation passes every character to {@link #append(char)}.  </span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_106'/>
+106
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_106'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>     * Override in subclasses to provide an efficient implementation.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_107'/>
+107
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_107'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>     */</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_108'/>
+108
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_108'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    protected void append(String str) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_109'/>
+109
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_109'>2</a>
+<span>
+1. append : changed conditional boundary &rarr; KILLED<br/>
+2. append : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        for (int i = 0; i &#60; str.length(); i++) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_110'/>
+110
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_110'>1</a>
+<span>
+1. append : removed call to org/hamcrest/BaseDescription::append &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>            append(str.charAt(i));</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_111'/>
+111
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_111'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_112'/>
+112
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_112'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_113'/>
+113
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_113'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    </span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_114'/>
+114
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_114'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    /**</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_115'/>
+115
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_115'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>     * Append the char &#60;var&#62;c&#60;/var&#62; to the description.  </span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_116'/>
+116
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_116'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>     */</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_117'/>
+117
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_117'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    protected abstract void append(char c);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_118'/>
+118
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_118'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_119'/>
+119
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_119'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    private void toJavaSyntax(String unformatted) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_120'/>
+120
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_120'>1</a>
+<span>
+1. toJavaSyntax : removed call to org/hamcrest/BaseDescription::append &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        append(&#39;&#34;&#39;);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_121'/>
+121
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_121'>2</a>
+<span>
+1. toJavaSyntax : changed conditional boundary &rarr; KILLED<br/>
+2. toJavaSyntax : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        for (int i = 0; i &#60; unformatted.length(); i++) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_122'/>
+122
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_122'>1</a>
+<span>
+1. toJavaSyntax : removed call to org/hamcrest/BaseDescription::toJavaSyntax &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>            toJavaSyntax(unformatted.charAt(i));</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_123'/>
+123
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_123'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_124'/>
+124
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_124'>1</a>
+<span>
+1. toJavaSyntax : removed call to org/hamcrest/BaseDescription::append &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        append(&#39;&#34;&#39;);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_125'/>
+125
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_125'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_126'/>
+126
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_126'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_127'/>
+127
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_127'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    private void toJavaSyntax(char ch) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_128'/>
+128
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_128'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>        switch (ch) {</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_129'/>
+129
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_129'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>            case &#39;&#34;&#39;:</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_130'/>
+130
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_130'>1</a>
+<span>
+1. toJavaSyntax : removed call to org/hamcrest/BaseDescription::append &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>                append(&#34;\\\&#34;&#34;);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_131'/>
+131
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_131'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>                break;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_132'/>
+132
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_132'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>            case &#39;\n&#39;:</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_133'/>
+133
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_133'>1</a>
+<span>
+1. toJavaSyntax : removed call to org/hamcrest/BaseDescription::append &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>                append(&#34;\\n&#34;);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_134'/>
+134
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_134'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>                break;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_135'/>
+135
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_135'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>            case &#39;\r&#39;:</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_136'/>
+136
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_136'>1</a>
+<span>
+1. toJavaSyntax : removed call to org/hamcrest/BaseDescription::append &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>                append(&#34;\\r&#34;);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_137'/>
+137
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_137'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>                break;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_138'/>
+138
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_138'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>            case &#39;\t&#39;:</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_139'/>
+139
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_139'>1</a>
+<span>
+1. toJavaSyntax : removed call to org/hamcrest/BaseDescription::append &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>                append(&#34;\\t&#34;);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_140'/>
+140
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_140'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>                break;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_141'/>
+141
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_141'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>            case &#39;\\&#39;:</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_142'/>
+142
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_142'>1</a>
+<span>
+1. toJavaSyntax : removed call to org/hamcrest/BaseDescription::append &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>                append(&#34;\\\\&#34;);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_143'/>
+143
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_143'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>                break;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_144'/>
+144
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_144'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>            default:</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_145'/>
+145
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_145'>1</a>
+<span>
+1. toJavaSyntax : removed call to org/hamcrest/BaseDescription::append &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>                append(ch);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_146'/>
+146
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_146'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_147'/>
+147
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_147'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4088702d_148'/>
+148
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_148'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>}</span></pre></td></tr>
+
+
+
+<tr><td></td><td></td><td><h2>Mutations</h2></td></tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4088702d_18'>18</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_18'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>appendText<br/><b>Killed by : </b>org.hamcrest.core.IsAnythingTest.canOverrideDescription(org.hamcrest.core.IsAnythingTest)</span></span> removed call to org/hamcrest/BaseDescription::append &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4088702d_19'>19</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_19'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>appendText<br/><b>Killed by : </b>org.hamcrest.core.IsSameTest.returnsReadableDescriptionFromToStringWhenInitialisedWithNull(org.hamcrest.core.IsSameTest)</span></span> mutated return of Object value for org/hamcrest/BaseDescription::appendText to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4088702d_24'>24</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_24'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>appendDescriptionOf<br/><b>Killed by : </b>org.hamcrest.BaseDescriptionTest.describesAppendedArrayValue(org.hamcrest.BaseDescriptionTest)</span></span> removed call to org/hamcrest/SelfDescribing::describeTo &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4088702d_25'>25</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_25'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>appendDescriptionOf<br/><b>Killed by : </b>org.hamcrest.BaseMatcherTest.describesItselfWithToStringMethod(org.hamcrest.BaseMatcherTest)</span></span> mutated return of Object value for org/hamcrest/BaseDescription::appendDescriptionOf to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4088702d_30'>30</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_30'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>appendValue<br/><b>Killed by : </b>org.hamcrest.BaseDescriptionTest.bracketsAppendedLongValue(org.hamcrest.BaseDescriptionTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4088702d_31'>31</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_31'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>appendValue<br/><b>Killed by : </b>org.hamcrest.BaseDescriptionTest.describesAppendedNullValue(org.hamcrest.BaseDescriptionTest)</span></span> removed call to org/hamcrest/BaseDescription::append &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4088702d_32'>32</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_32'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>appendValue<br/><b>Killed by : </b>org.hamcrest.BaseDescriptionTest.bracketsAppendedLongValue(org.hamcrest.BaseDescriptionTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4088702d_33'>33</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_33'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>appendValue<br/><b>Killed by : </b>org.hamcrest.BaseDescriptionTest.quotesAppendedStringValue(org.hamcrest.BaseDescriptionTest)</span></span> removed call to org/hamcrest/BaseDescription::toJavaSyntax &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4088702d_34'>34</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_34'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>appendValue<br/><b>Killed by : </b>org.hamcrest.BaseDescriptionTest.bracketsAppendedLongValue(org.hamcrest.BaseDescriptionTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4088702d_35'>35</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_35'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>appendValue<br/><b>Killed by : </b>org.hamcrest.BaseDescriptionTest.quotesAppendedBackslash(org.hamcrest.BaseDescriptionTest)</span></span> removed call to org/hamcrest/BaseDescription::append &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4088702d_36'>36</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_36'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>appendValue<br/><b>Killed by : </b>org.hamcrest.BaseDescriptionTest.quotesAppendedBackslash(org.hamcrest.BaseDescriptionTest)</span></span> removed call to org/hamcrest/BaseDescription::toJavaSyntax &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4088702d_37'>37</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_37'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>appendValue<br/><b>Killed by : </b>org.hamcrest.BaseDescriptionTest.quotesAppendedBackslash(org.hamcrest.BaseDescriptionTest)</span></span> removed call to org/hamcrest/BaseDescription::append &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4088702d_38'>38</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_38'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>appendValue<br/><b>Killed by : </b>org.hamcrest.BaseDescriptionTest.bracketsAppendedLongValue(org.hamcrest.BaseDescriptionTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4088702d_39'>39</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_39'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>appendValue<br/><b>Killed by : </b>org.hamcrest.BaseDescriptionTest.bracketsAppendedShortValue(org.hamcrest.BaseDescriptionTest)</span></span> removed call to org/hamcrest/BaseDescription::append &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4088702d_40'>40</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_40'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>appendValue<br/><b>Killed by : </b>org.hamcrest.BaseDescriptionTest.bracketsAppendedShortValue(org.hamcrest.BaseDescriptionTest)</span></span> removed call to org/hamcrest/BaseDescription::append &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4088702d_41'>41</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_41'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>appendValue<br/><b>Killed by : </b>org.hamcrest.BaseDescriptionTest.bracketsAppendedShortValue(org.hamcrest.BaseDescriptionTest)</span></span> removed call to org/hamcrest/BaseDescription::append &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4088702d_42'>42</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_42'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>appendValue<br/><b>Killed by : </b>org.hamcrest.BaseDescriptionTest.bracketsAppendedLongValue(org.hamcrest.BaseDescriptionTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4088702d_43'>43</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_43'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>appendValue<br/><b>Killed by : </b>org.hamcrest.BaseDescriptionTest.bracketsAppendedLongValue(org.hamcrest.BaseDescriptionTest)</span></span> removed call to org/hamcrest/BaseDescription::append &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4088702d_44'>44</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_44'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>appendValue<br/><b>Killed by : </b>org.hamcrest.BaseDescriptionTest.bracketsAppendedLongValue(org.hamcrest.BaseDescriptionTest)</span></span> removed call to org/hamcrest/BaseDescription::append &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4088702d_45'>45</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_45'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>appendValue<br/><b>Killed by : </b>org.hamcrest.BaseDescriptionTest.bracketsAppendedLongValue(org.hamcrest.BaseDescriptionTest)</span></span> removed call to org/hamcrest/BaseDescription::append &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4088702d_46'>46</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_46'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>appendValue<br/><b>Killed by : </b>org.hamcrest.BaseDescriptionTest.bracketsAppendedObjectValue(org.hamcrest.BaseDescriptionTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4088702d_47'>47</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_47'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>appendValue<br/><b>Killed by : </b>org.hamcrest.BaseDescriptionTest.bracketsAppendedFloatValue(org.hamcrest.BaseDescriptionTest)</span></span> removed call to org/hamcrest/BaseDescription::append &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4088702d_48'>48</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_48'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>appendValue<br/><b>Killed by : </b>org.hamcrest.BaseDescriptionTest.bracketsAppendedFloatValue(org.hamcrest.BaseDescriptionTest)</span></span> removed call to org/hamcrest/BaseDescription::append &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4088702d_49'>49</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_49'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>appendValue<br/><b>Killed by : </b>org.hamcrest.BaseDescriptionTest.bracketsAppendedFloatValue(org.hamcrest.BaseDescriptionTest)</span></span> removed call to org/hamcrest/BaseDescription::append &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4088702d_50'>50</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_50'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>appendValue<br/><b>Killed by : </b>org.hamcrest.BaseDescriptionTest.bracketsAppendedObjectValue(org.hamcrest.BaseDescriptionTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4088702d_53'>53</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_53'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>appendValue<br/><b>Killed by : </b>org.hamcrest.BaseDescriptionTest.bracketsAppendedObjectValue(org.hamcrest.BaseDescriptionTest)</span></span> removed call to org/hamcrest/BaseDescription::append &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4088702d_54'>54</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_54'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>appendValue<br/><b>Killed by : </b>org.hamcrest.BaseDescriptionTest.bracketsAppendedObjectValue(org.hamcrest.BaseDescriptionTest)</span></span> removed call to org/hamcrest/BaseDescription::append &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4088702d_55'>55</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_55'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>appendValue<br/><b>Killed by : </b>org.hamcrest.BaseDescriptionTest.bracketsAppendedObjectValue(org.hamcrest.BaseDescriptionTest)</span></span> removed call to org/hamcrest/BaseDescription::append &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4088702d_57'>57</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_57'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>appendValue<br/><b>Killed by : </b>org.hamcrest.core.IsSameTest.returnsReadableDescriptionFromToStringWhenInitialisedWithNull(org.hamcrest.core.IsSameTest)</span></span> mutated return of Object value for org/hamcrest/BaseDescription::appendValue to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4088702d_62'>62</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_62'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>descriptionOf<br/><b>Killed by : </b>org.hamcrest.BaseDescriptionTest.bracketsAppendedLongValue(org.hamcrest.BaseDescriptionTest)</span></span> mutated return of Object value for org/hamcrest/BaseDescription::descriptionOf to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4088702d_65'>65</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_65'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>descriptionOf<br/><b>Killed by : </b>org.hamcrest.BaseDescriptionTest.safelyDescribesAppendedValueOfObjectWhoseToStringThrowsAnException(org.hamcrest.BaseDescriptionTest)</span></span> mutated return of Object value for org/hamcrest/BaseDescription::descriptionOf to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4088702d_72'>72</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_72'/> 
+
+<p class='NO_COVERAGE'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>appendValueList<br/><b>Killed by : </b>none</span></span> mutated return of Object value for org/hamcrest/BaseDescription::appendValueList to ( if (x != null) null else throw new RuntimeException ) &rarr; NO_COVERAGE</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4088702d_77'>77</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_77'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>appendValueList<br/><b>Killed by : </b>org.hamcrest.text.StringContainsInOrderTest.testHasAReadableDescription(org.hamcrest.text.StringContainsInOrderTest)</span></span> mutated return of Object value for org/hamcrest/BaseDescription::appendValueList to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4088702d_81'>81</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_81'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>appendValueList<br/><b>Killed by : </b>org.hamcrest.text.StringContainsInOrderTest.testHasAReadableDescription(org.hamcrest.text.StringContainsInOrderTest)</span></span> mutated return of Object value for org/hamcrest/BaseDescription::appendValueList to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4088702d_86'>86</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_86'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>appendList<br/><b>Killed by : </b>org.hamcrest.collection.IsIterableContainingInAnyOrderTest.testHasAReadableDescription(org.hamcrest.collection.IsIterableContainingInAnyOrderTest)</span></span> mutated return of Object value for org/hamcrest/BaseDescription::appendList to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4088702d_92'>92</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_92'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>appendList<br/><b>Killed by : </b>org.hamcrest.BaseDescriptionTest.describesAppendedArrayValue(org.hamcrest.BaseDescriptionTest)</span></span> removed call to org/hamcrest/BaseDescription::append &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4088702d_93'>93</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_93'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>appendList<br/><b>Killed by : </b>org.hamcrest.BaseDescriptionTest.describesAppendedArrayValue(org.hamcrest.BaseDescriptionTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4088702d_94'>94</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_94'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>appendList<br/><b>Killed by : </b>org.hamcrest.BaseDescriptionTest.describesAppendedArrayValue(org.hamcrest.BaseDescriptionTest)</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>appendList<br/><b>Killed by : </b>org.hamcrest.BaseDescriptionTest.describesAppendedArrayValue(org.hamcrest.BaseDescriptionTest)</span></span> removed call to org/hamcrest/BaseDescription::append &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4088702d_98'>98</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_98'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>appendList<br/><b>Killed by : </b>org.hamcrest.BaseDescriptionTest.describesAppendedArrayValue(org.hamcrest.BaseDescriptionTest)</span></span> removed call to org/hamcrest/BaseDescription::append &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4088702d_100'>100</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_100'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>appendList<br/><b>Killed by : </b>org.hamcrest.collection.IsIterableContainingInAnyOrderTest.testHasAReadableDescription(org.hamcrest.collection.IsIterableContainingInAnyOrderTest)</span></span> mutated return of Object value for org/hamcrest/BaseDescription::appendList to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4088702d_109'>109</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_109'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>append<br/><b>Killed by : </b>org.hamcrest.BaseDescriptionTest.bracketsAppendedLongValue(org.hamcrest.BaseDescriptionTest)</span></span> changed conditional boundary &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>append<br/><b>Killed by : </b>org.hamcrest.BaseDescriptionTest.bracketsAppendedLongValue(org.hamcrest.BaseDescriptionTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4088702d_110'>110</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_110'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>append<br/><b>Killed by : </b>org.hamcrest.BaseDescriptionTest.bracketsAppendedLongValue(org.hamcrest.BaseDescriptionTest)</span></span> removed call to org/hamcrest/BaseDescription::append &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4088702d_120'>120</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_120'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>toJavaSyntax<br/><b>Killed by : </b>org.hamcrest.BaseDescriptionTest.quotesAppendedStringValue(org.hamcrest.BaseDescriptionTest)</span></span> removed call to org/hamcrest/BaseDescription::append &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4088702d_121'>121</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_121'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>toJavaSyntax<br/><b>Killed by : </b>org.hamcrest.BaseDescriptionTest.quotesAppendedStringValue(org.hamcrest.BaseDescriptionTest)</span></span> changed conditional boundary &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>toJavaSyntax<br/><b>Killed by : </b>org.hamcrest.BaseDescriptionTest.quotesAppendedStringValue(org.hamcrest.BaseDescriptionTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4088702d_122'>122</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_122'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>toJavaSyntax<br/><b>Killed by : </b>org.hamcrest.BaseDescriptionTest.quotesAppendedStringValue(org.hamcrest.BaseDescriptionTest)</span></span> removed call to org/hamcrest/BaseDescription::toJavaSyntax &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4088702d_124'>124</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_124'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>toJavaSyntax<br/><b>Killed by : </b>org.hamcrest.BaseDescriptionTest.quotesAppendedStringValue(org.hamcrest.BaseDescriptionTest)</span></span> removed call to org/hamcrest/BaseDescription::append &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4088702d_130'>130</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_130'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>toJavaSyntax<br/><b>Killed by : </b>org.hamcrest.BaseDescriptionTest.quotesAppendedDoubleQuotes(org.hamcrest.BaseDescriptionTest)</span></span> removed call to org/hamcrest/BaseDescription::append &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4088702d_133'>133</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_133'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>toJavaSyntax<br/><b>Killed by : </b>org.hamcrest.BaseDescriptionTest.quotesAppendedNewLine(org.hamcrest.BaseDescriptionTest)</span></span> removed call to org/hamcrest/BaseDescription::append &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4088702d_136'>136</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_136'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>toJavaSyntax<br/><b>Killed by : </b>org.hamcrest.BaseDescriptionTest.quotesAppendedLineReturn(org.hamcrest.BaseDescriptionTest)</span></span> removed call to org/hamcrest/BaseDescription::append &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4088702d_139'>139</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_139'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>toJavaSyntax<br/><b>Killed by : </b>org.hamcrest.BaseDescriptionTest.quotesAppendedTab(org.hamcrest.BaseDescriptionTest)</span></span> removed call to org/hamcrest/BaseDescription::append &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4088702d_142'>142</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_142'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>toJavaSyntax<br/><b>Killed by : </b>org.hamcrest.BaseDescriptionTest.quotesAppendedBackslash(org.hamcrest.BaseDescriptionTest)</span></span> removed call to org/hamcrest/BaseDescription::append &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4088702d_145'>145</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4088702d_145'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>toJavaSyntax<br/><b>Killed by : </b>org.hamcrest.BaseDescriptionTest.quotesAppendedCharacterValue(org.hamcrest.BaseDescriptionTest)</span></span> removed call to org/hamcrest/BaseDescription::append &rarr; KILLED</p> 
+</td>
+</tr>
+
+</table>
+
+
+<h2>Active mutators</h2>
+<ul>
+<li class='mutator'>INCREMENTS_MUTATOR</li>
+<li class='mutator'>VOID_METHOD_CALL_MUTATOR</li>
+<li class='mutator'>RETURN_VALS_MUTATOR</li>
+<li class='mutator'>MATH_MUTATOR</li>
+<li class='mutator'>NEGATE_CONDITIONALS_MUTATOR</li>
+<li class='mutator'>INVERT_NEGS_MUTATOR</li>
+<li class='mutator'>CONDITIONALS_BOUNDARY_MUTATOR</li>
+
+</ul>
+
+<h2>Tests examined</h2>
+<ul>
+<li>org.hamcrest.text.IsEqualIgnoringCaseTest.describesItself(org.hamcrest.text.IsEqualIgnoringCaseTest) (0 ms)</li><li>org.hamcrest.collection.IsArrayTest.testHasAReadableMismatchDescriptionUsingCustomMatchers(org.hamcrest.collection.IsArrayTest) (1 ms)</li><li>org.hamcrest.core.StringContainsTest.testMatchesSubstringsIgnoringCase(org.hamcrest.core.StringContainsTest) (0 ms)</li><li>org.hamcrest.collection.IsMapContainingKeyTest.testDoesNotMatchMapMissingKey(org.hamcrest.collection.IsMapContainingKeyTest) (1 ms)</li><li>org.hamcrest.core.IsSameTest.returnsReadableDescriptionFromToStringWhenInitialisedWithNull(org.hamcrest.core.IsSameTest) (0 ms)</li><li>org.hamcrest.comparator.ComparatorMatcherBuilderTest.testDescription(org.hamcrest.comparator.ComparatorMatcherBuilderTest) (1 ms)</li><li>org.hamcrest.BaseDescriptionTest.quotesAppendedBackslash(org.hamcrest.BaseDescriptionTest) (0 ms)</li><li>org.hamcrest.collection.IsIterableContainingInAnyOrderTest.testDoesNotMatchEmpty(org.hamcrest.collection.IsIterableContainingInAnyOrderTest) (8 ms)</li><li>org.hamcrest.object.IsEventFromTest.testEvaluatesToTrueIfArgumentIsAnEventObjectFiredByASpecifiedSource(org.hamcrest.object.IsEventFromTest) (1 ms)</li><li>org.hamcrest.beans.SamePropertyValuesAsTest.test_rejects_subtype_that_has_extra_properties(org.hamcrest.beans.SamePropertyValuesAsTest) (9 ms)</li><li>org.hamcrest.BaseDescriptionTest.quotesAppendedCharacterValue(org.hamcrest.BaseDescriptionTest) (1 ms)</li><li>org.hamcrest.collection.IsEmptyCollectionTest.testDoesNotMatchACollectionWithAnItem(org.hamcrest.collection.IsEmptyCollectionTest) (1 ms)</li><li>org.hamcrest.core.StringRegularExpressionTest.testMatchingRegex(org.hamcrest.core.StringRegularExpressionTest) (0 ms)</li><li>org.hamcrest.FeatureMatcherTest.doesNotThrowClassCastException(org.hamcrest.FeatureMatcherTest) (1 ms)</li><li>org.hamcrest.collection.IsIterableContainingInOrderTest.testDoesNotMatchWithMoreElementsThanExpected(org.hamcrest.collection.IsIterableContainingInOrderTest) (2 ms)</li><li>org.hamcrest.comparator.ComparatorMatcherTest.testDescription(org.hamcrest.comparator.ComparatorMatcherTest) (0 ms)</li><li>org.hamcrest.collection.IsIterableContainingInOrderTest.testDoesNotMatchWithFewerElementsThanExpected(org.hamcrest.collection.IsIterableContainingInOrderTest) (1 ms)</li><li>org.hamcrest.core.DescribedAsTest.overridesDescriptionOfOtherMatcherWithThatPassedToConstructor(org.hamcrest.core.DescribedAsTest) (0 ms)</li><li>org.hamcrest.collection.IsMapWithSizeTest.testMatchesListWhenSizeIsCorrectUsingStringElementType(org.hamcrest.collection.IsMapWithSizeTest) (2 ms)</li><li>org.hamcrest.object.IsEventFromTest.testCanTestForSpecificEventClasses(org.hamcrest.object.IsEventFromTest) (1 ms)</li><li>org.hamcrest.collection.IsIterableContainingInAnyOrderTest.testDoesNotMatchIfOneOfMultipleElementsMismatches(org.hamcrest.collection.IsIterableContainingInAnyOrderTest) (1 ms)</li><li>org.hamcrest.collection.IsMapContainingKeyTest.testHasReadableDescription(org.hamcrest.collection.IsMapContainingKeyTest) (1 ms)</li><li>org.hamcrest.text.IsEmptyStringTest.describesAMismatch(org.hamcrest.text.IsEmptyStringTest) (1 ms)</li><li>org.hamcrest.collection.IsMapContainingTest.testHasReadableDescription(org.hamcrest.collection.IsMapContainingTest) (1 ms)</li><li>org.hamcrest.TypeSafeDiagnosingMatcherTest.describesMismatches(org.hamcrest.TypeSafeDiagnosingMatcherTest) (1 ms)</li><li>org.hamcrest.BaseDescriptionTest.describesAppendedArrayValue(org.hamcrest.BaseDescriptionTest) (1 ms)</li><li>org.hamcrest.core.DescribedAsTest.appendsValuesToDescription(org.hamcrest.core.DescribedAsTest) (1 ms)</li><li>org.hamcrest.collection.IsCollectionWithSizeTest.testMatchesCollectionWhenSizeIsCorrectUsingStringElementType(org.hamcrest.collection.IsCollectionWithSizeTest) (1 ms)</li><li>org.hamcrest.collection.IsMapWithSizeTest.testProvidesConvenientShortcutForHasSizeEqualTo(org.hamcrest.collection.IsMapWithSizeTest) (2 ms)</li><li>org.hamcrest.collection.IsCollectionWithSizeTest.testMatchesListWhenSizeIsCorrectUsingObjectElementType(org.hamcrest.collection.IsCollectionWithSizeTest) (1 ms)</li><li>org.hamcrest.collection.HasItemInArrayTest.testDoesNotMatchAnArrayThatDoesntContainAnElementMatchingTheGivenMatcher(org.hamcrest.collection.HasItemInArrayTest) (1 ms)</li><li>org.hamcrest.BaseDescriptionTest.bracketsAppendedFloatValue(org.hamcrest.BaseDescriptionTest) (9 ms)</li><li>org.hamcrest.BaseDescriptionTest.bracketsAppendedObjectValue(org.hamcrest.BaseDescriptionTest) (1 ms)</li><li>org.hamcrest.BaseDescriptionTest.quotesAppendedTab(org.hamcrest.BaseDescriptionTest) (1 ms)</li><li>org.hamcrest.collection.IsMapWithSizeTest.testMatchesMapWhenSizeIsCorrectUsingObjectElementType(org.hamcrest.collection.IsMapWithSizeTest) (1 ms)</li><li>org.hamcrest.collection.IsIterableContainingInRelativeOrderTest.testDoesNotMatchIfSingleItemNotFound(org.hamcrest.collection.IsIterableContainingInRelativeOrderTest) (5 ms)</li><li>org.hamcrest.comparator.ComparatorMatcherBuilderTest.testMismatchDescriptions(org.hamcrest.comparator.ComparatorMatcherBuilderTest) (2 ms)</li><li>org.hamcrest.BaseDescriptionTest.quotesAppendedStringValue(org.hamcrest.BaseDescriptionTest) (1 ms)</li><li>org.hamcrest.number.IsCloseToTest.test_matchesIfArgumentIsEqualToADoubleValueWithinSomeError(org.hamcrest.number.IsCloseToTest) (1 ms)</li><li>org.hamcrest.collection.IsMapWithSizeTest.testMatchesMapWhenSizeIsCorrectUsingStringElementType(org.hamcrest.collection.IsMapWithSizeTest) (1 ms)</li><li>org.hamcrest.CustomTypeSafeMatcherTest.usesStaticDescription(org.hamcrest.CustomTypeSafeMatcherTest) (1 ms)</li><li>org.hamcrest.collection.IsMapContainingValueTest.testHasReadableDescription(org.hamcrest.collection.IsMapContainingValueTest) (1 ms)</li><li>org.hamcrest.beans.HasPropertyTest.describesItself(org.hamcrest.beans.HasPropertyTest) (5 ms)</li><li>org.hamcrest.number.OrderingComparisonTest.testDescription(org.hamcrest.number.OrderingComparisonTest) (4 ms)</li><li>org.hamcrest.BaseDescriptionTest.quotesAppendedDoubleQuotes(org.hamcrest.BaseDescriptionTest) (1 ms)</li><li>org.hamcrest.core.IsEqualTest.includesTheResultOfCallingToStringOnItsArgumentInTheDescription(org.hamcrest.core.IsEqualTest) (1 ms)</li><li>org.hamcrest.beans.HasPropertyWithValueTest.testDescribesMissingPropertyMismatch(org.hamcrest.beans.HasPropertyWithValueTest) (1 ms)</li><li>org.hamcrest.beans.HasPropertyWithValueTest.testMatchesBeanWithoutInfoWithMatchedNamedBooleanProperty(org.hamcrest.beans.HasPropertyWithValueTest) (2 ms)</li><li>org.hamcrest.MatcherAssertTest.includesDescriptionOfTestedValueInErrorMessage(org.hamcrest.MatcherAssertTest) (0 ms)</li><li>org.hamcrest.number.IsNanTest.describesAMismatch(org.hamcrest.number.IsNanTest) (1 ms)</li><li>org.hamcrest.beans.HasPropertyWithValueTest.testDoesNotMatchBeanWithoutInfoOrMatchedNamedProperty(org.hamcrest.beans.HasPropertyWithValueTest) (2 ms)</li><li>org.hamcrest.FeatureMatcherTest.mismatchesPartOfAnObject(org.hamcrest.FeatureMatcherTest) (0 ms)</li><li>org.hamcrest.beans.HasPropertyWithValueTest.testMatchesPath(org.hamcrest.beans.HasPropertyWithValueTest) (4 ms)</li><li>org.hamcrest.collection.IsIterableContainingInOrderTest.testDoesNotMatchIfSingleItemMismatches(org.hamcrest.collection.IsIterableContainingInOrderTest) (1 ms)</li><li>org.hamcrest.core.CombinableTest.eitherDescribesItself(org.hamcrest.core.CombinableTest) (1 ms)</li><li>org.hamcrest.collection.IsCollectionWithSizeTest.testMatchesWhenSizeIsCorrect(org.hamcrest.collection.IsCollectionWithSizeTest) (1 ms)</li><li>org.hamcrest.object.HasEqualsValuesTest.test_mismatches_on_first_field_inequality(org.hamcrest.object.HasEqualsValuesTest) (1 ms)</li><li>org.hamcrest.collection.IsCollectionWithSizeTest.testMatchesCollectionWhenSizeIsCorrectUsingObjectElementType(org.hamcrest.collection.IsCollectionWithSizeTest) (1 ms)</li><li>org.hamcrest.core.IsTest.generatesIsPrefixInDescription(org.hamcrest.core.IsTest) (1 ms)</li><li>org.hamcrest.collection.IsArrayTest.testHasAReadableDescription(org.hamcrest.collection.IsArrayTest) (1 ms)</li><li>org.hamcrest.collection.IsMapWithSizeTest.testMatchesListWhenSizeIsCorrectUsingObjectElementType(org.hamcrest.collection.IsMapWithSizeTest) (2 ms)</li><li>org.hamcrest.number.BigDecimalCloseToTest.testEvaluatesToTrueIfArgumentIsEqualToABigDecimalWithinSomeError(org.hamcrest.number.BigDecimalCloseToTest) (1 ms)</li><li>org.hamcrest.core.CombinableTest.bothDescribesItself(org.hamcrest.core.CombinableTest) (2 ms)</li><li>org.hamcrest.beans.SamePropertyValuesAsTest.test_reports_mismatch_on_first_property_difference(org.hamcrest.beans.SamePropertyValuesAsTest) (42 ms)</li><li>org.hamcrest.TypeSafeMatcherTest.describesMismatches(org.hamcrest.TypeSafeMatcherTest) (0 ms)</li><li>org.hamcrest.object.MatchesPatternTest.describesAMismatch(org.hamcrest.object.MatchesPatternTest) (1 ms)</li><li>org.hamcrest.collection.IsIterableContainingInOrderTest.testHasAReadableDescription(org.hamcrest.collection.IsIterableContainingInOrderTest) (9 ms)</li><li>org.hamcrest.collection.IsMapContainingValueTest.testMatchesMapContainingValue(org.hamcrest.collection.IsMapContainingValueTest) (2 ms)</li><li>org.hamcrest.beans.HasPropertyWithValueTest.testDoesNotMatchWriteOnlyProperty(org.hamcrest.beans.HasPropertyWithValueTest) (2 ms)</li><li>org.hamcrest.beans.SamePropertyValuesAsTest.testDescribesItself(org.hamcrest.beans.SamePropertyValuesAsTest) (3 ms)</li><li>org.hamcrest.object.IsCompatibleTypeTest.testHasReadableDescription(org.hamcrest.object.IsCompatibleTypeTest) (1 ms)</li><li>org.hamcrest.collection.IsCollectionWithSizeTest.testMatchesListWhenSizeIsCorrectUsingWildcardElementType(org.hamcrest.collection.IsCollectionWithSizeTest) (1 ms)</li><li>org.hamcrest.collection.IsMapContainingValueTest.testDoesNotMatchEmptyMap(org.hamcrest.collection.IsMapContainingValueTest) (1 ms)</li><li>org.hamcrest.collection.IsIterableContainingInOrderTest.testDoesNotMatchIfOneOfMultipleItemsMismatch(org.hamcrest.collection.IsIterableContainingInOrderTest) (1 ms)</li><li>org.hamcrest.core.StringEndsWithTest.testMatchesSubstringAtEndIngoringCase(org.hamcrest.core.StringEndsWithTest) (1 ms)</li><li>org.hamcrest.BaseDescriptionTest.quotesAppendedLineReturn(org.hamcrest.BaseDescriptionTest) (1 ms)</li><li>org.hamcrest.collection.IsCollectionWithSizeTest.testHasAReadableDescription(org.hamcrest.collection.IsCollectionWithSizeTest) (1 ms)</li><li>org.hamcrest.core.AnyOfTest.hasAReadableDescription(org.hamcrest.core.AnyOfTest) (1 ms)</li><li>org.hamcrest.number.BigDecimalCloseToTest.test_is_self_describing(org.hamcrest.number.BigDecimalCloseToTest) (1 ms)</li><li>org.hamcrest.core.StringStartsWithTest.testMatchesStringAtStartIgnoringCase(org.hamcrest.core.StringStartsWithTest) (0 ms)</li><li>org.hamcrest.core.IsIterableContainingTest.hasAReadableDescription(org.hamcrest.core.IsIterableContainingTest) (1 ms)</li><li>org.hamcrest.core.EveryTest.describesItself(org.hamcrest.core.EveryTest) (1 ms)</li><li>org.hamcrest.collection.HasItemInArrayTest.testHasAReadableDescription(org.hamcrest.collection.HasItemInArrayTest) (1 ms)</li><li>org.hamcrest.xml.HasXPathTest.describesMissingNodeMismatch(org.hamcrest.xml.HasXPathTest) (4 ms)</li><li>org.hamcrest.core.IsAnythingTest.hasUsefulDefaultDescription(org.hamcrest.core.IsAnythingTest) (1 ms)</li><li>org.hamcrest.collection.IsIterableWithSizeTest.testHasAReadableDescription(org.hamcrest.collection.IsIterableWithSizeTest) (1 ms)</li><li>org.hamcrest.CustomTypeSafeMatcherTest.reportsMismatch(org.hamcrest.CustomTypeSafeMatcherTest) (1 ms)</li><li>org.hamcrest.beans.HasPropertyTest.describesAMismatch(org.hamcrest.beans.HasPropertyTest) (5 ms)</li><li>org.hamcrest.beans.HasPropertyWithValueTest.testMatchesBeanWithoutInfoWithMatchedNamedProperty(org.hamcrest.beans.HasPropertyWithValueTest) (2 ms)</li><li>org.hamcrest.collection.IsIterableContainingInRelativeOrderTest.testDoesNotMatchWithFewerElementsThanExpected(org.hamcrest.collection.IsIterableContainingInRelativeOrderTest) (1 ms)</li><li>org.hamcrest.xml.HasXPathTest.describesIncorrectNodeValueMismatch(org.hamcrest.xml.HasXPathTest) (4 ms)</li><li>org.hamcrest.collection.IsIterableContainingInRelativeOrderTest.testDoesNotMatchIfOneOfMultipleItemsNotFound(org.hamcrest.collection.IsIterableContainingInRelativeOrderTest) (1 ms)</li><li>org.hamcrest.collection.IsCollectionWithSizeTest.testMatchesCollectionWhenSizeIsCorrectUsingWildcardElementType(org.hamcrest.collection.IsCollectionWithSizeTest) (1 ms)</li><li>org.hamcrest.core.StringStartsWithTest.testMatchesStringAtStart(org.hamcrest.core.StringStartsWithTest) (0 ms)</li><li>org.hamcrest.text.IsBlankStringTest.describesAMismatch(org.hamcrest.text.IsBlankStringTest) (1 ms)</li><li>org.hamcrest.xml.HasXPathTest.describesItself(org.hamcrest.xml.HasXPathTest) (4 ms)</li><li>org.hamcrest.collection.IsEmptyIterableTest.testHasAReadableDescription(org.hamcrest.collection.IsEmptyIterableTest) (0 ms)</li><li>org.hamcrest.collection.IsMapWithSizeTest.testMatchesWhenSizeIsCorrect(org.hamcrest.collection.IsMapWithSizeTest) (1 ms)</li><li>org.hamcrest.MatcherAssertTest.includesMismatchDescription(org.hamcrest.MatcherAssertTest) (0 ms)</li><li>org.hamcrest.object.MatchesPatternTest.factoryMethodAllowsCreationWithPattern(org.hamcrest.object.MatchesPatternTest) (0 ms)</li><li>org.hamcrest.FeatureMatcherTest.doesNotThrowNullPointerException(org.hamcrest.FeatureMatcherTest) (0 ms)</li><li>org.hamcrest.core.IsNotTest.usesDescriptionOfNegatedMatcherWithPrefix(org.hamcrest.core.IsNotTest) (0 ms)</li><li>org.hamcrest.collection.IsCollectionWithSizeTest.testMatchesListWhenSizeIsCorrectUsingStringElementType(org.hamcrest.collection.IsCollectionWithSizeTest) (1 ms)</li><li>org.hamcrest.core.IsEqualTest.returnsGoodDescriptionIfCreatedWithNullReference(org.hamcrest.core.IsEqualTest) (0 ms)</li><li>org.hamcrest.beans.HasPropertyWithValueTest.testDescribeTo(org.hamcrest.beans.HasPropertyWithValueTest) (1 ms)</li><li>org.hamcrest.BaseDescriptionTest.quotesAppendedNewLine(org.hamcrest.BaseDescriptionTest) (0 ms)</li><li>org.hamcrest.collection.IsIterableContainingInAnyOrderTest.testHasAReadableDescription(org.hamcrest.collection.IsIterableContainingInAnyOrderTest) (1 ms)</li><li>org.hamcrest.core.StringContainsTest.testMatchesSubstrings(org.hamcrest.core.StringContainsTest) (0 ms)</li><li>org.hamcrest.number.BigDecimalCloseToTest.testEvaluatesToTrueIfArgumentHasDifferentScale(org.hamcrest.number.BigDecimalCloseToTest) (2 ms)</li><li>org.hamcrest.text.IsEqualCompressingWhiteSpaceTest.testHasAReadableDescription(org.hamcrest.text.IsEqualCompressingWhiteSpaceTest) (1 ms)</li><li>org.hamcrest.BaseDescriptionTest.bracketsAppendedShortValue(org.hamcrest.BaseDescriptionTest) (2 ms)</li><li>org.hamcrest.comparator.ComparatorMatcherTest.testMismatchDescriptions(org.hamcrest.comparator.ComparatorMatcherTest) (0 ms)</li><li>org.hamcrest.core.IsInstanceOfTest.describesActualClassInMismatchMessage(org.hamcrest.core.IsInstanceOfTest) (0 ms)</li><li>org.hamcrest.collection.IsMapContainingTest.testDoesNotMatchNull(org.hamcrest.collection.IsMapContainingTest) (1 ms)</li><li>org.hamcrest.collection.IsInTest.testHasReadableDescription(org.hamcrest.collection.IsInTest) (2 ms)</li><li>org.hamcrest.collection.IsMapContainingKeyTest.testDoesNotMatchEmptyMap(org.hamcrest.collection.IsMapContainingKeyTest) (0 ms)</li><li>org.hamcrest.object.HasEqualsValuesTest.test_mismatches_on_inherited_field(org.hamcrest.object.HasEqualsValuesTest) (0 ms)</li><li>org.hamcrest.BaseDescriptionTest.bracketsAppendedLongValue(org.hamcrest.BaseDescriptionTest) (0 ms)</li><li>org.hamcrest.object.MatchesPatternTest.factoryMethodAllowsCreationWithString(org.hamcrest.object.MatchesPatternTest) (0 ms)</li><li>org.hamcrest.object.HasToStringTest.describesAMismatch(org.hamcrest.object.HasToStringTest) (0 ms)</li><li>org.hamcrest.collection.IsArrayContainingInOrderTest.testMismatchesItemsInOrder(org.hamcrest.collection.IsArrayContainingInOrderTest) (3 ms)</li><li>org.hamcrest.text.StringContainsInOrderTest.testHasAReadableDescription(org.hamcrest.text.StringContainsInOrderTest) (1 ms)</li><li>org.hamcrest.collection.IsIterableContainingInRelativeOrderTest.testDoesNotMatchEmptyIterable(org.hamcrest.collection.IsIterableContainingInRelativeOrderTest) (1 ms)</li><li>org.hamcrest.collection.IsArrayWithSizeTest.testHasAReadableDescription(org.hamcrest.collection.IsArrayWithSizeTest) (1 ms)</li><li>org.hamcrest.FeatureMatcherTest.matchesPartOfAnObject(org.hamcrest.FeatureMatcherTest) (0 ms)</li><li>org.hamcrest.core.EveryTest.describesAMismatch(org.hamcrest.core.EveryTest) (0 ms)</li><li>org.hamcrest.collection.IsCollectionWithSizeTest.testProvidesConvenientShortcutForHasSizeEqualTo(org.hamcrest.collection.IsCollectionWithSizeTest) (1 ms)</li><li>org.hamcrest.collection.IsIterableContainingInOrderTest.testDoesNotMatchEmptyIterable(org.hamcrest.collection.IsIterableContainingInOrderTest) (2 ms)</li><li>org.hamcrest.collection.IsArrayContainingInAnyOrderTest.testHasAReadableDescription(org.hamcrest.collection.IsArrayContainingInAnyOrderTest) (1 ms)</li><li>org.hamcrest.object.MatchesPatternTest.hasAReadableDescription(org.hamcrest.object.MatchesPatternTest) (1 ms)</li><li>org.hamcrest.object.HasEqualsValuesTest.test_describes_itself(org.hamcrest.object.HasEqualsValuesTest) (1 ms)</li><li>org.hamcrest.beans.HasPropertyWithValueTest.testMatchesBeanWithInfoWithMatchedNamedProperty(org.hamcrest.beans.HasPropertyWithValueTest) (2 ms)</li><li>org.hamcrest.core.IsEqualTest.returnsAnObviousDescriptionIfCreatedWithANestedMatcherByMistake(org.hamcrest.core.IsEqualTest) (0 ms)</li><li>org.hamcrest.collection.IsArrayContainingInAnyOrderTest.testMismatchesItemsInAnyOrder(org.hamcrest.collection.IsArrayContainingInAnyOrderTest) (1 ms)</li><li>org.hamcrest.object.HasToStringTest.describesItself(org.hamcrest.object.HasToStringTest) (0 ms)</li><li>org.hamcrest.CustomMatcherTest.usesStaticDescription(org.hamcrest.CustomMatcherTest) (1 ms)</li><li>org.hamcrest.BaseDescriptionTest.describesAppendedNullValue(org.hamcrest.BaseDescriptionTest) (0 ms)</li><li>org.hamcrest.text.IsEmptyStringTest.describesItself(org.hamcrest.text.IsEmptyStringTest) (1 ms)</li><li>org.hamcrest.text.IsBlankStringTest.describesItself(org.hamcrest.text.IsBlankStringTest) (1 ms)</li><li>org.hamcrest.collection.IsMapWithSizeTest.testHasAReadableDescription(org.hamcrest.collection.IsMapWithSizeTest) (7 ms)</li><li>org.hamcrest.collection.IsIterableContainingInAnyOrderTest.testDoesNotMatchIfThereAreMoreMatchersThanElements(org.hamcrest.collection.IsIterableContainingInAnyOrderTest) (0 ms)</li><li>org.hamcrest.core.AllOfTest.hasAMismatchDescriptionDescribingTheFirstFailingMatch(org.hamcrest.core.AllOfTest) (0 ms)</li><li>org.hamcrest.core.DescribedAsTest.delegatesMismatchDescriptionToAnotherMatcher(org.hamcrest.core.DescribedAsTest) (1 ms)</li><li>org.hamcrest.collection.IsArrayTest.testHasAReadableMismatchDescriptionUsing(org.hamcrest.collection.IsArrayTest) (1 ms)</li><li>org.hamcrest.number.IsCloseToTest.test_is_self_describing(org.hamcrest.number.IsCloseToTest) (0 ms)</li><li>org.hamcrest.beans.SamePropertyValuesAsTest.test_reports_mismatch_when_actual_type_is_not_assignable_to_expected_type(org.hamcrest.beans.SamePropertyValuesAsTest) (2 ms)</li><li>org.hamcrest.core.StringEndsWithTest.testMatchesSubstringAtEnd(org.hamcrest.core.StringEndsWithTest) (1 ms)</li><li>org.hamcrest.collection.IsIterableContainingInAnyOrderTest.testDoesNotMatchIfThereAreMoreElementsThanMatchers(org.hamcrest.collection.IsIterableContainingInAnyOrderTest) (0 ms)</li><li>org.hamcrest.core.AllOfTest.hasAReadableDescription(org.hamcrest.core.AllOfTest) (1 ms)</li><li>org.hamcrest.core.IsSameTest.returnsReadableDescriptionFromToString(org.hamcrest.core.IsSameTest) (0 ms)</li><li>org.hamcrest.core.IsIterableContainingTest.doesNotMatchCollectionWithoutAnElementForGivenMatcher(org.hamcrest.core.IsIterableContainingTest) (1 ms)</li><li>org.hamcrest.MatcherAssertTest.descriptionCanBeElided(org.hamcrest.MatcherAssertTest) (0 ms)</li><li>org.hamcrest.beans.HasPropertyWithValueTest.testExceptionsInBeanMethodsShouldBeReportedCorrectly(org.hamcrest.beans.HasPropertyWithValueTest) (3 ms)</li><li>org.hamcrest.number.OrderingComparisonTest.testMismatchDescriptions(org.hamcrest.number.OrderingComparisonTest) (0 ms)</li><li>org.hamcrest.BaseMatcherTest.describesItselfWithToStringMethod(org.hamcrest.BaseMatcherTest) (1 ms)</li><li>org.hamcrest.collection.IsArrayContainingInOrderTest.testHasAReadableDescription(org.hamcrest.collection.IsArrayContainingInOrderTest) (3 ms)</li><li>org.hamcrest.text.IsEqualCompressingWhiteSpaceTest.test_has_a_readable_mismatch(org.hamcrest.text.IsEqualCompressingWhiteSpaceTest) (1 ms)</li><li>org.hamcrest.BaseDescriptionTest.safelyDescribesAppendedValueOfObjectWhoseToStringThrowsAnException(org.hamcrest.BaseDescriptionTest) (1 ms)</li><li>org.hamcrest.collection.IsEmptyCollectionTest.testHasAReadableDescription(org.hamcrest.collection.IsEmptyCollectionTest) (1 ms)</li><li>org.hamcrest.collection.IsMapContainingTest.testMatchesMapContainingMatchingKeyAndValue(org.hamcrest.collection.IsMapContainingTest) (1 ms)</li><li>org.hamcrest.core.IsAnythingTest.canOverrideDescription(org.hamcrest.core.IsAnythingTest) (0 ms)</li><li>org.hamcrest.collection.IsIterableContainingInRelativeOrderTest.testHasAReadableDescription(org.hamcrest.collection.IsIterableContainingInRelativeOrderTest) (1 ms)</li><li>org.hamcrest.number.IsNanTest.describesItself(org.hamcrest.number.IsNanTest) (0 ms)</li><li>org.hamcrest.core.IsInstanceOfTest.hasAReadableDescription(org.hamcrest.core.IsInstanceOfTest) (0 ms)</li><li>org.hamcrest.collection.IsMapWithSizeTest.testMatchesListWhenSizeIsCorrectUsingWildcardElementType(org.hamcrest.collection.IsMapWithSizeTest) (1 ms)</li><li>org.hamcrest.collection.IsMapWithSizeTest.testMatchesMapWhenSizeIsCorrectUsingWildcardElementType(org.hamcrest.collection.IsMapWithSizeTest) (1 ms)</li><li>org.hamcrest.core.IsIterableContainingTest.reportsMismatchWithAReadableDescriptionForMultipleItems(org.hamcrest.core.IsIterableContainingTest) (0 ms)</li><li>org.hamcrest.text.IsEqualIgnoringCaseTest.describesAMismatch(org.hamcrest.text.IsEqualIgnoringCaseTest) (1 ms)</li>
+</ul>
+
+<br/>
+
+Report generated by <a href='http://pitest.org'>PIT</a> 1.3.1
+
+</body>
+</html>

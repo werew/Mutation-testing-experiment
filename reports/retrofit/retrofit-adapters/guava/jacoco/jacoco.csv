@@ -1,0 +1,9 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+Adapter: Guava,retrofit2.adapter.guava,GuavaCallAdapterFactory.BodyCallAdapter,0,15,0,0,0,5,0,3,0,3
+Adapter: Guava,retrofit2.adapter.guava,HttpException,0,4,0,0,0,2,0,1,0,1
+Adapter: Guava,retrofit2.adapter.guava,GuavaCallAdapterFactory.ResponseCallAdapter,0,15,0,0,0,5,0,3,0,3
+Adapter: Guava,retrofit2.adapter.guava,GuavaCallAdapterFactory.ResponseCallAdapter.1.new Callback() {...},0,18,0,0,0,5,0,3,0,3
+Adapter: Guava,retrofit2.adapter.guava,GuavaCallAdapterFactory,0,50,0,8,0,12,0,6,0,2
+Adapter: Guava,retrofit2.adapter.guava,GuavaCallAdapterFactory.BodyCallAdapter.new AbstractFuture() {...},4,16,0,0,2,3,1,1,1,1
+Adapter: Guava,retrofit2.adapter.guava,GuavaCallAdapterFactory.BodyCallAdapter.1.new Callback() {...},0,31,0,2,0,7,0,4,0,3
+Adapter: Guava,retrofit2.adapter.guava,GuavaCallAdapterFactory.ResponseCallAdapter.new AbstractFuture() {...},4,16,0,0,2,3,1,1,1,1

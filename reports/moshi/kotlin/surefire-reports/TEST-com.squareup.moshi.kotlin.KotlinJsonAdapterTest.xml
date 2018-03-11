@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.squareup.moshi.kotlin.KotlinJsonAdapterTest" time="2.672" tests="42" errors="0" skipped="0" failures="0">
+  <properties>
+    <property name="idea.plugins.compatible.build" value="172.9999"/>
+    <property name="jna.platform.library.path" value="/usr/lib/x86_64-linux-gnu:/lib/x86_64-linux-gnu:/lib64:/usr/lib:/lib:/usr/lib/x86_64-linux-gnu/libfakeroot:/usr/lib/x86_64-linux-gnu/mesa"/>
+    <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
+    <property name="sun.boot.library.path" value="/usr/lib/jvm/java-8-oracle/jre/lib/amd64"/>
+    <property name="java.vm.version" value="25.161-b12"/>
+    <property name="java.vm.vendor" value="Oracle Corporation"/>
+    <property name="maven.multiModuleProjectDirectory" value="/root/projects/moshi"/>
+    <property name="java.vendor.url" value="http://java.oracle.com/"/>
+    <property name="path.separator" value=":"/>
+    <property name="guice.disable.misplaced.annotation.check" value="true"/>
+    <property name="java.vm.name" value="Java HotSpot(TM) 64-Bit Server VM"/>
+    <property name="file.encoding.pkg" value="sun.io"/>
+    <property name="jna.loaded" value="true"/>
+    <property name="user.country" value="US"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="sun.os.patch.level" value="unknown"/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="user.dir" value="/root/projects/moshi"/>
+    <property name="java.runtime.version" value="1.8.0_161-b12"/>
+    <property name="java.awt.graphicsenv" value="sun.awt.X11GraphicsEnvironment"/>
+    <property name="java.endorsed.dirs" value="/usr/lib/jvm/java-8-oracle/jre/lib/endorsed"/>
+    <property name="os.arch" value="amd64"/>
+    <property name="java.io.tmpdir" value="/tmp"/>
+    <property name="line.separator" value="&#10;"/>
+    <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
+    <property name="os.name" value="Linux"/>
+    <property name="classworlds.conf" value="/usr/share/maven/bin/m2.conf"/>
+    <property name="sun.jnu.encoding" value="ANSI_X3.4-1968"/>
+    <property name="jnidispatch.path" value="/tmp/jna-3506402/jna4483690535423223575.tmp"/>
+    <property name="java.library.path" value="/usr/java/packages/lib/amd64:/usr/lib64:/lib64:/lib:/usr/lib"/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="java.class.version" value="52.0"/>
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
+    <property name="os.version" value="3.13.0-142-generic"/>
+    <property name="user.home" value="/root"/>
+    <property name="user.timezone" value="Etc/UTC"/>
+    <property name="java.awt.printerjob" value="sun.print.PSPrinterJob"/>
+    <property name="java.specification.version" value="1.8"/>
+    <property name="file.encoding" value="ANSI_X3.4-1968"/>
+    <property name="user.name" value="root"/>
+    <property name="java.class.path" value="/usr/share/maven/boot/plexus-classworlds-2.x.jar"/>
+    <property name="java.vm.specification.version" value="1.8"/>
+    <property name="sun.arch.data.model" value="64"/>
+    <property name="java.home" value="/usr/lib/jvm/java-8-oracle/jre"/>
+    <property name="sun.java.command" value="org.codehaus.plexus.classworlds.launcher.Launcher clean test org.pitest:pitest-maven:mutationCoverage"/>
+    <property name="java.specification.vendor" value="Oracle Corporation"/>
+    <property name="user.language" value="en"/>
+    <property name="awt.toolkit" value="sun.awt.X11.XToolkit"/>
+    <property name="java.vm.info" value="mixed mode"/>
+    <property name="java.version" value="1.8.0_161"/>
+    <property name="java.ext.dirs" value="/usr/lib/jvm/java-8-oracle/jre/lib/ext:/usr/java/packages/lib/ext"/>
+    <property name="securerandom.source" value="file:/dev/./urandom"/>
+    <property name="sun.boot.class.path" value="/usr/lib/jvm/java-8-oracle/jre/lib/resources.jar:/usr/lib/jvm/java-8-oracle/jre/lib/rt.jar:/usr/lib/jvm/java-8-oracle/jre/lib/sunrsasign.jar:/usr/lib/jvm/java-8-oracle/jre/lib/jsse.jar:/usr/lib/jvm/java-8-oracle/jre/lib/jce.jar:/usr/lib/jvm/java-8-oracle/jre/lib/charsets.jar:/usr/lib/jvm/java-8-oracle/jre/lib/jfr.jar:/usr/lib/jvm/java-8-oracle/jre/classes"/>
+    <property name="java.vendor" value="Oracle Corporation"/>
+    <property name="maven.home" value="/usr/share/maven"/>
+    <property name="file.separator" value="/"/>
+    <property name="java.vendor.url.bug" value="http://bugreport.sun.com/bugreport/"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
+    <property name="sun.cpu.isalist" value=""/>
+  </properties>
+  <testcase name="privateProperties" classname="com.squareup.moshi.kotlin.KotlinJsonAdapterTest" time="1.695"/>
+  <testcase name="privateConstructor" classname="com.squareup.moshi.kotlin.KotlinJsonAdapterTest" time="0.02"/>
+  <testcase name="repeatedValue" classname="com.squareup.moshi.kotlin.KotlinJsonAdapterTest" time="0.011"/>
+  <testcase name="platformTypeThrows" classname="com.squareup.moshi.kotlin.KotlinJsonAdapterTest" time="0.001"/>
+  <testcase name="absentNull" classname="com.squareup.moshi.kotlin.KotlinJsonAdapterTest" time="0.014"/>
+  <testcase name="constructorDefaults" classname="com.squareup.moshi.kotlin.KotlinJsonAdapterTest" time="0.006"/>
+  <testcase name="supertypeConstructorParameters" classname="com.squareup.moshi.kotlin.KotlinJsonAdapterTest" time="0.011"/>
+  <testcase name="requiredTransientConstructorParameterFails" classname="com.squareup.moshi.kotlin.KotlinJsonAdapterTest" time="0.073"/>
+  <testcase name="propertyWithQualifier" classname="com.squareup.moshi.kotlin.KotlinJsonAdapterTest" time="0.079"/>
+  <testcase name="constructorParameters" classname="com.squareup.moshi.kotlin.KotlinJsonAdapterTest" time="0.006"/>
+  <testcase name="propertyWithJsonName" classname="com.squareup.moshi.kotlin.KotlinJsonAdapterTest" time="0.05"/>
+  <testcase name="manyProperties32" classname="com.squareup.moshi.kotlin.KotlinJsonAdapterTest" time="0.044"/>
+  <testcase name="manyProperties33" classname="com.squareup.moshi.kotlin.KotlinJsonAdapterTest" time="0.029"/>
+  <testcase name="objectDeclarationsNotSupported" classname="com.squareup.moshi.kotlin.KotlinJsonAdapterTest" time="0.002"/>
+  <testcase name="kotlinEnumsAreNotCovered" classname="com.squareup.moshi.kotlin.KotlinJsonAdapterTest" time="0.041"/>
+  <testcase name="nonPropertyConstructorParameter" classname="com.squareup.moshi.kotlin.KotlinJsonAdapterTest" time="0.005"/>
+  <testcase name="constructorParameterWithJsonName" classname="com.squareup.moshi.kotlin.KotlinJsonAdapterTest" time="0.008"/>
+  <testcase name="extendsPlatformClassWithProtectedField" classname="com.squareup.moshi.kotlin.KotlinJsonAdapterTest" time="0.37"/>
+  <testcase name="properties" classname="com.squareup.moshi.kotlin.KotlinJsonAdapterTest" time="0.005"/>
+  <testcase name="constructorParameterWithQualifier" classname="com.squareup.moshi.kotlin.KotlinJsonAdapterTest" time="0.007"/>
+  <testcase name="privateConstructorParameters" classname="com.squareup.moshi.kotlin.KotlinJsonAdapterTest" time="0.006"/>
+  <testcase name="interfacesNotSupported" classname="com.squareup.moshi.kotlin.KotlinJsonAdapterTest" time="0.001"/>
+  <testcase name="nonNullPropertySetToNullFailsWithJsonDataException" classname="com.squareup.moshi.kotlin.KotlinJsonAdapterTest" time="0.004"/>
+  <testcase name="transientConstructorParameter" classname="com.squareup.moshi.kotlin.KotlinJsonAdapterTest" time="0.005"/>
+  <testcase name="supertypeProperties" classname="com.squareup.moshi.kotlin.KotlinJsonAdapterTest" time="0.006"/>
+  <testcase name="objectExpressionsNotSupported" classname="com.squareup.moshi.kotlin.KotlinJsonAdapterTest" time="0.002"/>
+  <testcase name="unsettablePropertyIgnored" classname="com.squareup.moshi.kotlin.KotlinJsonAdapterTest" time="0.006"/>
+  <testcase name="explicitNull" classname="com.squareup.moshi.kotlin.KotlinJsonAdapterTest" time="0.005"/>
+  <testcase name="constructorParametersAndPropertiesWithSameNamesMustHaveSameTypes" classname="com.squareup.moshi.kotlin.KotlinJsonAdapterTest" time="0.003"/>
+  <testcase name="transientProperty" classname="com.squareup.moshi.kotlin.KotlinJsonAdapterTest" time="0.005"/>
+  <testcase name="abstractClassesNotSupported" classname="com.squareup.moshi.kotlin.KotlinJsonAdapterTest" time="0.001"/>
+  <testcase name="extendsPlatformClassWithPrivateField" classname="com.squareup.moshi.kotlin.KotlinJsonAdapterTest" time="0.104"/>
+  <testcase name="duplicatedValue" classname="com.squareup.moshi.kotlin.KotlinJsonAdapterTest" time="0.005"/>
+  <testcase name="requiredValueAbsent" classname="com.squareup.moshi.kotlin.KotlinJsonAdapterTest" time="0.005"/>
+  <testcase name="localClassesNotSupported" classname="com.squareup.moshi.kotlin.KotlinJsonAdapterTest" time="0.002"/>
+  <testcase name="immutableProperties" classname="com.squareup.moshi.kotlin.KotlinJsonAdapterTest" time="0.005"/>
+  <testcase name="getterAndSetterNoBackingField" classname="com.squareup.moshi.kotlin.KotlinJsonAdapterTest" time="0.007"/>
+  <testcase name="getterOnlyNoBackingField" classname="com.squareup.moshi.kotlin.KotlinJsonAdapterTest" time="0.006"/>
+  <testcase name="constructorParametersAndProperties" classname="com.squareup.moshi.kotlin.KotlinJsonAdapterTest" time="0.005"/>
+  <testcase name="nonNullConstructorParameterCalledWithNullFailsWithJsonDataException" classname="com.squareup.moshi.kotlin.KotlinJsonAdapterTest" time="0.004"/>
+  <testcase name="immutableConstructorParameters" classname="com.squareup.moshi.kotlin.KotlinJsonAdapterTest" time="0.006"/>
+  <testcase name="innerClassesNotSupported" classname="com.squareup.moshi.kotlin.KotlinJsonAdapterTest" time="0.002"/>
+</testsuite>

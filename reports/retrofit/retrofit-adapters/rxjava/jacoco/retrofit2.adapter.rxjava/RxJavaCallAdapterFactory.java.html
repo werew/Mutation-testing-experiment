@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RxJavaCallAdapterFactory.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Adapter: RxJava</a> &gt; <a href="index.source.html" class="el_package">retrofit2.adapter.rxjava</a> &gt; <span class="el_source">RxJavaCallAdapterFactory.java</span></div><h1>RxJavaCallAdapterFactory.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2015 Square, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package retrofit2.adapter.rxjava;
+
+import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import javax.annotation.Nullable;
+import retrofit2.CallAdapter;
+import retrofit2.HttpException;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import rx.Completable;
+import rx.Observable;
+import rx.Scheduler;
+import rx.Single;
+
+/**
+ * A {@linkplain CallAdapter.Factory call adapter} which uses RxJava for creating observables.
+ * &lt;p&gt;
+ * Adding this class to {@link Retrofit} allows you to return an {@link Observable}, {@link Single},
+ * or {@link Completable} from service methods.
+ * &lt;pre&gt;&lt;code&gt;
+ * interface MyService {
+ *   &amp;#64;GET(&quot;user/me&quot;)
+ *   Observable&amp;lt;User&amp;gt; getUser()
+ * }
+ * &lt;/code&gt;&lt;/pre&gt;
+ * There are three configurations supported for the {@code Observable} or {@code Single} type
+ * parameter:
+ * &lt;ul&gt;
+ * &lt;li&gt;Direct body (e.g., {@code Observable&lt;User&gt;}) calls {@code onNext} with the deserialized body
+ * for 2XX responses and calls {@code onError} with {@link HttpException} for non-2XX responses and
+ * {@link IOException} for network errors.&lt;/li&gt;
+ * &lt;li&gt;Response wrapped body (e.g., {@code Observable&lt;Response&lt;User&gt;&gt;}) calls {@code onNext}
+ * with a {@link Response} object for all HTTP responses and calls {@code onError} with
+ * {@link IOException} for network errors&lt;/li&gt;
+ * &lt;li&gt;Result wrapped body (e.g., {@code Observable&lt;Result&lt;User&gt;&gt;}) calls {@code onNext} with a
+ * {@link Result} object for all HTTP responses and errors.&lt;/li&gt;
+ * &lt;/ul&gt;
+ * &lt;p&gt;
+ * &lt;em&gt;Note:&lt;/em&gt; Support for {@link Single} and {@link Completable} is experimental and subject
+ * to backwards-incompatible changes at any time since both of these types are not considered
+ * stable by RxJava.
+ */
+public final class RxJavaCallAdapterFactory extends CallAdapter.Factory {
+  /**
+   * Returns an instance which creates synchronous observables that do not operate on any scheduler
+   * by default.
+   */
+  public static RxJavaCallAdapterFactory create() {
+<span class="fc" id="L66">    return new RxJavaCallAdapterFactory(null, false);</span>
+  }
+
+  /**
+   * Returns an instance which creates asynchronous observables. Applying
+   * {@link Observable#subscribeOn} has no effect on stream types created by this factory.
+   */
+  public static RxJavaCallAdapterFactory createAsync() {
+<span class="fc" id="L74">    return new RxJavaCallAdapterFactory(null, true);</span>
+  }
+
+  /**
+   * Returns an instance which creates synchronous observables that
+   * {@linkplain Observable#subscribeOn(Scheduler) subscribe on} {@code scheduler} by default.
+   */
+  @SuppressWarnings(&quot;ConstantConditions&quot;) // Guarding public API nullability.
+  public static RxJavaCallAdapterFactory createWithScheduler(Scheduler scheduler) {
+<span class="fc bfc" id="L83" title="All 2 branches covered.">    if (scheduler == null) throw new NullPointerException(&quot;scheduler == null&quot;);</span>
+<span class="fc" id="L84">    return new RxJavaCallAdapterFactory(scheduler, false);</span>
+  }
+
+  private final @Nullable Scheduler scheduler;
+  private final boolean isAsync;
+
+<span class="fc" id="L90">  private RxJavaCallAdapterFactory(@Nullable Scheduler scheduler, boolean isAsync) {</span>
+<span class="fc" id="L91">    this.scheduler = scheduler;</span>
+<span class="fc" id="L92">    this.isAsync = isAsync;</span>
+<span class="fc" id="L93">  }</span>
+
+  @Override
+  public CallAdapter&lt;?, ?&gt; get(Type returnType, Annotation[] annotations, Retrofit retrofit) {
+<span class="fc" id="L97">    Class&lt;?&gt; rawType = getRawType(returnType);</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">    boolean isSingle = rawType == Single.class;</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">    boolean isCompletable = rawType == Completable.class;</span>
+<span class="fc bfc" id="L100" title="All 6 branches covered.">    if (rawType != Observable.class &amp;&amp; !isSingle &amp;&amp; !isCompletable) {</span>
+<span class="fc" id="L101">      return null;</span>
+    }
+
+<span class="fc bfc" id="L104" title="All 2 branches covered.">    if (isCompletable) {</span>
+<span class="fc" id="L105">      return new RxJavaCallAdapter(Void.class, scheduler, isAsync, false, true, false, true);</span>
+    }
+
+<span class="fc" id="L108">    boolean isResult = false;</span>
+<span class="fc" id="L109">    boolean isBody = false;</span>
+    Type responseType;
+<span class="fc bfc" id="L111" title="All 2 branches covered.">    if (!(returnType instanceof ParameterizedType)) {</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">      String name = isSingle ? &quot;Single&quot; : &quot;Observable&quot;;</span>
+<span class="fc" id="L113">      throw new IllegalStateException(name + &quot; return type must be parameterized&quot;</span>
+          + &quot; as &quot; + name + &quot;&lt;Foo&gt; or &quot; + name + &quot;&lt;? extends Foo&gt;&quot;);
+    }
+
+<span class="fc" id="L117">    Type observableType = getParameterUpperBound(0, (ParameterizedType) returnType);</span>
+<span class="fc" id="L118">    Class&lt;?&gt; rawObservableType = getRawType(observableType);</span>
+<span class="fc bfc" id="L119" title="All 2 branches covered.">    if (rawObservableType == Response.class) {</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">      if (!(observableType instanceof ParameterizedType)) {</span>
+<span class="fc" id="L121">        throw new IllegalStateException(&quot;Response must be parameterized&quot;</span>
+            + &quot; as Response&lt;Foo&gt; or Response&lt;? extends Foo&gt;&quot;);
+      }
+<span class="fc" id="L124">      responseType = getParameterUpperBound(0, (ParameterizedType) observableType);</span>
+<span class="fc bfc" id="L125" title="All 2 branches covered.">    } else if (rawObservableType == Result.class) {</span>
+<span class="fc bfc" id="L126" title="All 2 branches covered.">      if (!(observableType instanceof ParameterizedType)) {</span>
+<span class="fc" id="L127">        throw new IllegalStateException(&quot;Result must be parameterized&quot;</span>
+            + &quot; as Result&lt;Foo&gt; or Result&lt;? extends Foo&gt;&quot;);
+      }
+<span class="fc" id="L130">      responseType = getParameterUpperBound(0, (ParameterizedType) observableType);</span>
+<span class="fc" id="L131">      isResult = true;</span>
+    } else {
+<span class="fc" id="L133">      responseType = observableType;</span>
+<span class="fc" id="L134">      isBody = true;</span>
+    }
+
+<span class="fc" id="L137">    return new RxJavaCallAdapter(responseType, scheduler, isAsync, isResult, isBody, isSingle,</span>
+        false);
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

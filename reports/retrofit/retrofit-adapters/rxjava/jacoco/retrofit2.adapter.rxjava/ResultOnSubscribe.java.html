@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ResultOnSubscribe.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Adapter: RxJava</a> &gt; <a href="index.source.html" class="el_package">retrofit2.adapter.rxjava</a> &gt; <span class="el_source">ResultOnSubscribe.java</span></div><h1>ResultOnSubscribe.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2016 Jake Wharton
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package retrofit2.adapter.rxjava;
+
+import retrofit2.Response;
+import rx.Observable.OnSubscribe;
+import rx.Subscriber;
+import rx.exceptions.CompositeException;
+import rx.exceptions.Exceptions;
+import rx.exceptions.OnCompletedFailedException;
+import rx.exceptions.OnErrorFailedException;
+import rx.exceptions.OnErrorNotImplementedException;
+import rx.plugins.RxJavaPlugins;
+
+final class ResultOnSubscribe&lt;T&gt; implements OnSubscribe&lt;Result&lt;T&gt;&gt; {
+  private final OnSubscribe&lt;Response&lt;T&gt;&gt; upstream;
+
+<span class="fc" id="L31">  ResultOnSubscribe(OnSubscribe&lt;Response&lt;T&gt;&gt; upstream) {</span>
+<span class="fc" id="L32">    this.upstream = upstream;</span>
+<span class="fc" id="L33">  }</span>
+
+  @Override public void call(Subscriber&lt;? super Result&lt;T&gt;&gt; subscriber) {
+<span class="fc" id="L36">    upstream.call(new ResultSubscriber&lt;T&gt;(subscriber));</span>
+<span class="fc" id="L37">  }</span>
+
+  private static class ResultSubscriber&lt;R&gt; extends Subscriber&lt;Response&lt;R&gt;&gt; {
+    private final Subscriber&lt;? super Result&lt;R&gt;&gt; subscriber;
+
+    ResultSubscriber(Subscriber&lt;? super Result&lt;R&gt;&gt; subscriber) {
+<span class="fc" id="L43">      super(subscriber);</span>
+<span class="fc" id="L44">      this.subscriber = subscriber;</span>
+<span class="fc" id="L45">    }</span>
+
+    @Override public void onNext(Response&lt;R&gt; response) {
+<span class="fc" id="L48">      subscriber.onNext(Result.response(response));</span>
+<span class="fc" id="L49">    }</span>
+
+    @Override public void onError(Throwable throwable) {
+      try {
+<span class="fc" id="L53">        subscriber.onNext(Result.&lt;R&gt;error(throwable));</span>
+<span class="fc" id="L54">      } catch (Throwable t) {</span>
+        try {
+<span class="fc" id="L56">          subscriber.onError(t);</span>
+<span class="nc" id="L57">        } catch (OnCompletedFailedException</span>
+            | OnErrorFailedException
+            | OnErrorNotImplementedException e) {
+<span class="nc" id="L60">          RxJavaPlugins.getInstance().getErrorHandler().handleError(e);</span>
+<span class="fc" id="L61">        } catch (Throwable inner) {</span>
+<span class="fc" id="L62">          Exceptions.throwIfFatal(inner);</span>
+<span class="fc" id="L63">          CompositeException composite = new CompositeException(t, inner);</span>
+<span class="fc" id="L64">          RxJavaPlugins.getInstance().getErrorHandler().handleError(composite);</span>
+<span class="pc" id="L65">        }</span>
+<span class="fc" id="L66">        return;</span>
+<span class="fc" id="L67">      }</span>
+<span class="fc" id="L68">      subscriber.onCompleted();</span>
+<span class="fc" id="L69">    }</span>
+
+    @Override public void onCompleted() {
+<span class="fc" id="L72">      subscriber.onCompleted();</span>
+<span class="fc" id="L73">    }</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

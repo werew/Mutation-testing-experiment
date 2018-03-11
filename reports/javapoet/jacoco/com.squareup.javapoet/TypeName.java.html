@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TypeName.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JavaPoet</a> &gt; <a href="index.source.html" class="el_package">com.squareup.javapoet</a> &gt; <span class="el_source">TypeName.java</span></div><h1>TypeName.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2015 Square, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.squareup.javapoet;
+
+import java.io.IOException;
+import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+import java.lang.reflect.WildcardType;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import javax.lang.model.element.Modifier;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.TypeParameterElement;
+import javax.lang.model.type.ArrayType;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.ErrorType;
+import javax.lang.model.type.NoType;
+import javax.lang.model.type.PrimitiveType;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.SimpleTypeVisitor8;
+
+/**
+ * Any type in Java's type system, plus {@code void}. This class is an identifier for primitive
+ * types like {@code int} and raw reference types like {@code String} and {@code List}. It also
+ * identifies composite types like {@code char[]} and {@code Set&lt;Long&gt;}.
+ *
+ * &lt;p&gt;Type names are dumb identifiers only and do not model the values they name. For example, the
+ * type name for {@code java.lang.List} doesn't know about the {@code size()} method, the fact that
+ * lists are collections, or even that it accepts a single type parameter.
+ *
+ * &lt;p&gt;Instances of this class are immutable value objects that implement {@code equals()} and {@code
+ * hashCode()} properly.
+ *
+ * &lt;h3&gt;Referencing existing types&lt;/h3&gt;
+ *
+ * &lt;p&gt;Primitives and void are constants that you can reference directly: see {@link #INT}, {@link
+ * #DOUBLE}, and {@link #VOID}.
+ *
+ * &lt;p&gt;In an annotation processor you can get a type name instance for a type mirror by calling
+ * {@link #get(TypeMirror)}. In reflection code, you can use {@link #get(Type)}.
+ *
+ * &lt;h3&gt;Defining new types&lt;/h3&gt;
+ *
+ * &lt;p&gt;Create new reference types like {@code com.example.HelloWorld} with {@link
+ * ClassName#get(String, String, String...)}. To build composite types like {@code char[]} and
+ * {@code Set&lt;Long&gt;}, use the factory methods on {@link ArrayTypeName}, {@link
+ * ParameterizedTypeName}, {@link TypeVariableName}, and {@link WildcardTypeName}.
+ */
+public class TypeName {
+<span class="fc" id="L69">  public static final TypeName VOID = new TypeName(&quot;void&quot;);</span>
+<span class="fc" id="L70">  public static final TypeName BOOLEAN = new TypeName(&quot;boolean&quot;);</span>
+<span class="fc" id="L71">  public static final TypeName BYTE = new TypeName(&quot;byte&quot;);</span>
+<span class="fc" id="L72">  public static final TypeName SHORT = new TypeName(&quot;short&quot;);</span>
+<span class="fc" id="L73">  public static final TypeName INT = new TypeName(&quot;int&quot;);</span>
+<span class="fc" id="L74">  public static final TypeName LONG = new TypeName(&quot;long&quot;);</span>
+<span class="fc" id="L75">  public static final TypeName CHAR = new TypeName(&quot;char&quot;);</span>
+<span class="fc" id="L76">  public static final TypeName FLOAT = new TypeName(&quot;float&quot;);</span>
+<span class="fc" id="L77">  public static final TypeName DOUBLE = new TypeName(&quot;double&quot;);</span>
+<span class="fc" id="L78">  public static final ClassName OBJECT = ClassName.get(&quot;java.lang&quot;, &quot;Object&quot;);</span>
+
+<span class="fc" id="L80">  private static final ClassName BOXED_VOID = ClassName.get(&quot;java.lang&quot;, &quot;Void&quot;);</span>
+<span class="fc" id="L81">  private static final ClassName BOXED_BOOLEAN = ClassName.get(&quot;java.lang&quot;, &quot;Boolean&quot;);</span>
+<span class="fc" id="L82">  private static final ClassName BOXED_BYTE = ClassName.get(&quot;java.lang&quot;, &quot;Byte&quot;);</span>
+<span class="fc" id="L83">  private static final ClassName BOXED_SHORT = ClassName.get(&quot;java.lang&quot;, &quot;Short&quot;);</span>
+<span class="fc" id="L84">  private static final ClassName BOXED_INT = ClassName.get(&quot;java.lang&quot;, &quot;Integer&quot;);</span>
+<span class="fc" id="L85">  private static final ClassName BOXED_LONG = ClassName.get(&quot;java.lang&quot;, &quot;Long&quot;);</span>
+<span class="fc" id="L86">  private static final ClassName BOXED_CHAR = ClassName.get(&quot;java.lang&quot;, &quot;Character&quot;);</span>
+<span class="fc" id="L87">  private static final ClassName BOXED_FLOAT = ClassName.get(&quot;java.lang&quot;, &quot;Float&quot;);</span>
+<span class="fc" id="L88">  private static final ClassName BOXED_DOUBLE = ClassName.get(&quot;java.lang&quot;, &quot;Double&quot;);</span>
+
+  /** The name of this type if it is a keyword, or null. */
+  private final String keyword;
+  public final List&lt;AnnotationSpec&gt; annotations;
+
+  /** Lazily-initialized toString of this type name. */
+  private String cachedString;
+
+  private TypeName(String keyword) {
+<span class="fc" id="L98">    this(keyword, new ArrayList&lt;&gt;());</span>
+<span class="fc" id="L99">  }</span>
+
+<span class="fc" id="L101">  private TypeName(String keyword, List&lt;AnnotationSpec&gt; annotations) {</span>
+<span class="fc" id="L102">    this.keyword = keyword;</span>
+<span class="fc" id="L103">    this.annotations = Util.immutableList(annotations);</span>
+<span class="fc" id="L104">  }</span>
+
+  // Package-private constructor to prevent third-party subclasses.
+  TypeName(List&lt;AnnotationSpec&gt; annotations) {
+<span class="fc" id="L108">    this(null, annotations);</span>
+<span class="fc" id="L109">  }</span>
+
+  public final TypeName annotated(AnnotationSpec... annotations) {
+<span class="fc" id="L112">    return annotated(Arrays.asList(annotations));</span>
+  }
+
+  public TypeName annotated(List&lt;AnnotationSpec&gt; annotations) {
+<span class="fc" id="L116">    Util.checkNotNull(annotations, &quot;annotations == null&quot;);</span>
+<span class="fc" id="L117">    return new TypeName(keyword, concatAnnotations(annotations));</span>
+  }
+
+  public TypeName withoutAnnotations() {
+<span class="nc" id="L121">    return new TypeName(keyword);</span>
+  }
+
+  protected final List&lt;AnnotationSpec&gt; concatAnnotations(List&lt;AnnotationSpec&gt; annotations) {
+<span class="fc" id="L125">    List&lt;AnnotationSpec&gt; allAnnotations = new ArrayList&lt;&gt;(this.annotations);</span>
+<span class="fc" id="L126">    allAnnotations.addAll(annotations);</span>
+<span class="fc" id="L127">    return allAnnotations;</span>
+  }
+
+  public boolean isAnnotated() {
+<span class="fc bfc" id="L131" title="All 2 branches covered.">    return !annotations.isEmpty();</span>
+  }
+
+  /**
+   * Returns true if this is a primitive type like {@code int}. Returns false for all other types
+   * types including boxed primitives and {@code void}.
+   */
+  public boolean isPrimitive() {
+<span class="fc bfc" id="L139" title="All 4 branches covered.">    return keyword != null &amp;&amp; this != VOID;</span>
+  }
+
+  /**
+   * Returns true if this is a boxed primitive type like {@code Integer}. Returns false for all
+   * other types types including unboxed primitives and {@code java.lang.Void}.
+   */
+  public boolean isBoxedPrimitive() {
+<span class="pc bpc" id="L147" title="1 of 2 branches missed.">    return this.equals(BOXED_BOOLEAN)</span>
+<span class="pc bpc" id="L148" title="1 of 2 branches missed.">        || this.equals(BOXED_BYTE)</span>
+<span class="pc bpc" id="L149" title="1 of 2 branches missed.">        || this.equals(BOXED_SHORT)</span>
+<span class="fc bfc" id="L150" title="All 2 branches covered.">        || this.equals(BOXED_INT)</span>
+<span class="pc bpc" id="L151" title="1 of 2 branches missed.">        || this.equals(BOXED_LONG)</span>
+<span class="pc bpc" id="L152" title="1 of 2 branches missed.">        || this.equals(BOXED_CHAR)</span>
+<span class="pc bpc" id="L153" title="1 of 2 branches missed.">        || this.equals(BOXED_FLOAT)</span>
+<span class="pc bpc" id="L154" title="1 of 2 branches missed.">        || this.equals(BOXED_DOUBLE);</span>
+  }
+
+  /**
+   * Returns a boxed type if this is a primitive type (like {@code Integer} for {@code int}) or
+   * {@code void}. Returns this type if boxing doesn't apply.
+   */
+  public TypeName box() {
+<span class="fc bfc" id="L162" title="All 2 branches covered.">    if (keyword == null) return this; // Doesn't need boxing.</span>
+<span class="fc bfc" id="L163" title="All 2 branches covered.">    if (this == VOID) return BOXED_VOID;</span>
+<span class="pc bpc" id="L164" title="1 of 2 branches missed.">    if (this == BOOLEAN) return BOXED_BOOLEAN;</span>
+<span class="pc bpc" id="L165" title="1 of 2 branches missed.">    if (this == BYTE) return BOXED_BYTE;</span>
+<span class="pc bpc" id="L166" title="1 of 2 branches missed.">    if (this == SHORT) return BOXED_SHORT;</span>
+<span class="pc bpc" id="L167" title="1 of 2 branches missed.">    if (this == INT) return BOXED_INT;</span>
+<span class="nc bnc" id="L168" title="All 2 branches missed.">    if (this == LONG) return BOXED_LONG;</span>
+<span class="nc bnc" id="L169" title="All 2 branches missed.">    if (this == CHAR) return BOXED_CHAR;</span>
+<span class="nc bnc" id="L170" title="All 2 branches missed.">    if (this == FLOAT) return BOXED_FLOAT;</span>
+<span class="nc bnc" id="L171" title="All 2 branches missed.">    if (this == DOUBLE) return BOXED_DOUBLE;</span>
+<span class="nc" id="L172">    throw new AssertionError(keyword);</span>
+  }
+
+  /**
+   * Returns an unboxed type if this is a boxed primitive type (like {@code int} for {@code
+   * Integer}) or {@code Void}. Returns this type if it is already unboxed.
+   *
+   * @throws UnsupportedOperationException if this type isn't eligible for unboxing.
+   */
+  public TypeName unbox() {
+<span class="fc bfc" id="L182" title="All 2 branches covered.">    if (keyword != null) return this; // Already unboxed.</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">    if (this.equals(BOXED_VOID)) return VOID;</span>
+<span class="pc bpc" id="L184" title="1 of 2 branches missed.">    if (this.equals(BOXED_BOOLEAN)) return BOOLEAN;</span>
+<span class="pc bpc" id="L185" title="1 of 2 branches missed.">    if (this.equals(BOXED_BYTE)) return BYTE;</span>
+<span class="pc bpc" id="L186" title="1 of 2 branches missed.">    if (this.equals(BOXED_SHORT)) return SHORT;</span>
+<span class="fc bfc" id="L187" title="All 2 branches covered.">    if (this.equals(BOXED_INT)) return INT;</span>
+<span class="pc bpc" id="L188" title="1 of 2 branches missed.">    if (this.equals(BOXED_LONG)) return LONG;</span>
+<span class="pc bpc" id="L189" title="1 of 2 branches missed.">    if (this.equals(BOXED_CHAR)) return CHAR;</span>
+<span class="pc bpc" id="L190" title="1 of 2 branches missed.">    if (this.equals(BOXED_FLOAT)) return FLOAT;</span>
+<span class="pc bpc" id="L191" title="1 of 2 branches missed.">    if (this.equals(BOXED_DOUBLE)) return DOUBLE;</span>
+<span class="fc" id="L192">    throw new UnsupportedOperationException(&quot;cannot unbox &quot; + this);</span>
+  }
+
+  @Override public final boolean equals(Object o) {
+<span class="fc bfc" id="L196" title="All 2 branches covered.">    if (this == o) return true;</span>
+<span class="fc bfc" id="L197" title="All 2 branches covered.">    if (o == null) return false;</span>
+<span class="fc bfc" id="L198" title="All 2 branches covered.">    if (getClass() != o.getClass()) return false;</span>
+<span class="fc" id="L199">    return toString().equals(o.toString());</span>
+  }
+
+  @Override public final int hashCode() {
+<span class="fc" id="L203">    return toString().hashCode();</span>
+  }
+
+  @Override public final String toString() {
+<span class="fc" id="L207">    String result = cachedString;</span>
+<span class="fc bfc" id="L208" title="All 2 branches covered.">    if (result == null) {</span>
+      try {
+<span class="fc" id="L210">        StringBuilder resultBuilder = new StringBuilder();</span>
+<span class="fc" id="L211">        CodeWriter codeWriter = new CodeWriter(resultBuilder);</span>
+<span class="fc" id="L212">        emitAnnotations(codeWriter);</span>
+<span class="fc" id="L213">        emit(codeWriter);</span>
+<span class="fc" id="L214">        result = resultBuilder.toString();</span>
+<span class="fc" id="L215">        cachedString = result;</span>
+<span class="nc" id="L216">      } catch (IOException e) {</span>
+<span class="nc" id="L217">        throw new AssertionError();</span>
+<span class="fc" id="L218">      }</span>
+    }
+<span class="fc" id="L220">    return result;</span>
+  }
+
+  CodeWriter emit(CodeWriter out) throws IOException {
+<span class="pc bpc" id="L224" title="1 of 2 branches missed.">    if (keyword == null) throw new AssertionError();</span>
+<span class="fc" id="L225">    return out.emitAndIndent(keyword);</span>
+  }
+
+  CodeWriter emitAnnotations(CodeWriter out) throws IOException {
+<span class="fc bfc" id="L229" title="All 2 branches covered.">    for (AnnotationSpec annotation : annotations) {</span>
+<span class="fc" id="L230">      annotation.emit(out, true);</span>
+<span class="fc" id="L231">      out.emit(&quot; &quot;);</span>
+<span class="fc" id="L232">    }</span>
+<span class="fc" id="L233">    return out;</span>
+  }
+
+  /** Returns a type name equivalent to {@code mirror}. */
+  public static TypeName get(TypeMirror mirror) {
+<span class="fc" id="L238">    return get(mirror, new LinkedHashMap&lt;&gt;());</span>
+  }
+
+  static TypeName get(TypeMirror mirror,
+      final Map&lt;TypeParameterElement, TypeVariableName&gt; typeVariables) {
+<span class="fc" id="L243">    return mirror.accept(new SimpleTypeVisitor8&lt;TypeName, Void&gt;() {</span>
+      @Override public TypeName visitPrimitive(PrimitiveType t, Void p) {
+<span class="pc bpc" id="L245" title="1 of 9 branches missed.">        switch (t.getKind()) {</span>
+          case BOOLEAN:
+<span class="fc" id="L247">            return TypeName.BOOLEAN;</span>
+          case BYTE:
+<span class="fc" id="L249">            return TypeName.BYTE;</span>
+          case SHORT:
+<span class="fc" id="L251">            return TypeName.SHORT;</span>
+          case INT:
+<span class="fc" id="L253">            return TypeName.INT;</span>
+          case LONG:
+<span class="fc" id="L255">            return TypeName.LONG;</span>
+          case CHAR:
+<span class="fc" id="L257">            return TypeName.CHAR;</span>
+          case FLOAT:
+<span class="fc" id="L259">            return TypeName.FLOAT;</span>
+          case DOUBLE:
+<span class="fc" id="L261">            return TypeName.DOUBLE;</span>
+          default:
+<span class="nc" id="L263">            throw new AssertionError();</span>
+        }
+      }
+
+      @Override public TypeName visitDeclared(DeclaredType t, Void p) {
+<span class="fc" id="L268">        ClassName rawType = ClassName.get((TypeElement) t.asElement());</span>
+<span class="fc" id="L269">        TypeMirror enclosingType = t.getEnclosingType();</span>
+        TypeName enclosing =
+<span class="fc bfc" id="L271" title="All 2 branches covered.">            (enclosingType.getKind() != TypeKind.NONE)</span>
+<span class="pc bpc" id="L272" title="1 of 2 branches missed.">                    &amp;&amp; !t.asElement().getModifiers().contains(Modifier.STATIC)</span>
+<span class="nc" id="L273">                ? enclosingType.accept(this, null)</span>
+<span class="fc" id="L274">                : null;</span>
+<span class="pc bpc" id="L275" title="1 of 4 branches missed.">        if (t.getTypeArguments().isEmpty() &amp;&amp; !(enclosing instanceof ParameterizedTypeName)) {</span>
+<span class="fc" id="L276">          return rawType;</span>
+        }
+
+<span class="fc" id="L279">        List&lt;TypeName&gt; typeArgumentNames = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L280" title="All 2 branches covered.">        for (TypeMirror mirror : t.getTypeArguments()) {</span>
+<span class="fc" id="L281">          typeArgumentNames.add(get(mirror, typeVariables));</span>
+<span class="fc" id="L282">        }</span>
+<span class="pc bpc" id="L283" title="1 of 2 branches missed.">        return enclosing instanceof ParameterizedTypeName</span>
+<span class="nc" id="L284">            ? ((ParameterizedTypeName) enclosing).nestedClass(</span>
+<span class="nc" id="L285">            rawType.simpleName(), typeArgumentNames)</span>
+<span class="fc" id="L286">            : new ParameterizedTypeName(null, rawType, typeArgumentNames);</span>
+      }
+
+      @Override public TypeName visitError(ErrorType t, Void p) {
+<span class="fc" id="L290">        return visitDeclared(t, p);</span>
+      }
+
+      @Override public ArrayTypeName visitArray(ArrayType t, Void p) {
+<span class="fc" id="L294">        return ArrayTypeName.get(t, typeVariables);</span>
+      }
+
+      @Override public TypeName visitTypeVariable(javax.lang.model.type.TypeVariable t, Void p) {
+<span class="fc" id="L298">        return TypeVariableName.get(t, typeVariables);</span>
+      }
+
+      @Override public TypeName visitWildcard(javax.lang.model.type.WildcardType t, Void p) {
+<span class="fc" id="L302">        return WildcardTypeName.get(t, typeVariables);</span>
+      }
+
+      @Override public TypeName visitNoType(NoType t, Void p) {
+<span class="pc bpc" id="L306" title="1 of 2 branches missed.">        if (t.getKind() == TypeKind.VOID) return TypeName.VOID;</span>
+<span class="nc" id="L307">        return super.visitUnknown(t, p);</span>
+      }
+
+      @Override protected TypeName defaultAction(TypeMirror e, Void p) {
+<span class="fc" id="L311">        throw new IllegalArgumentException(&quot;Unexpected type mirror: &quot; + e);</span>
+      }
+    }, null);
+  }
+
+  /** Returns a type name equivalent to {@code type}. */
+  public static TypeName get(Type type) {
+<span class="fc" id="L318">    return get(type, new LinkedHashMap&lt;&gt;());</span>
+  }
+
+  static TypeName get(Type type, Map&lt;Type, TypeVariableName&gt; map) {
+<span class="fc bfc" id="L322" title="All 2 branches covered.">    if (type instanceof Class&lt;?&gt;) {</span>
+<span class="fc" id="L323">      Class&lt;?&gt; classType = (Class&lt;?&gt;) type;</span>
+<span class="pc bpc" id="L324" title="1 of 2 branches missed.">      if (type == void.class) return VOID;</span>
+<span class="fc bfc" id="L325" title="All 2 branches covered.">      if (type == boolean.class) return BOOLEAN;</span>
+<span class="pc bpc" id="L326" title="1 of 2 branches missed.">      if (type == byte.class) return BYTE;</span>
+<span class="pc bpc" id="L327" title="1 of 2 branches missed.">      if (type == short.class) return SHORT;</span>
+<span class="fc bfc" id="L328" title="All 2 branches covered.">      if (type == int.class) return INT;</span>
+<span class="fc bfc" id="L329" title="All 2 branches covered.">      if (type == long.class) return LONG;</span>
+<span class="pc bpc" id="L330" title="1 of 2 branches missed.">      if (type == char.class) return CHAR;</span>
+<span class="pc bpc" id="L331" title="1 of 2 branches missed.">      if (type == float.class) return FLOAT;</span>
+<span class="pc bpc" id="L332" title="1 of 2 branches missed.">      if (type == double.class) return DOUBLE;</span>
+<span class="fc bfc" id="L333" title="All 2 branches covered.">      if (classType.isArray()) return ArrayTypeName.of(get(classType.getComponentType(), map));</span>
+<span class="fc" id="L334">      return ClassName.get(classType);</span>
+
+<span class="fc bfc" id="L336" title="All 2 branches covered.">    } else if (type instanceof ParameterizedType) {</span>
+<span class="fc" id="L337">      return ParameterizedTypeName.get((ParameterizedType) type, map);</span>
+
+<span class="pc bpc" id="L339" title="1 of 2 branches missed.">    } else if (type instanceof WildcardType) {</span>
+<span class="nc" id="L340">      return WildcardTypeName.get((WildcardType) type, map);</span>
+
+<span class="fc bfc" id="L342" title="All 2 branches covered.">    } else if (type instanceof TypeVariable&lt;?&gt;) {</span>
+<span class="fc" id="L343">      return TypeVariableName.get((TypeVariable&lt;?&gt;) type, map);</span>
+
+<span class="pc bpc" id="L345" title="1 of 2 branches missed.">    } else if (type instanceof GenericArrayType) {</span>
+<span class="fc" id="L346">      return ArrayTypeName.get((GenericArrayType) type, map);</span>
+
+    } else {
+<span class="nc" id="L349">      throw new IllegalArgumentException(&quot;unexpected type: &quot; + type);</span>
+    }
+  }
+
+  /** Converts an array of types to a list of type names. */
+  static List&lt;TypeName&gt; list(Type[] types) {
+<span class="fc" id="L355">    return list(types, new LinkedHashMap&lt;&gt;());</span>
+  }
+
+  static List&lt;TypeName&gt; list(Type[] types, Map&lt;Type, TypeVariableName&gt; map) {
+<span class="fc" id="L359">    List&lt;TypeName&gt; result = new ArrayList&lt;&gt;(types.length);</span>
+<span class="fc bfc" id="L360" title="All 2 branches covered.">    for (Type type : types) {</span>
+<span class="fc" id="L361">      result.add(get(type, map));</span>
+    }
+<span class="fc" id="L363">    return result;</span>
+  }
+
+  /** Returns the array component of {@code type}, or null if {@code type} is not an array. */
+  static TypeName arrayComponent(TypeName type) {
+<span class="pc bpc" id="L368" title="1 of 2 branches missed.">    return type instanceof ArrayTypeName</span>
+<span class="fc" id="L369">        ? ((ArrayTypeName) type).componentType</span>
+<span class="nc" id="L370">        : null;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

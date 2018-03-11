@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ObjectGraph.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Dagger</a> &gt; <a href="index.source.html" class="el_package">dagger</a> &gt; <span class="el_source">ObjectGraph.java</span></div><h1>ObjectGraph.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2012 Square, Inc.
+ * Copyright (C) 2012 Google, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package dagger;
+
+import dagger.internal.Binding;
+import dagger.internal.BindingsGroup;
+import dagger.internal.FailoverLoader;
+import dagger.internal.Keys;
+import dagger.internal.Linker;
+import dagger.internal.Loader;
+import dagger.internal.ModuleAdapter;
+import dagger.internal.Modules;
+import dagger.internal.ProblemDetector;
+import dagger.internal.SetBinding;
+import dagger.internal.StaticInjection;
+import dagger.internal.ThrowingErrorHandler;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+
+/**
+ * A graph of objects linked by their dependencies.
+ *
+ * &lt;p&gt;The following injection features are supported:
+ * &lt;ul&gt;
+ *   &lt;li&gt;Field injection. A class may have any number of field injections, and
+ *       fields may be of any visibility. Static fields will be injected each
+ *       time an instance is injected.
+ *   &lt;li&gt;Constructor injection. A class may have a single
+ *       {@code @Inject}-annotated constructor. Classes that have fields
+ *       injected may omit the {@code @Inject} annotation if they have a public
+ *       no-arguments constructor.
+ *   &lt;li&gt;Injection of {@code @Provides} method parameters.
+ *   &lt;li&gt;{@code @Provides} methods annotated {@code @Singleton}.
+ *   &lt;li&gt;Constructor-injected classes annotated {@code @Singleton}.
+ *   &lt;li&gt;Injection of {@code Provider}s.
+ *   &lt;li&gt;Injection of {@code MembersInjector}s.
+ *   &lt;li&gt;Qualifier annotations on injected parameters and fields.
+ *   &lt;li&gt;JSR 330 annotations.
+ * &lt;/ul&gt;
+ *
+ * &lt;p&gt;The following injection features are not currently supported:
+ * &lt;ul&gt;
+ *   &lt;li&gt;Method injection.&lt;/li&gt;
+ *   &lt;li&gt;Circular dependencies.&lt;/li&gt;
+ * &lt;/ul&gt;
+ */
+public abstract class ObjectGraph {
+<span class="fc" id="L66">  ObjectGraph() {</span>
+<span class="fc" id="L67">  }</span>
+
+  /**
+   * Returns an instance of {@code type}.
+   *
+   * @throws IllegalArgumentException if {@code type} is not one of this object
+   *     graph's {@link Module#injects injectable types}.
+   */
+  public abstract &lt;T&gt; T get(Class&lt;T&gt; type);
+
+  /**
+   * Injects the members of {@code instance}, including injectable members
+   * inherited from its supertypes.
+   *
+   * @throws IllegalArgumentException if the runtime type of {@code instance} is
+   *     not one of this object graph's {@link Module#injects injectable types}.
+   */
+  public abstract &lt;T&gt; T inject(T instance);
+
+  /**
+   * Returns a new object graph that includes all of the objects in this graph,
+   * plus additional objects in the {@literal @}{@link Module}-annotated
+   * modules. This graph is a subgraph of the returned graph.
+   *
+   * &lt;p&gt;The current graph is not modified by this operation: its objects and the
+   * dependency links between them are unchanged. But this graph's objects may
+   * be shared by both graphs. For example, the singletons of this graph may be
+   * injected and used by the returned graph.
+   *
+   * &lt;p&gt;This &lt;strong&gt;does not&lt;/strong&gt; inject any members or validate the graph.
+   * See {@link #create} for guidance on injection and validation.
+   */
+  public abstract ObjectGraph plus(Object... modules);
+
+  /**
+   * Do runtime graph problem detection. For fastest graph creation, rely on
+   * build time tools for graph validation.
+   *
+   * @throws IllegalStateException if this graph has problems.
+   */
+  public abstract void validate();
+
+  /**
+   * Injects the static fields of the classes listed in the object graph's
+   * {@code staticInjections} property.
+   */
+  public abstract void injectStatics();
+
+  /**
+   * Returns a new dependency graph using the {@literal @}{@link
+   * Module}-annotated modules.
+   *
+   * &lt;p&gt;This &lt;strong&gt;does not&lt;/strong&gt; inject any members. Most applications
+   * should call {@link #injectStatics} to inject static members and {@link
+   * #inject} or get {@link #get(Class)} to inject instance members when this
+   * method has returned.
+   *
+   * &lt;p&gt;This &lt;strong&gt;does not&lt;/strong&gt; validate the graph. Rely on build time
+   * tools for graph validation, or call {@link #validate} to find problems in
+   * the graph at runtime.
+   */
+  public static ObjectGraph create(Object... modules) {
+<span class="fc" id="L129">    return DaggerObjectGraph.makeGraph(null, new FailoverLoader(), modules);</span>
+  }
+
+  // visible for testing
+  static ObjectGraph createWith(Loader loader, Object... modules) {
+<span class="fc" id="L134">    return DaggerObjectGraph.makeGraph(null, loader, modules);</span>
+  }
+
+  // TODO(cgruber): Move this internal implementation of ObjectGraph into the internal package.
+  static class DaggerObjectGraph extends ObjectGraph {
+    private final DaggerObjectGraph base;
+    private final Linker linker;
+    private final Loader plugin;
+    private final Map&lt;Class&lt;?&gt;, StaticInjection&gt; staticInjections;
+    private final Map&lt;String, Class&lt;?&gt;&gt; injectableTypes;
+    private final List&lt;SetBinding&lt;?&gt;&gt; setBindings;
+
+    DaggerObjectGraph(DaggerObjectGraph base,
+        Linker linker,
+        Loader plugin,
+        Map&lt;Class&lt;?&gt;, StaticInjection&gt; staticInjections,
+        Map&lt;String, Class&lt;?&gt;&gt; injectableTypes,
+<span class="fc" id="L151">        List&lt;SetBinding&lt;?&gt;&gt; setBindings) {</span>
+
+<span class="fc" id="L153">      this.base = base;</span>
+<span class="fc" id="L154">      this.linker = checkNotNull(linker, &quot;linker&quot;);</span>
+<span class="fc" id="L155">      this.plugin = checkNotNull(plugin, &quot;plugin&quot;);</span>
+<span class="fc" id="L156">      this.staticInjections = checkNotNull(staticInjections, &quot;staticInjections&quot;);</span>
+<span class="fc" id="L157">      this.injectableTypes = checkNotNull(injectableTypes, &quot;injectableTypes&quot;);</span>
+<span class="fc" id="L158">      this.setBindings = checkNotNull(setBindings, &quot;setBindings&quot;);</span>
+<span class="fc" id="L159">    }</span>
+
+    private static &lt;T&gt; T checkNotNull(T object, String label) {
+<span class="pc bpc" id="L162" title="1 of 2 branches missed.">      if (object == null) throw new NullPointerException(label);</span>
+<span class="fc" id="L163">      return object;</span>
+    }
+
+    static ObjectGraph makeGraph(DaggerObjectGraph base, Loader plugin, Object... modules) {
+<span class="fc" id="L167">      Map&lt;String, Class&lt;?&gt;&gt; injectableTypes = new LinkedHashMap&lt;String, Class&lt;?&gt;&gt;();</span>
+<span class="fc" id="L168">      Map&lt;Class&lt;?&gt;, StaticInjection&gt; staticInjections</span>
+          = new LinkedHashMap&lt;Class&lt;?&gt;, StaticInjection&gt;();
+<span class="fc bfc" id="L170" title="All 2 branches covered.">      StandardBindings baseBindings =</span>
+          (base == null) ? new StandardBindings() : new StandardBindings(base.setBindings);
+<span class="fc" id="L172">      BindingsGroup overrideBindings = new OverridesBindings();</span>
+
+<span class="fc" id="L174">      Map&lt;ModuleAdapter&lt;?&gt;, Object&gt; loadedModules = Modules.loadModules(plugin, modules);</span>
+<span class="fc bfc" id="L175" title="All 2 branches covered.">      for (Entry&lt;ModuleAdapter&lt;?&gt;, Object&gt; loadedModule : loadedModules.entrySet()) {</span>
+<span class="fc" id="L176">        ModuleAdapter&lt;Object&gt; moduleAdapter = (ModuleAdapter&lt;Object&gt;) loadedModule.getKey();</span>
+<span class="fc bfc" id="L177" title="All 2 branches covered.">        for (int i = 0; i &lt; moduleAdapter.injectableTypes.length; i++) {</span>
+<span class="fc" id="L178">          injectableTypes.put(moduleAdapter.injectableTypes[i], moduleAdapter.moduleClass);</span>
+        }
+<span class="fc bfc" id="L180" title="All 2 branches covered.">        for (int i = 0; i &lt; moduleAdapter.staticInjections.length; i++) {</span>
+<span class="fc" id="L181">          staticInjections.put(moduleAdapter.staticInjections[i], null);</span>
+        }
+        try {
+<span class="fc bfc" id="L184" title="All 2 branches covered.">          BindingsGroup addTo = moduleAdapter.overrides ? overrideBindings : baseBindings;</span>
+<span class="fc" id="L185">          moduleAdapter.getBindings(addTo, loadedModule.getValue());</span>
+<span class="fc" id="L186">        } catch (IllegalArgumentException e) {</span>
+<span class="fc" id="L187">          throw new IllegalArgumentException(</span>
+<span class="fc" id="L188">              moduleAdapter.moduleClass.getSimpleName() + &quot;: &quot; + e.getMessage(), e);</span>
+<span class="fc" id="L189">        }</span>
+<span class="fc" id="L190">      }</span>
+
+      // Create a linker and install all of the user's bindings
+<span class="fc bfc" id="L193" title="All 2 branches covered.">      Linker linker =</span>
+          new Linker((base != null) ? base.linker : null, plugin, new ThrowingErrorHandler());
+<span class="fc" id="L195">      linker.installBindings(baseBindings);</span>
+<span class="fc" id="L196">      linker.installBindings(overrideBindings);</span>
+
+<span class="fc" id="L198">      return new DaggerObjectGraph(</span>
+<span class="fc" id="L199">          base, linker, plugin, staticInjections, injectableTypes, baseBindings.setBindings);</span>
+    }
+
+    @Override public ObjectGraph plus(Object... modules) {
+<span class="fc" id="L203">      linkEverything();</span>
+<span class="fc" id="L204">      return makeGraph(this, plugin, modules);</span>
+    }
+
+    private void linkStaticInjections() {
+<span class="fc bfc" id="L208" title="All 2 branches covered.">      for (Map.Entry&lt;Class&lt;?&gt;, StaticInjection&gt; entry : staticInjections.entrySet()) {</span>
+<span class="fc" id="L209">        StaticInjection staticInjection = entry.getValue();</span>
+<span class="fc bfc" id="L210" title="All 2 branches covered.">        if (staticInjection == null) {</span>
+<span class="fc" id="L211">          staticInjection = plugin.getStaticInjection(entry.getKey());</span>
+<span class="fc" id="L212">          entry.setValue(staticInjection);</span>
+        }
+<span class="fc" id="L214">        staticInjection.attach(linker);</span>
+<span class="fc" id="L215">      }</span>
+<span class="fc" id="L216">    }</span>
+
+    private void linkInjectableTypes() {
+<span class="fc bfc" id="L219" title="All 2 branches covered.">      for (Map.Entry&lt;String, Class&lt;?&gt;&gt; entry : injectableTypes.entrySet()) {</span>
+<span class="fc" id="L220">        linker.requestBinding(entry.getKey(), entry.getValue(), entry.getValue().getClassLoader(),</span>
+            false, true);
+<span class="fc" id="L222">      }</span>
+<span class="fc" id="L223">    }</span>
+
+    @Override public void validate() {
+<span class="fc" id="L226">      Map&lt;String, Binding&lt;?&gt;&gt; allBindings = linkEverything();</span>
+<span class="fc" id="L227">      new ProblemDetector().detectProblems(allBindings.values());</span>
+<span class="fc" id="L228">    }</span>
+
+    /**
+     * Links all bindings, injectable types and static injections.
+     */
+    private Map&lt;String, Binding&lt;?&gt;&gt; linkEverything() {
+<span class="fc" id="L234">      Map&lt;String, Binding&lt;?&gt;&gt; bindings = linker.fullyLinkedBindings();</span>
+<span class="fc bfc" id="L235" title="All 2 branches covered.">      if (bindings != null) {</span>
+<span class="fc" id="L236">        return bindings;</span>
+      }
+<span class="fc" id="L238">      synchronized (linker) {</span>
+<span class="pc bpc" id="L239" title="1 of 2 branches missed.">        if ((bindings = linker.fullyLinkedBindings()) != null) {</span>
+<span class="nc" id="L240">          return bindings;</span>
+        }
+<span class="fc" id="L242">        linkStaticInjections();</span>
+<span class="fc" id="L243">        linkInjectableTypes();</span>
+<span class="fc" id="L244">        return linker.linkAll(); // Linker.linkAll() implicitly does Linker.linkRequested().</span>
+      }
+    }
+
+    @Override public void injectStatics() {
+      // We call linkStaticInjections() twice on purpose. The first time through
+      // we request all of the bindings we need. The linker returns null for
+      // bindings it doesn't have. Then we ask the linker to link all of those
+      // requested bindings. Finally we call linkStaticInjections() again: this
+      // time the linker won't return null because everything has been linked.
+<span class="fc" id="L254">      synchronized (linker) {</span>
+<span class="fc" id="L255">        linkStaticInjections();</span>
+<span class="fc" id="L256">        linker.linkRequested();</span>
+<span class="fc" id="L257">        linkStaticInjections();</span>
+<span class="fc" id="L258">      }</span>
+
+<span class="fc bfc" id="L260" title="All 2 branches covered.">      for (Map.Entry&lt;Class&lt;?&gt;, StaticInjection&gt; entry : staticInjections.entrySet()) {</span>
+<span class="fc" id="L261">        entry.getValue().inject();</span>
+<span class="fc" id="L262">      }</span>
+<span class="fc" id="L263">    }</span>
+
+    @Override public &lt;T&gt; T get(Class&lt;T&gt; type) {
+<span class="fc" id="L266">      String key = Keys.get(type);</span>
+<span class="fc bfc" id="L267" title="All 2 branches covered.">      String injectableTypeKey = type.isInterface() ? key : Keys.getMembersKey(type);</span>
+<span class="fc" id="L268">      ClassLoader classLoader = type.getClassLoader();</span>
+      @SuppressWarnings(&quot;unchecked&quot;) // The linker matches keys to bindings by their type.
+<span class="fc" id="L270">      Binding&lt;T&gt; binding =</span>
+<span class="fc" id="L271">          (Binding&lt;T&gt;) getInjectableTypeBinding(classLoader, injectableTypeKey, key);</span>
+<span class="fc" id="L272">      return binding.get();</span>
+    }
+
+    @Override public &lt;T&gt; T inject(T instance) {
+<span class="fc" id="L276">      String membersKey = Keys.getMembersKey(instance.getClass());</span>
+<span class="fc" id="L277">      ClassLoader classLoader = instance.getClass().getClassLoader();</span>
+      @SuppressWarnings(&quot;unchecked&quot;) // The linker matches keys to bindings by their type.
+<span class="fc" id="L279">      Binding&lt;T&gt; binding =</span>
+<span class="fc" id="L280">          (Binding&lt;T&gt;) getInjectableTypeBinding(classLoader, membersKey, membersKey);</span>
+<span class="fc" id="L281">      binding.injectMembers(instance);</span>
+<span class="fc" id="L282">      return instance;</span>
+    }
+
+    /**
+     * @param classLoader the {@code ClassLoader} used to load dependent bindings.
+     * @param injectableKey the key used to store the injectable type. This
+     *     is a provides key for interfaces and a members injection key for
+     *     other types. That way keys can always be created, even if the type
+     *     has no injectable constructor.
+     * @param key the key to use when retrieving the binding. This may be a
+     *     regular (provider) key or a members key.
+     */
+    private Binding&lt;?&gt; getInjectableTypeBinding(
+        ClassLoader classLoader, String injectableKey, String key) {
+<span class="fc" id="L296">      Class&lt;?&gt; moduleClass = null;</span>
+<span class="fc bfc" id="L297" title="All 2 branches covered.">      for (DaggerObjectGraph graph = this; graph != null; graph = graph.base) {</span>
+<span class="fc" id="L298">        moduleClass = graph.injectableTypes.get(injectableKey);</span>
+<span class="fc bfc" id="L299" title="All 2 branches covered.">        if (moduleClass != null) break;</span>
+      }
+<span class="fc bfc" id="L301" title="All 2 branches covered.">      if (moduleClass == null) {</span>
+<span class="fc" id="L302">        throw new IllegalArgumentException(&quot;No inject registered for &quot; + injectableKey</span>
+            + &quot;. You must explicitly add it to the 'injects' option in one of your modules.&quot;);
+      }
+
+<span class="fc" id="L306">      synchronized (linker) {</span>
+<span class="fc" id="L307">        Binding&lt;?&gt; binding = linker.requestBinding(key, moduleClass, classLoader, false, true);</span>
+<span class="fc bfc" id="L308" title="All 4 branches covered.">        if (binding == null || !binding.isLinked()) {</span>
+<span class="fc" id="L309">          linker.linkRequested();</span>
+<span class="fc" id="L310">          binding = linker.requestBinding(key, moduleClass, classLoader, false, true);</span>
+        }
+<span class="fc" id="L312">        return binding;</span>
+      }
+    }
+  }
+
+
+  /**
+   * A BindingsGroup which fails when existing values are clobbered and sets aside
+   * {@link SetBinding}.
+   */
+  private static final class StandardBindings extends BindingsGroup {
+    private final List&lt;SetBinding&lt;?&gt;&gt; setBindings;
+
+<span class="fc" id="L325">    public StandardBindings() {</span>
+<span class="fc" id="L326">      setBindings = new ArrayList&lt;SetBinding&lt;?&gt;&gt;();</span>
+<span class="fc" id="L327">    }</span>
+
+<span class="fc" id="L329">    public StandardBindings(List&lt;SetBinding&lt;?&gt;&gt; baseSetBindings) {</span>
+<span class="fc" id="L330">      setBindings = new ArrayList&lt;SetBinding&lt;?&gt;&gt;(baseSetBindings.size());</span>
+<span class="fc bfc" id="L331" title="All 2 branches covered.">      for (SetBinding&lt;?&gt; sb : baseSetBindings) {</span>
+        @SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
+<span class="fc" id="L333">        SetBinding&lt;?&gt; child = new SetBinding(sb);</span>
+<span class="fc" id="L334">        setBindings.add(child);</span>
+<span class="fc" id="L335">        put(child.provideKey, child);</span>
+<span class="fc" id="L336">      }</span>
+<span class="fc" id="L337">    }</span>
+
+    @Override public Binding&lt;?&gt; contributeSetBinding(String key, SetBinding&lt;?&gt; value) {
+<span class="fc" id="L340">      setBindings.add(value);</span>
+<span class="fc" id="L341">      return super.put(key, value);</span>
+    }
+  }
+
+  /**
+   * A BindingsGroup which throws an {@link IllegalArgumentException} when a
+   * {@link SetBinding} is contributed, since overrides modules cannot contribute such
+   * bindings.
+   */
+  private static final class OverridesBindings extends BindingsGroup {
+<span class="fc" id="L351">    OverridesBindings() { }</span>
+
+    @Override public Binding&lt;?&gt; contributeSetBinding(String key, SetBinding&lt;?&gt; value) {
+<span class="fc" id="L354">      throw new IllegalArgumentException(&quot;Module overrides cannot contribute set bindings.&quot;);</span>
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

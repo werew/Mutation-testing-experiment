@@ -1,0 +1,77 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+Moshi,com.squareup.moshi.internal,Util,0,128,2,26,0,24,2,19,0,7
+Moshi,com.squareup.moshi,StandardJsonAdapters.new JsonAdapter.Factory() {...},0,125,0,40,0,24,0,22,0,2
+Moshi,com.squareup.moshi,StandardJsonAdapters.new JsonAdapter() {...},2,13,0,0,1,4,1,3,1,3
+Moshi,com.squareup.moshi,ClassJsonAdapter,36,118,1,9,9,32,2,8,1,4
+Moshi,com.squareup.moshi,StandardJsonAdapters.new JsonAdapter() {...},2,20,0,0,1,4,1,3,1,3
+Moshi,com.squareup.moshi,JsonReader.Options,6,47,0,2,2,11,0,3,0,2
+Moshi,com.squareup.moshi,StandardJsonAdapters.new JsonAdapter() {...},2,51,0,2,1,8,1,4,1,3
+Moshi,com.squareup.moshi,StandardJsonAdapters.ObjectJsonAdapter,23,100,2,11,4,23,3,11,1,4
+Moshi,com.squareup.moshi,Moshi,12,326,1,23,1,62,1,20,0,9
+Moshi,com.squareup.moshi,Types.new InvocationHandler() {...},18,33,2,3,2,7,2,4,0,2
+Moshi,com.squareup.moshi,LinkedHashTreeMap,196,830,56,114,39,203,47,63,5,20
+Moshi,com.squareup.moshi,JsonValueReader,26,857,14,98,3,178,14,66,0,24
+Moshi,com.squareup.moshi,LinkedHashTreeMap.LinkedTreeMapIterator,12,71,3,5,3,15,3,5,0,4
+Moshi,com.squareup.moshi,ClassFactory.new ClassFactory() {...},29,0,0,0,3,0,3,0,3,0
+Moshi,com.squareup.moshi,LinkedHashTreeMap.new Comparator() {...},4,3,0,0,1,1,1,1,1,1
+Moshi,com.squareup.moshi,LinkedHashTreeMap.AvlIterator,0,56,0,6,0,18,0,6,0,3
+Moshi,com.squareup.moshi,LinkedHashTreeMap.Node,80,75,20,2,20,20,15,6,4,6
+Moshi,com.squareup.moshi,ClassFactory.new ClassFactory() {...},4,25,0,0,1,2,1,2,1,2
+Moshi,com.squareup.moshi,ClassFactory.new ClassFactory() {...},34,0,0,0,3,0,3,0,3,0
+Moshi,com.squareup.moshi,ClassJsonAdapter.FieldBinding,0,34,0,0,0,11,0,3,0,3
+Moshi,com.squareup.moshi,ClassFactory.new ClassFactory() {...},4,16,0,0,1,3,1,2,1,2
+Moshi,com.squareup.moshi,Types.GenericArrayTypeImpl,11,26,0,4,1,7,1,6,1,4
+Moshi,com.squareup.moshi,ClassJsonAdapter.new JsonAdapter.Factory() {...},0,262,3,41,0,39,3,23,0,4
+Moshi,com.squareup.moshi,JsonEncodingException,0,4,0,0,0,2,0,1,0,1
+Moshi,com.squareup.moshi,Moshi.Builder,0,125,0,18,0,21,0,16,0,7
+Moshi,com.squareup.moshi,JsonValueWriter,16,567,6,70,4,110,6,49,0,17
+Moshi,com.squareup.moshi,JsonReader.new Object() {...},6,41,0,0,0,1,0,1,0,1
+Moshi,com.squareup.moshi,LinkedHashTreeMap.EntrySet.new LinkedHashTreeMap.LinkedTreeMapIterator() {...},0,11,0,0,0,2,0,2,0,2
+Moshi,com.squareup.moshi,LinkedHashTreeMap.EntrySet,43,11,8,0,11,2,8,2,4,2
+Moshi,com.squareup.moshi,AdapterMethodsFactory.AdapterMethod,18,150,1,7,6,29,3,7,2,4
+Moshi,com.squareup.moshi,ArrayJsonAdapter.new JsonAdapter.Factory() {...},2,27,1,3,0,7,1,3,0,2
+Moshi,com.squareup.moshi,JsonUtf8Reader,132,2472,34,382,25,568,35,225,1,35
+Moshi,com.squareup.moshi,StandardJsonAdapters.new JsonAdapter() {...},2,18,0,0,1,4,1,3,1,3
+Moshi,com.squareup.moshi,MapJsonAdapter,17,125,0,8,1,28,1,8,1,4
+Moshi,com.squareup.moshi,StandardJsonAdapters.new JsonAdapter() {...},2,13,0,0,1,4,1,3,1,3
+Moshi,com.squareup.moshi,StandardJsonAdapters.new JsonAdapter() {...},2,44,1,5,1,10,2,5,1,3
+Moshi,com.squareup.moshi,StandardJsonAdapters.new JsonAdapter() {...},2,14,0,0,1,4,1,3,1,3
+Moshi,com.squareup.moshi,StandardJsonAdapters.new JsonAdapter() {...},2,13,0,0,1,4,1,3,1,3
+Moshi,com.squareup.moshi,JsonUtf8Writer,18,696,5,89,5,173,5,68,0,24
+Moshi,com.squareup.moshi,Types,185,798,58,132,33,171,49,71,0,25
+Moshi,com.squareup.moshi,Moshi.Builder.new JsonAdapter.Factory() {...},0,25,1,3,0,2,1,3,0,2
+Moshi,com.squareup.moshi,LinkedHashTreeMap.KeySet,18,15,2,0,4,3,4,3,3,3
+Moshi,com.squareup.moshi,Moshi.Builder.new JsonAdapter.Factory() {...},0,34,1,5,0,6,1,4,0,2
+Moshi,com.squareup.moshi,Types.ParameterizedTypeImpl,7,185,3,21,1,31,3,16,0,7
+Moshi,com.squareup.moshi,StandardJsonAdapters,0,74,0,4,0,15,0,4,0,2
+Moshi,com.squareup.moshi,JsonDataException,7,9,0,0,4,4,2,2,2,2
+Moshi,com.squareup.moshi,JsonWriter,5,190,1,15,1,38,1,21,0,14
+Moshi,com.squareup.moshi,LinkedHashTreeMap.AvlBuilder,4,202,3,15,1,46,3,10,0,4
+Moshi,com.squareup.moshi,JsonAdapter,23,118,0,6,7,31,1,15,1,12
+Moshi,com.squareup.moshi,MapJsonAdapter.new JsonAdapter.Factory() {...},0,32,0,4,0,6,0,4,0,2
+Moshi,com.squareup.moshi,ArrayJsonAdapter,10,79,0,6,1,19,1,7,1,4
+Moshi,com.squareup.moshi,Moshi.DeferredAdapter,10,30,2,2,0,11,2,4,0,4
+Moshi,com.squareup.moshi,JsonScope,0,46,0,7,0,9,0,5,0,1
+Moshi,com.squareup.moshi,JsonReader,46,237,3,16,5,48,3,20,0,11
+Moshi,com.squareup.moshi,JsonReader.Token,0,109,0,0,0,11,0,2,0,2
+Moshi,com.squareup.moshi,LinkedHashTreeMap.KeySet.new LinkedHashTreeMap.LinkedTreeMapIterator() {...},0,12,0,0,0,2,0,2,0,2
+Moshi,com.squareup.moshi,StandardJsonAdapters.new JsonAdapter() {...},2,11,0,0,1,4,1,3,1,3
+Moshi,com.squareup.moshi,StandardJsonAdapters.new Object() {...},6,41,0,0,0,1,0,1,0,1
+Moshi,com.squareup.moshi,JsonAdapter.new JsonAdapter() {...},24,28,0,0,3,6,3,2,3,2
+Moshi,com.squareup.moshi,CollectionJsonAdapter.new JsonAdapter.Factory() {...},0,32,0,8,0,8,0,6,0,2
+Moshi,com.squareup.moshi,CollectionJsonAdapter.new CollectionJsonAdapter() {...},0,9,0,0,0,2,0,2,0,2
+Moshi,com.squareup.moshi,JsonAdapter.new JsonAdapter() {...},10,42,0,0,1,11,1,4,1,4
+Moshi,com.squareup.moshi,CollectionJsonAdapter.new CollectionJsonAdapter() {...},0,9,0,0,0,2,0,2,0,2
+Moshi,com.squareup.moshi,JsonAdapter.new JsonAdapter() {...},27,18,0,0,5,4,3,2,3,2
+Moshi,com.squareup.moshi,AdapterMethodsFactory.new JsonAdapter() {...},23,126,2,14,1,22,3,9,1,3
+Moshi,com.squareup.moshi,AdapterMethodsFactory.new AdapterMethodsFactory.AdapterMethod() {...},0,16,0,0,0,3,0,2,0,2
+Moshi,com.squareup.moshi,AdapterMethodsFactory.new AdapterMethodsFactory.AdapterMethod() {...},0,67,0,4,0,10,0,5,0,3
+Moshi,com.squareup.moshi,AdapterMethodsFactory.new AdapterMethodsFactory.AdapterMethod() {...},0,14,0,0,0,2,0,2,0,2
+Moshi,com.squareup.moshi,AdapterMethodsFactory.new AdapterMethodsFactory.AdapterMethod() {...},0,70,0,4,0,9,0,5,0,3
+Moshi,com.squareup.moshi,ClassFactory,104,49,0,0,19,11,0,2,0,2
+Moshi,com.squareup.moshi,StandardJsonAdapters.EnumJsonAdapter,28,106,0,6,3,20,1,6,1,3
+Moshi,com.squareup.moshi,AdapterMethodsFactory,4,471,7,59,0,75,7,33,0,7
+Moshi,com.squareup.moshi,JsonAdapter.new JsonAdapter() {...},19,24,0,0,3,6,3,2,3,2
+Moshi,com.squareup.moshi,JsonAdapter.new JsonAdapter() {...},10,37,0,4,1,9,1,6,1,4
+Moshi,com.squareup.moshi,Types.WildcardTypeImpl,23,133,8,16,1,24,8,10,0,6
+Moshi,com.squareup.moshi,CollectionJsonAdapter,10,79,0,4,1,22,1,8,1,6

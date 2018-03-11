@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SimpleXmlConverterFactory.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Converter: SimpleXML</a> &gt; <a href="index.source.html" class="el_package">retrofit2.converter.simplexml</a> &gt; <span class="el_source">SimpleXmlConverterFactory.java</span></div><h1>SimpleXmlConverterFactory.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2013 Square, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package retrofit2.converter.simplexml;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
+import org.simpleframework.xml.Serializer;
+import org.simpleframework.xml.core.Persister;
+import retrofit2.Converter;
+import retrofit2.Retrofit;
+
+/**
+ * A {@linkplain Converter.Factory converter} which uses Simple Framework for XML.
+ * &lt;p&gt;
+ * This converter only applies for class types. Parameterized types (e.g., {@code List&lt;Foo&gt;}) are
+ * not handled.
+ *
+ * @deprecated we recommend switching to the JAXB converter.
+ */
+@Deprecated
+public final class SimpleXmlConverterFactory extends Converter.Factory {
+  /** Create an instance using a default {@link Persister} instance for conversion. */
+  public static SimpleXmlConverterFactory create() {
+<span class="nc" id="L39">    return create(new Persister());</span>
+  }
+
+  /** Create an instance using {@code serializer} for conversion. */
+  public static SimpleXmlConverterFactory create(Serializer serializer) {
+<span class="fc" id="L44">    return new SimpleXmlConverterFactory(serializer, true);</span>
+  }
+
+  /** Create an instance using a default {@link Persister} instance for non-strict conversion. */
+  public static SimpleXmlConverterFactory createNonStrict() {
+<span class="nc" id="L49">    return createNonStrict(new Persister());</span>
+  }
+
+  /** Create an instance using {@code serializer} for non-strict conversion. */
+  @SuppressWarnings(&quot;ConstantConditions&quot;) // Guarding public API nullability.
+  public static SimpleXmlConverterFactory createNonStrict(Serializer serializer) {
+<span class="nc bnc" id="L55" title="All 2 branches missed.">    if (serializer == null) throw new NullPointerException(&quot;serializer == null&quot;);</span>
+<span class="nc" id="L56">    return new SimpleXmlConverterFactory(serializer, false);</span>
+  }
+
+  private final Serializer serializer;
+  private final boolean strict;
+
+<span class="fc" id="L62">  private SimpleXmlConverterFactory(Serializer serializer, boolean strict) {</span>
+<span class="fc" id="L63">    this.serializer = serializer;</span>
+<span class="fc" id="L64">    this.strict = strict;</span>
+<span class="fc" id="L65">  }</span>
+
+  public boolean isStrict() {
+<span class="nc" id="L68">    return strict;</span>
+  }
+
+  @Override
+  public Converter&lt;ResponseBody, ?&gt; responseBodyConverter(Type type, Annotation[] annotations,
+      Retrofit retrofit) {
+<span class="pc bpc" id="L74" title="1 of 2 branches missed.">    if (!(type instanceof Class)) {</span>
+<span class="nc" id="L75">      return null;</span>
+    }
+<span class="fc" id="L77">    Class&lt;?&gt; cls = (Class&lt;?&gt;) type;</span>
+<span class="fc" id="L78">    return new SimpleXmlResponseBodyConverter&lt;&gt;(cls, serializer, strict);</span>
+  }
+
+  @Override
+  public Converter&lt;?, RequestBody&gt; requestBodyConverter(Type type,
+      Annotation[] parameterAnnotations, Annotation[] methodAnnotations, Retrofit retrofit) {
+<span class="pc bpc" id="L84" title="1 of 2 branches missed.">    if (!(type instanceof Class)) {</span>
+<span class="nc" id="L85">      return null;</span>
+    }
+<span class="fc" id="L87">    return new SimpleXmlRequestBodyConverter&lt;&gt;(serializer);</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

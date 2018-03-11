@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HasProperty.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JavaHamcrest</a> &gt; <a href="index.source.html" class="el_package">org.hamcrest.beans</a> &gt; <span class="el_source">HasProperty.java</span></div><h1>HasProperty.java</h1><pre class="source lang-java linenums">package org.hamcrest.beans;
+
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeMatcher;
+
+/**
+ * A Matcher that checks that an object has a JavaBean property
+ * with the specified name. If an error occurs during introspection
+ * of the object then this is treated as a mismatch.
+ *
+ * @author Iain McGinniss
+ * @author Nat Pryce
+ * @author Steve Freeman
+ */
+public class HasProperty&lt;T&gt; extends TypeSafeMatcher&lt;T&gt; {
+
+    private final String propertyName;
+
+<span class="fc" id="L20">    public HasProperty(String propertyName) {</span>
+<span class="fc" id="L21">        this.propertyName = propertyName;</span>
+<span class="fc" id="L22">    }</span>
+
+    @Override
+    public boolean matchesSafely(T obj) {
+        try {
+<span class="fc bfc" id="L27" title="All 2 branches covered.">            return PropertyUtil.getPropertyDescriptor(propertyName, obj) != null;</span>
+<span class="nc" id="L28">        } catch (IllegalArgumentException e) {</span>
+<span class="nc" id="L29">            return false;</span>
+        }
+    }
+
+    @Override
+    public void describeMismatchSafely(T item, Description mismatchDescription) {
+<span class="fc" id="L35">        mismatchDescription.appendText(&quot;no &quot;).appendValue(propertyName).appendText(&quot; in &quot;).appendValue(item);</span>
+<span class="fc" id="L36">    }</span>
+
+    @Override
+    public void describeTo(Description description) {
+<span class="fc" id="L40">        description.appendText(&quot;hasProperty(&quot;).appendValue(propertyName).appendText(&quot;)&quot;);</span>
+<span class="fc" id="L41">    }</span>
+
+    /**
+     * Creates a matcher that matches when the examined object has a JavaBean property
+     * with the specified name.
+     * For example:
+     * &lt;pre&gt;assertThat(myBean, hasProperty(&quot;foo&quot;))&lt;/pre&gt;
+     * 
+     * @param propertyName
+     *     the name of the JavaBean property that examined beans should possess
+     */
+    public static &lt;T&gt; Matcher&lt;T&gt; hasProperty(String propertyName) {
+<span class="fc" id="L53">        return new HasProperty&lt;T&gt;(propertyName);</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

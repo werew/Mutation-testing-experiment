@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FieldSpec.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JavaPoet</a> &gt; <a href="index.source.html" class="el_package">com.squareup.javapoet</a> &gt; <span class="el_source">FieldSpec.java</span></div><h1>FieldSpec.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2015 Square, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.squareup.javapoet;
+
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import javax.lang.model.SourceVersion;
+import javax.lang.model.element.Modifier;
+
+import static com.squareup.javapoet.Util.checkArgument;
+import static com.squareup.javapoet.Util.checkNotNull;
+import static com.squareup.javapoet.Util.checkState;
+
+/** A generated field declaration. */
+public final class FieldSpec {
+  public final TypeName type;
+  public final String name;
+  public final CodeBlock javadoc;
+  public final List&lt;AnnotationSpec&gt; annotations;
+  public final Set&lt;Modifier&gt; modifiers;
+  public final CodeBlock initializer;
+
+<span class="fc" id="L40">  private FieldSpec(Builder builder) {</span>
+<span class="fc" id="L41">    this.type = checkNotNull(builder.type, &quot;type == null&quot;);</span>
+<span class="fc" id="L42">    this.name = checkNotNull(builder.name, &quot;name == null&quot;);</span>
+<span class="fc" id="L43">    this.javadoc = builder.javadoc.build();</span>
+<span class="fc" id="L44">    this.annotations = Util.immutableList(builder.annotations);</span>
+<span class="fc" id="L45">    this.modifiers = Util.immutableSet(builder.modifiers);</span>
+<span class="fc bfc" id="L46" title="All 2 branches covered.">    this.initializer = (builder.initializer == null)</span>
+<span class="fc" id="L47">        ? CodeBlock.builder().build()</span>
+<span class="fc" id="L48">        : builder.initializer;</span>
+<span class="fc" id="L49">  }</span>
+
+  public boolean hasModifier(Modifier modifier) {
+<span class="fc" id="L52">    return modifiers.contains(modifier);</span>
+  }
+
+  void emit(CodeWriter codeWriter, Set&lt;Modifier&gt; implicitModifiers) throws IOException {
+<span class="fc" id="L56">    codeWriter.emitJavadoc(javadoc);</span>
+<span class="fc" id="L57">    codeWriter.emitAnnotations(annotations, false);</span>
+<span class="fc" id="L58">    codeWriter.emitModifiers(modifiers, implicitModifiers);</span>
+<span class="fc" id="L59">    codeWriter.emit(&quot;$T $L&quot;, type, name);</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">    if (!initializer.isEmpty()) {</span>
+<span class="fc" id="L61">      codeWriter.emit(&quot; = &quot;);</span>
+<span class="fc" id="L62">      codeWriter.emit(initializer);</span>
+    }
+<span class="fc" id="L64">    codeWriter.emit(&quot;;\n&quot;);</span>
+<span class="fc" id="L65">  }</span>
+
+  @Override public boolean equals(Object o) {
+<span class="pc bpc" id="L68" title="1 of 2 branches missed.">    if (this == o) return true;</span>
+<span class="pc bpc" id="L69" title="1 of 2 branches missed.">    if (o == null) return false;</span>
+<span class="pc bpc" id="L70" title="1 of 2 branches missed.">    if (getClass() != o.getClass()) return false;</span>
+<span class="fc" id="L71">    return toString().equals(o.toString());</span>
+  }
+
+  @Override public int hashCode() {
+<span class="fc" id="L75">    return toString().hashCode();</span>
+  }
+
+  @Override public String toString() {
+<span class="fc" id="L79">    StringBuilder out = new StringBuilder();</span>
+    try {
+<span class="fc" id="L81">      CodeWriter codeWriter = new CodeWriter(out);</span>
+<span class="fc" id="L82">      emit(codeWriter, Collections.emptySet());</span>
+<span class="fc" id="L83">      return out.toString();</span>
+<span class="nc" id="L84">    } catch (IOException e) {</span>
+<span class="nc" id="L85">      throw new AssertionError();</span>
+    }
+  }
+
+  public static Builder builder(TypeName type, String name, Modifier... modifiers) {
+<span class="fc" id="L90">    checkNotNull(type, &quot;type == null&quot;);</span>
+<span class="fc" id="L91">    checkArgument(SourceVersion.isName(name), &quot;not a valid name: %s&quot;, name);</span>
+<span class="fc" id="L92">    return new Builder(type, name)</span>
+<span class="fc" id="L93">        .addModifiers(modifiers);</span>
+  }
+
+  public static Builder builder(Type type, String name, Modifier... modifiers) {
+<span class="fc" id="L97">    return builder(TypeName.get(type), name, modifiers);</span>
+  }
+
+  public Builder toBuilder() {
+<span class="nc" id="L101">    Builder builder = new Builder(type, name);</span>
+<span class="nc" id="L102">    builder.javadoc.add(javadoc);</span>
+<span class="nc" id="L103">    builder.annotations.addAll(annotations);</span>
+<span class="nc" id="L104">    builder.modifiers.addAll(modifiers);</span>
+<span class="nc bnc" id="L105" title="All 2 branches missed.">    builder.initializer = initializer.isEmpty() ? null : initializer;</span>
+<span class="nc" id="L106">    return builder;</span>
+  }
+
+  public static final class Builder {
+    private final TypeName type;
+    private final String name;
+
+<span class="fc" id="L113">    private final CodeBlock.Builder javadoc = CodeBlock.builder();</span>
+<span class="fc" id="L114">    private final List&lt;AnnotationSpec&gt; annotations = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L115">    private final List&lt;Modifier&gt; modifiers = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L116">    private CodeBlock initializer = null;</span>
+
+<span class="fc" id="L118">    private Builder(TypeName type, String name) {</span>
+<span class="fc" id="L119">      this.type = type;</span>
+<span class="fc" id="L120">      this.name = name;</span>
+<span class="fc" id="L121">    }</span>
+
+    public Builder addJavadoc(String format, Object... args) {
+<span class="fc" id="L124">      javadoc.add(format, args);</span>
+<span class="fc" id="L125">      return this;</span>
+    }
+
+    public Builder addJavadoc(CodeBlock block) {
+<span class="nc" id="L129">      javadoc.add(block);</span>
+<span class="nc" id="L130">      return this;</span>
+    }
+
+    public Builder addAnnotations(Iterable&lt;AnnotationSpec&gt; annotationSpecs) {
+<span class="pc bpc" id="L134" title="1 of 2 branches missed.">      checkArgument(annotationSpecs != null, &quot;annotationSpecs == null&quot;);</span>
+<span class="nc bnc" id="L135" title="All 2 branches missed.">      for (AnnotationSpec annotationSpec : annotationSpecs) {</span>
+<span class="nc" id="L136">        this.annotations.add(annotationSpec);</span>
+<span class="nc" id="L137">      }</span>
+<span class="nc" id="L138">      return this;</span>
+    }
+
+    public Builder addAnnotation(AnnotationSpec annotationSpec) {
+<span class="fc" id="L142">      this.annotations.add(annotationSpec);</span>
+<span class="fc" id="L143">      return this;</span>
+    }
+
+    public Builder addAnnotation(ClassName annotation) {
+<span class="nc" id="L147">      this.annotations.add(AnnotationSpec.builder(annotation).build());</span>
+<span class="nc" id="L148">      return this;</span>
+    }
+
+    public Builder addAnnotation(Class&lt;?&gt; annotation) {
+<span class="nc" id="L152">      return addAnnotation(ClassName.get(annotation));</span>
+    }
+
+    public Builder addModifiers(Modifier... modifiers) {
+<span class="fc" id="L156">      Collections.addAll(this.modifiers, modifiers);</span>
+<span class="fc" id="L157">      return this;</span>
+    }
+
+    public Builder initializer(String format, Object... args) {
+<span class="fc" id="L161">      return initializer(CodeBlock.of(format, args));</span>
+    }
+
+    public Builder initializer(CodeBlock codeBlock) {
+<span class="fc bfc" id="L165" title="All 2 branches covered.">      checkState(this.initializer == null, &quot;initializer was already set&quot;);</span>
+<span class="fc" id="L166">      this.initializer = checkNotNull(codeBlock, &quot;codeBlock == null&quot;);</span>
+<span class="fc" id="L167">      return this;</span>
+    }
+
+    public FieldSpec build() {
+<span class="fc" id="L171">      return new FieldSpec(this);</span>
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

@@ -1,0 +1,4 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+Converter: JAXB,retrofit2.converter.jaxb,JaxbConverterFactory,15,72,5,7,4,12,5,8,0,7
+Converter: JAXB,retrofit2.converter.jaxb,JaxbResponseConverter,0,35,0,0,0,10,0,2,0,2
+Converter: JAXB,retrofit2.converter.jaxb,JaxbRequestConverter,6,39,0,0,2,12,0,2,0,2

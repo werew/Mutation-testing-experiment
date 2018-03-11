@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FileMatchers.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JavaHamcrest</a> &gt; <a href="index.source.html" class="el_package">org.hamcrest.io</a> &gt; <span class="el_source">FileMatchers.java</span></div><h1>FileMatchers.java</h1><pre class="source lang-java linenums">package org.hamcrest.io;
+
+import org.hamcrest.Description;
+import org.hamcrest.FeatureMatcher;
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeDiagnosingMatcher;
+
+import java.io.File;
+import java.io.IOException;
+
+import static org.hamcrest.core.IsEqual.equalTo;
+
+<span class="nc" id="L13">public final class FileMatchers {</span>
+
+    public static Matcher&lt;File&gt; anExistingDirectory() {
+<span class="fc" id="L16">        return fileChecker(IS_DIRECTORY, &quot;an existing directory&quot;, &quot;is not a directory&quot;);</span>
+    }
+
+    public static Matcher&lt;File&gt; anExistingFileOrDirectory() {
+<span class="fc" id="L20">        return fileChecker(EXISTS, &quot;an existing file or directory&quot;, &quot;does not exist&quot;);</span>
+    }
+
+    public static Matcher&lt;File&gt; anExistingFile() {
+<span class="fc" id="L24">        return fileChecker(IS_FILE, &quot;an existing File&quot;, &quot;is not a file&quot;);</span>
+    }
+
+    public static Matcher&lt;File&gt; aReadableFile() {
+<span class="fc" id="L28">        return fileChecker(CAN_READ, &quot;a readable File&quot;, &quot;cannot be read&quot;);</span>
+    }
+
+    public static Matcher&lt;File&gt; aWritableFile() {
+<span class="fc" id="L32">        return fileChecker(CAN_WRITE, &quot;a writable File&quot;, &quot;cannot be written to&quot;);</span>
+    }
+
+    public static Matcher&lt;File&gt; aFileWithSize(long size) {
+<span class="fc" id="L36">        return aFileWithSize(equalTo(size));</span>
+    }
+
+    public static Matcher&lt;File&gt; aFileWithSize(final Matcher&lt;Long&gt; expected) {
+<span class="fc" id="L40">        return new FeatureMatcher&lt;File, Long&gt;(expected, &quot;A file with size&quot;, &quot;size&quot;) {</span>
+<span class="fc" id="L41">            @Override protected Long featureValueOf(File actual) { return actual.length(); }</span>
+        };
+    }
+
+    public static Matcher&lt;File&gt; aFileNamed(final Matcher&lt;String&gt; expected) {
+<span class="fc" id="L46">        return new FeatureMatcher&lt;File, String&gt;(expected, &quot;A file with name&quot;, &quot;name&quot;) {</span>
+<span class="fc" id="L47">            @Override protected String featureValueOf(File actual) { return actual.getName(); }</span>
+        };
+    }
+
+    public static Matcher&lt;File&gt; aFileWithCanonicalPath(final Matcher&lt;String&gt; expected) {
+<span class="fc" id="L52">        return new FeatureMatcher&lt;File, String&gt;(expected, &quot;A file with canonical path&quot;, &quot;path&quot;) {</span>
+            @Override protected String featureValueOf(File actual) {
+                try {
+<span class="fc" id="L55">                    return actual.getCanonicalPath();</span>
+<span class="nc" id="L56">                } catch (IOException e) {</span>
+<span class="nc" id="L57">                    return &quot;Exception: &quot; + e.getMessage();</span>
+                }
+            }
+        };
+    }
+
+    public static Matcher&lt;File&gt; aFileWithAbsolutePath(final Matcher&lt;String&gt; expected) {
+<span class="fc" id="L64">        return new FeatureMatcher&lt;File, String&gt;(expected, &quot;A file with absolute path&quot;, &quot;path&quot;) {</span>
+<span class="fc" id="L65">            @Override protected String featureValueOf(File actual) { return actual.getAbsolutePath(); }</span>
+        };
+    }
+
+    public static interface FileStatus {
+        boolean check(File actual);
+    }
+
+<span class="fc" id="L73">    public static final FileStatus CAN_WRITE = new FileStatus() {</span>
+<span class="fc" id="L74">        @Override public boolean check(File actual) { return actual.canWrite(); }</span>
+    };
+<span class="fc" id="L76">    public static final FileStatus CAN_READ = new FileStatus() {</span>
+<span class="fc" id="L77">        @Override public boolean check(File actual) { return actual.canRead(); }</span>
+    };
+
+<span class="fc" id="L80">    public static final FileStatus IS_FILE = new FileStatus() {</span>
+<span class="fc" id="L81">        @Override public boolean check(File actual) { return actual.isFile(); }</span>
+    };
+
+<span class="fc" id="L84">    public static final FileStatus IS_DIRECTORY = new FileStatus() {</span>
+<span class="fc" id="L85">        @Override public boolean check(File actual) { return actual.isDirectory(); }</span>
+    };
+
+<span class="fc" id="L88">    public static final FileStatus EXISTS = new FileStatus() {</span>
+<span class="fc" id="L89">        @Override public boolean check(File actual) { return actual.exists(); }</span>
+    };
+
+    private static Matcher&lt;File&gt; fileChecker(final FileStatus fileStatus, final String successDescription, final String failureDescription) {
+<span class="fc" id="L93">        return new TypeSafeDiagnosingMatcher&lt;File&gt;() {</span>
+            public boolean matchesSafely(File actual, Description mismatchDescription) {
+<span class="fc" id="L95">                final boolean result = fileStatus.check(actual);</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">                if (!result) {</span>
+<span class="fc" id="L97">                    mismatchDescription.appendText(failureDescription);</span>
+                }
+<span class="fc" id="L99">                return result;</span>
+            }
+
+            public void describeTo(Description description) {
+<span class="nc" id="L103">                description.appendText(successDescription);</span>
+<span class="nc" id="L104">            }</span>
+        };
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

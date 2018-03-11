@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>StringDescription.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JavaHamcrest</a> &gt; <a href="index.source.html" class="el_package">org.hamcrest</a> &gt; <span class="el_source">StringDescription.java</span></div><h1>StringDescription.java</h1><pre class="source lang-java linenums">package org.hamcrest;
+
+import java.io.IOException;
+
+/**
+ * A {@link Description} that is stored as a string.
+ */
+public class StringDescription extends BaseDescription {
+    private final Appendable out;
+
+    public StringDescription() {
+<span class="fc" id="L12">        this(new StringBuilder());</span>
+<span class="fc" id="L13">    }</span>
+
+<span class="fc" id="L15">    public StringDescription(Appendable out) {</span>
+<span class="fc" id="L16">        this.out = out;</span>
+<span class="fc" id="L17">    }</span>
+    
+    /**
+     * Return the description of a {@link SelfDescribing} object as a String.
+     * 
+     * @param selfDescribing
+     *   The object to be described.
+     * @return
+     *   The description of the object.
+     */
+    public static String toString(SelfDescribing selfDescribing) {
+<span class="fc" id="L28">        return new StringDescription().appendDescriptionOf(selfDescribing).toString();</span>
+    }
+
+    /**
+     * Alias for {@link #toString(SelfDescribing)}.
+     */
+    public static String asString(SelfDescribing selfDescribing) {
+<span class="nc" id="L35">        return toString(selfDescribing);</span>
+    }
+
+    @Override
+    protected void append(String str) {
+        try {
+<span class="fc" id="L41">            out.append(str);</span>
+<span class="nc" id="L42">        } catch (IOException e) {</span>
+<span class="nc" id="L43">            throw new RuntimeException(&quot;Could not write description&quot;, e);</span>
+<span class="fc" id="L44">        }</span>
+<span class="fc" id="L45">    }</span>
+
+    @Override
+    protected void append(char c) {
+        try {
+<span class="fc" id="L50">            out.append(c);</span>
+<span class="nc" id="L51">        } catch (IOException e) {</span>
+<span class="nc" id="L52">            throw new RuntimeException(&quot;Could not write description&quot;, e);</span>
+<span class="fc" id="L53">        }</span>
+<span class="fc" id="L54">    }</span>
+    
+    /**
+     * Returns the description as a string.
+     */
+    @Override
+    public String toString() {
+<span class="fc" id="L61">        return out.toString();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

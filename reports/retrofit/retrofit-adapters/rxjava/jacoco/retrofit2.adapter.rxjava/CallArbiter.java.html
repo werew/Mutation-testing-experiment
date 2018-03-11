@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CallArbiter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Adapter: RxJava</a> &gt; <a href="index.source.html" class="el_package">retrofit2.adapter.rxjava</a> &gt; <span class="el_source">CallArbiter.java</span></div><h1>CallArbiter.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2016 Jake Wharton
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package retrofit2.adapter.rxjava;
+
+import java.util.concurrent.atomic.AtomicInteger;
+import retrofit2.Call;
+import retrofit2.Response;
+import rx.Producer;
+import rx.Subscriber;
+import rx.Subscription;
+import rx.exceptions.CompositeException;
+import rx.exceptions.Exceptions;
+import rx.exceptions.OnCompletedFailedException;
+import rx.exceptions.OnErrorFailedException;
+import rx.exceptions.OnErrorNotImplementedException;
+import rx.plugins.RxJavaPlugins;
+
+final class CallArbiter&lt;T&gt; extends AtomicInteger implements Subscription, Producer {
+  private static final int STATE_WAITING = 0;
+  private static final int STATE_REQUESTED = 1;
+  private static final int STATE_HAS_RESPONSE = 2;
+  private static final int STATE_TERMINATED = 3;
+
+  private final Call&lt;T&gt; call;
+  private final Subscriber&lt;? super Response&lt;T&gt;&gt; subscriber;
+
+  private volatile boolean unsubscribed;
+  private volatile Response&lt;T&gt; response;
+
+  CallArbiter(Call&lt;T&gt; call, Subscriber&lt;? super Response&lt;T&gt;&gt; subscriber) {
+<span class="fc" id="L44">    super(STATE_WAITING);</span>
+
+<span class="fc" id="L46">    this.call = call;</span>
+<span class="fc" id="L47">    this.subscriber = subscriber;</span>
+<span class="fc" id="L48">  }</span>
+
+  @Override public void unsubscribe() {
+<span class="fc" id="L51">    unsubscribed = true;</span>
+<span class="fc" id="L52">    call.cancel();</span>
+<span class="fc" id="L53">  }</span>
+
+  @Override public boolean isUnsubscribed() {
+<span class="fc" id="L56">    return unsubscribed;</span>
+  }
+
+  @Override public void request(long amount) {
+<span class="fc bfc" id="L60" title="All 2 branches covered.">    if (amount == 0) {</span>
+<span class="fc" id="L61">      return;</span>
+    }
+    while (true) {
+<span class="fc" id="L64">      int state = get();</span>
+<span class="pc bpc" id="L65" title="1 of 4 branches missed.">      switch (state) {</span>
+        case STATE_WAITING:
+<span class="pc bpc" id="L67" title="1 of 2 branches missed.">          if (compareAndSet(STATE_WAITING, STATE_REQUESTED)) {</span>
+<span class="fc" id="L68">            return;</span>
+          }
+          break; // State transition failed. Try again.
+
+        case STATE_HAS_RESPONSE:
+<span class="pc bpc" id="L73" title="1 of 2 branches missed.">          if (compareAndSet(STATE_HAS_RESPONSE, STATE_TERMINATED)) {</span>
+<span class="fc" id="L74">            deliverResponse(response);</span>
+<span class="fc" id="L75">            return;</span>
+          }
+          break; // State transition failed. Try again.
+
+        case STATE_REQUESTED:
+        case STATE_TERMINATED:
+<span class="fc" id="L81">          return; // Nothing to do.</span>
+
+        default:
+<span class="nc" id="L84">          throw new IllegalStateException(&quot;Unknown state: &quot; + state);</span>
+      }
+<span class="nc" id="L86">    }</span>
+  }
+
+  void emitResponse(Response&lt;T&gt; response) {
+    while (true) {
+<span class="fc" id="L91">      int state = get();</span>
+<span class="pc bpc" id="L92" title="2 of 4 branches missed.">      switch (state) {</span>
+        case STATE_WAITING:
+<span class="fc" id="L94">          this.response = response;</span>
+<span class="pc bpc" id="L95" title="1 of 2 branches missed.">          if (compareAndSet(STATE_WAITING, STATE_HAS_RESPONSE)) {</span>
+<span class="fc" id="L96">            return;</span>
+          }
+          break; // State transition failed. Try again.
+
+        case STATE_REQUESTED:
+<span class="pc bpc" id="L101" title="1 of 2 branches missed.">          if (compareAndSet(STATE_REQUESTED, STATE_TERMINATED)) {</span>
+<span class="fc" id="L102">            deliverResponse(response);</span>
+<span class="fc" id="L103">            return;</span>
+          }
+          break; // State transition failed. Try again.
+
+        case STATE_HAS_RESPONSE:
+        case STATE_TERMINATED:
+<span class="nc" id="L109">          throw new AssertionError();</span>
+
+        default:
+<span class="nc" id="L112">          throw new IllegalStateException(&quot;Unknown state: &quot; + state);</span>
+      }
+<span class="nc" id="L114">    }</span>
+  }
+
+  private void deliverResponse(Response&lt;T&gt; response) {
+    try {
+<span class="pc bpc" id="L119" title="1 of 2 branches missed.">      if (!isUnsubscribed()) {</span>
+<span class="fc" id="L120">        subscriber.onNext(response);</span>
+      }
+<span class="fc" id="L122">    } catch (OnCompletedFailedException</span>
+        | OnErrorFailedException
+        | OnErrorNotImplementedException e) {
+<span class="fc" id="L125">      RxJavaPlugins.getInstance().getErrorHandler().handleError(e);</span>
+<span class="fc" id="L126">      return;</span>
+<span class="fc" id="L127">    } catch (Throwable t) {</span>
+<span class="fc" id="L128">      Exceptions.throwIfFatal(t);</span>
+      try {
+<span class="fc" id="L130">        subscriber.onError(t);</span>
+<span class="nc" id="L131">      } catch (OnCompletedFailedException</span>
+          | OnErrorFailedException
+          | OnErrorNotImplementedException e) {
+<span class="nc" id="L134">        RxJavaPlugins.getInstance().getErrorHandler().handleError(e);</span>
+<span class="nc" id="L135">      } catch (Throwable inner) {</span>
+<span class="nc" id="L136">        Exceptions.throwIfFatal(inner);</span>
+<span class="nc" id="L137">        CompositeException composite = new CompositeException(t, inner);</span>
+<span class="nc" id="L138">        RxJavaPlugins.getInstance().getErrorHandler().handleError(composite);</span>
+<span class="pc" id="L139">      }</span>
+<span class="fc" id="L140">      return;</span>
+<span class="fc" id="L141">    }</span>
+    try {
+<span class="fc bfc" id="L143" title="All 2 branches covered.">      if (!isUnsubscribed()) {</span>
+<span class="fc" id="L144">        subscriber.onCompleted();</span>
+      }
+<span class="fc" id="L146">    } catch (OnCompletedFailedException</span>
+        | OnErrorFailedException
+        | OnErrorNotImplementedException e) {
+<span class="fc" id="L149">      RxJavaPlugins.getInstance().getErrorHandler().handleError(e);</span>
+<span class="fc" id="L150">    } catch (Throwable t) {</span>
+<span class="fc" id="L151">      Exceptions.throwIfFatal(t);</span>
+<span class="fc" id="L152">      RxJavaPlugins.getInstance().getErrorHandler().handleError(t);</span>
+<span class="fc" id="L153">    }</span>
+<span class="fc" id="L154">  }</span>
+
+  void emitError(Throwable t) {
+<span class="fc" id="L157">    set(STATE_TERMINATED);</span>
+
+<span class="fc bfc" id="L159" title="All 2 branches covered.">    if (!isUnsubscribed()) {</span>
+      try {
+<span class="fc" id="L161">        subscriber.onError(t);</span>
+<span class="fc" id="L162">      } catch (OnCompletedFailedException</span>
+          | OnErrorFailedException
+          | OnErrorNotImplementedException e) {
+<span class="fc" id="L165">        RxJavaPlugins.getInstance().getErrorHandler().handleError(e);</span>
+<span class="fc" id="L166">      } catch (Throwable inner) {</span>
+<span class="fc" id="L167">        Exceptions.throwIfFatal(inner);</span>
+<span class="fc" id="L168">        CompositeException composite = new CompositeException(t, inner);</span>
+<span class="fc" id="L169">        RxJavaPlugins.getInstance().getErrorHandler().handleError(composite);</span>
+<span class="fc" id="L170">      }</span>
+    }
+<span class="fc" id="L172">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HasXPath.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JavaHamcrest</a> &gt; <a href="index.source.html" class="el_package">org.hamcrest.xml</a> &gt; <span class="el_source">HasXPath.java</span></div><h1>HasXPath.java</h1><pre class="source lang-java linenums">package org.hamcrest.xml;
+
+import org.hamcrest.Condition;
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeDiagnosingMatcher;
+import org.hamcrest.core.IsAnything;
+import org.w3c.dom.Node;
+
+import javax.xml.namespace.NamespaceContext;
+import javax.xml.namespace.QName;
+import javax.xml.xpath.*;
+
+import static javax.xml.xpath.XPathConstants.STRING;
+import static org.hamcrest.Condition.matched;
+import static org.hamcrest.Condition.notMatched;
+
+/**
+ * Applies a Matcher to a given XML Node in an existing XML Node tree, specified by an XPath expression.
+ *
+ * @author Joe Walnes
+ * @author Steve Freeman
+ */
+public class HasXPath extends TypeSafeDiagnosingMatcher&lt;Node&gt; {
+<span class="fc" id="L25">    public static final NamespaceContext NO_NAMESPACE_CONTEXT = null;</span>
+<span class="fc" id="L26">    private static final IsAnything&lt;String&gt; WITH_ANY_CONTENT = new IsAnything&lt;String&gt;(&quot;&quot;);</span>
+<span class="fc" id="L27">    private static final Condition.Step&lt;Object,String&gt; NODE_EXISTS = nodeExists();</span>
+    private final Matcher&lt;String&gt; valueMatcher;
+    private final XPathExpression compiledXPath;
+    private final String xpathString;
+    private final QName evaluationMode;
+
+    /**
+     * @param xPathExpression XPath expression.
+     * @param valueMatcher Matcher to use at given XPath.
+     *                     May be null to specify that the XPath must exist but the value is irrelevant.
+     */
+    public HasXPath(String xPathExpression, Matcher&lt;String&gt; valueMatcher) {
+<span class="nc" id="L39">        this(xPathExpression, NO_NAMESPACE_CONTEXT, valueMatcher);</span>
+<span class="nc" id="L40">    }</span>
+
+    /**
+     * @param xPathExpression XPath expression.
+     * @param namespaceContext Resolves XML namespace prefixes in the XPath expression
+     * @param valueMatcher Matcher to use at given XPath.
+     *                     May be null to specify that the XPath must exist but the value is irrelevant.
+     */
+    public HasXPath(String xPathExpression, NamespaceContext namespaceContext, Matcher&lt;String&gt; valueMatcher) {
+<span class="nc" id="L49">        this(xPathExpression, namespaceContext, valueMatcher, STRING);</span>
+<span class="nc" id="L50">    }</span>
+
+<span class="fc" id="L52">    private HasXPath(String xPathExpression, NamespaceContext namespaceContext, Matcher&lt;String&gt; valueMatcher, QName mode) {</span>
+<span class="fc" id="L53">        this.compiledXPath = compiledXPath(xPathExpression, namespaceContext);</span>
+<span class="fc" id="L54">        this.xpathString = xPathExpression;</span>
+<span class="fc" id="L55">        this.valueMatcher = valueMatcher;</span>
+<span class="fc" id="L56">        this.evaluationMode = mode;</span>
+<span class="fc" id="L57">    }</span>
+
+    @Override
+    public boolean matchesSafely(Node item, Description mismatch) {
+<span class="fc" id="L61">        return evaluated(item, mismatch)</span>
+<span class="fc" id="L62">               .and(NODE_EXISTS)</span>
+<span class="fc" id="L63">               .matching(valueMatcher);</span>
+    }
+
+    @Override
+    public void describeTo(Description description) {
+<span class="fc" id="L68">        description.appendText(&quot;an XML document with XPath &quot;).appendText(xpathString);</span>
+<span class="pc bpc" id="L69" title="1 of 2 branches missed.">        if (valueMatcher != null) {</span>
+<span class="fc" id="L70">            description.appendText(&quot; &quot;).appendDescriptionOf(valueMatcher);</span>
+        }
+<span class="fc" id="L72">    }</span>
+
+    private Condition&lt;Object&gt; evaluated(Node item, Description mismatch) {
+        try {
+<span class="fc" id="L76">            return matched(compiledXPath.evaluate(item, evaluationMode), mismatch);</span>
+<span class="nc" id="L77">        } catch (XPathExpressionException e) {</span>
+<span class="nc" id="L78">            mismatch.appendText(e.getMessage());</span>
+        }
+<span class="nc" id="L80">        return notMatched();</span>
+    }
+
+    private static Condition.Step&lt;Object, String&gt; nodeExists() {
+<span class="fc" id="L84">        return new Condition.Step&lt;Object, String&gt;() {</span>
+            @Override
+            public Condition&lt;String&gt; apply(Object value, Description mismatch) {
+<span class="fc bfc" id="L87" title="All 2 branches covered.">                if (value == null) {</span>
+<span class="fc" id="L88">                    mismatch.appendText(&quot;xpath returned no results.&quot;);</span>
+<span class="fc" id="L89">                    return notMatched();</span>
+                }
+<span class="fc" id="L91">                return matched(String.valueOf(value), mismatch);</span>
+            }
+        };
+    }
+
+    private static XPathExpression compiledXPath(String xPathExpression, NamespaceContext namespaceContext) {
+        try {
+<span class="fc" id="L98">            final XPath xPath = XPathFactory.newInstance().newXPath();</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">            if (namespaceContext != null) {</span>
+<span class="fc" id="L100">                xPath.setNamespaceContext(namespaceContext);</span>
+            }
+<span class="fc" id="L102">            return xPath.compile(xPathExpression);</span>
+<span class="fc" id="L103">        } catch (XPathExpressionException e) {</span>
+<span class="fc" id="L104">            throw new IllegalArgumentException(&quot;Invalid XPath : &quot; + xPathExpression, e);</span>
+        }
+    }
+
+
+    /**
+     * Creates a matcher of {@link org.w3c.dom.Node}s that matches when the examined node has a value at the
+     * specified &lt;code&gt;xPath&lt;/code&gt; that satisfies the specified &lt;code&gt;valueMatcher&lt;/code&gt;.
+     * For example:
+     * &lt;pre&gt;assertThat(xml, hasXPath(&quot;/root/something[2]/cheese&quot;, equalTo(&quot;Cheddar&quot;)))&lt;/pre&gt;
+     * 
+     * @param xPath
+     *     the target xpath
+     * @param valueMatcher
+     *     matcher for the value at the specified xpath
+     */
+    public static Matcher&lt;Node&gt; hasXPath(String xPath, Matcher&lt;String&gt; valueMatcher) {
+<span class="fc" id="L121">        return hasXPath(xPath, NO_NAMESPACE_CONTEXT, valueMatcher);</span>
+    }
+
+    /**
+     * Creates a matcher of {@link org.w3c.dom.Node}s that matches when the examined node has a value at the
+     * specified &lt;code&gt;xPath&lt;/code&gt;, within the specified &lt;code&gt;namespaceContext&lt;/code&gt;, that satisfies
+     * the specified &lt;code&gt;valueMatcher&lt;/code&gt;.
+     * For example:
+     * &lt;pre&gt;assertThat(xml, hasXPath(&quot;/root/something[2]/cheese&quot;, myNs, equalTo(&quot;Cheddar&quot;)))&lt;/pre&gt;
+     * 
+     * @param xPath
+     *     the target xpath
+     * @param namespaceContext
+     *     the namespace for matching nodes
+     * @param valueMatcher
+     *     matcher for the value at the specified xpath
+     */
+    public static Matcher&lt;Node&gt; hasXPath(String xPath, NamespaceContext namespaceContext, Matcher&lt;String&gt; valueMatcher) {
+<span class="fc" id="L139">        return new HasXPath(xPath, namespaceContext, valueMatcher, STRING);</span>
+    }
+
+    /**
+     * Creates a matcher of {@link org.w3c.dom.Node}s that matches when the examined node contains a node
+     * at the specified &lt;code&gt;xPath&lt;/code&gt;, with any content.
+     * For example:
+     * &lt;pre&gt;assertThat(xml, hasXPath(&quot;/root/something[2]/cheese&quot;))&lt;/pre&gt;
+     * 
+     * @param xPath
+     *     the target xpath
+     */
+    public static Matcher&lt;Node&gt; hasXPath(String xPath) {
+<span class="fc" id="L152">        return hasXPath(xPath, NO_NAMESPACE_CONTEXT);</span>
+    }
+
+    /**
+     * Creates a matcher of {@link org.w3c.dom.Node}s that matches when the examined node contains a node
+     * at the specified &lt;code&gt;xPath&lt;/code&gt; within the specified namespace context, with any content.
+     * For example:
+     * &lt;pre&gt;assertThat(xml, hasXPath(&quot;/root/something[2]/cheese&quot;, myNs))&lt;/pre&gt;
+     * 
+     * @param xPath
+     *     the target xpath
+     * @param namespaceContext
+     *     the namespace for matching nodes
+     */
+    public static Matcher&lt;Node&gt; hasXPath(String xPath, NamespaceContext namespaceContext) {
+<span class="fc" id="L167">        return new HasXPath(xPath, namespaceContext, WITH_ANY_CONTENT, XPathConstants.NODE);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ModuleAdapter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Dagger</a> &gt; <a href="index.source.html" class="el_package">dagger.internal</a> &gt; <span class="el_source">ModuleAdapter.java</span></div><h1>ModuleAdapter.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2012 Square, Inc.
+ * Copyright (C) 2012 Google, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package dagger.internal;
+
+
+/**
+ * Extracts bindings from an {@code @Module}-annotated class.
+ */
+public abstract class ModuleAdapter&lt;T&gt; {
+  public final Class&lt;T&gt; moduleClass;
+  public final String[] injectableTypes;
+  public final Class&lt;?&gt;[] staticInjections;
+  public final boolean overrides;
+  public final Class&lt;?&gt;[] includes;
+  public final boolean complete;
+  public final boolean library;
+
+  protected ModuleAdapter(Class&lt;T&gt; moduleClass, String[] injectableTypes,
+      Class&lt;?&gt;[] staticInjections, boolean overrides, Class&lt;?&gt;[] includes, boolean complete,
+<span class="fc" id="L34">      boolean library) {</span>
+<span class="fc" id="L35">    this.moduleClass = moduleClass;</span>
+<span class="fc" id="L36">    this.injectableTypes = injectableTypes;</span>
+<span class="fc" id="L37">    this.staticInjections = staticInjections;</span>
+<span class="fc" id="L38">    this.overrides = overrides;</span>
+<span class="fc" id="L39">    this.includes = includes;</span>
+<span class="fc" id="L40">    this.complete = complete;</span>
+<span class="fc" id="L41">    this.library = library;</span>
+<span class="fc" id="L42">  }</span>
+
+  /**
+   * Returns bindings for the {@code @Provides} methods of {@code module}. The
+   * returned bindings must be linked before they can be used to inject values.
+   */
+  @SuppressWarnings(&quot;unused&quot;)
+  public void getBindings(BindingsGroup map, T module) {
+    // no-op;
+<span class="nc" id="L51">  }</span>
+
+  /**
+   * Returns a new instance of the module class created using a no-args
+   * constructor. Only used when a manually-constructed module is not supplied.
+   */
+  protected T newModule() {
+<span class="nc" id="L58">    throw new UnsupportedOperationException(&quot;No no-args constructor on &quot; + getClass().getName());</span>
+  }
+
+  @Override
+  public final boolean equals(Object obj) {
+<span class="pc bpc" id="L63" title="1 of 2 branches missed.">    if (obj == this) {</span>
+<span class="nc" id="L64">      return true;</span>
+<span class="pc bpc" id="L65" title="1 of 2 branches missed.">    } else if (obj instanceof ModuleAdapter&lt;?&gt;) {</span>
+<span class="fc" id="L66">      ModuleAdapter&lt;?&gt; that = (ModuleAdapter&lt;?&gt;) obj;</span>
+<span class="fc" id="L67">      return this.moduleClass.equals(that.moduleClass);</span>
+    } else {
+<span class="nc" id="L69">      return false;</span>
+    }
+  }
+
+  @Override
+  public final int hashCode() {
+<span class="fc" id="L75">    return moduleClass.hashCode();</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

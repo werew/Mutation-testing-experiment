@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BaseFillMode.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">vectalign</a> &gt; <a href="index.source.html" class="el_package">com.bonnyfone.vectalign.techniques</a> &gt; <span class="el_source">BaseFillMode.java</span></div><h1>BaseFillMode.java</h1><pre class="source lang-java linenums">package com.bonnyfone.vectalign.techniques;
+
+import android.support.v7.graphics.drawable.PathParser;
+import com.bonnyfone.vectalign.PathNodeUtils;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+
+/**
+ * Base fill mode which will fill the eventual holes using neutral nodes.
+ */
+<span class="fc" id="L12">public class BaseFillMode extends AbstractFillMode {</span>
+
+    protected float[][] penPosFrom;
+    protected float[][] penPosTo;
+    protected float[][] penPosFromAfter;
+    protected float[][] penPosToAfter;
+
+    @Override
+    public void fillInjectedNodes(ArrayList&lt;PathParser.PathDataNode&gt; from, ArrayList&lt;PathParser.PathDataNode&gt; to) {
+        PathParser.PathDataNode nodePlaceholder, nodeMaster;
+
+<span class="fc" id="L23">        penPosFrom = PathNodeUtils.calculatePenPosition(from);</span>
+<span class="fc" id="L24">        penPosTo = PathNodeUtils.calculatePenPosition(to);</span>
+<span class="fc" id="L25">        float[][] penPosPlaceholder = null;</span>
+<span class="fc" id="L26">        float[][] penPosMaster = null;</span>
+<span class="fc" id="L27">        ArrayList&lt;PathParser.PathDataNode&gt; listMaster = null;</span>
+<span class="fc" id="L28">        ArrayList&lt;PathParser.PathDataNode&gt; listPlaceholder = null;</span>
+
+<span class="fc bfc" id="L30" title="All 2 branches covered.">        for (int i = 0; i &lt; from.size(); i++) {</span>
+<span class="fc bfc" id="L31" title="All 2 branches covered.">            if (from.get(i).mType == PathNodeUtils.CMD_PLACEHOLDER) {</span>
+<span class="fc" id="L32">                nodePlaceholder = from.get(i);</span>
+<span class="fc" id="L33">                nodeMaster = to.get(i);</span>
+<span class="fc" id="L34">                penPosPlaceholder = penPosFrom;</span>
+<span class="fc" id="L35">                penPosMaster = penPosTo;</span>
+<span class="fc" id="L36">                listMaster = to;</span>
+<span class="fc" id="L37">                listPlaceholder = from;</span>
+<span class="fc bfc" id="L38" title="All 2 branches covered.">            } else if (to.get(i).mType == PathNodeUtils.CMD_PLACEHOLDER) {</span>
+<span class="fc" id="L39">                nodePlaceholder = to.get(i);</span>
+<span class="fc" id="L40">                nodeMaster = from.get(i);</span>
+<span class="fc" id="L41">                penPosPlaceholder = penPosTo;</span>
+<span class="fc" id="L42">                penPosMaster = penPosFrom;</span>
+<span class="fc" id="L43">                listMaster = from;</span>
+<span class="fc" id="L44">                listPlaceholder = to;</span>
+            } else {
+<span class="fc" id="L46">                nodeMaster = null;</span>
+<span class="fc" id="L47">                nodePlaceholder = null;</span>
+            }
+
+<span class="pc bpc" id="L50" title="1 of 4 branches missed.">            if (nodeMaster == null || nodePlaceholder == null)</span>
+<span class="nc" id="L51">                continue;</span>
+
+
+<span class="fc" id="L54">            nodePlaceholder.mType = nodeMaster.mType;</span>
+<span class="fc" id="L55">            nodePlaceholder.mParams = PathParser.copyOfRange(nodeMaster.mParams, 0, nodeMaster.mParams.length);</span>
+
+            float lastPlaceholderX, lastPlaceholderY, lastMasterX, lastMasterY;
+<span class="fc bfc" id="L58" title="All 2 branches covered.">            if (i &gt; 0) {</span>
+<span class="fc" id="L59">                lastPlaceholderX = penPosPlaceholder[i - 1][0];</span>
+<span class="fc" id="L60">                lastPlaceholderY = penPosPlaceholder[i - 1][1];</span>
+<span class="fc" id="L61">                lastMasterX = penPosMaster[i - 1][0];</span>
+<span class="fc" id="L62">                lastMasterY = penPosMaster[i - 1][1];</span>
+            } else {
+<span class="fc" id="L64">                lastPlaceholderX = 0;</span>
+<span class="fc" id="L65">                lastPlaceholderY = 0;</span>
+<span class="fc" id="L66">                lastMasterX = 0;</span>
+<span class="fc" id="L67">                lastMasterY = 0;</span>
+            }
+
+<span class="pc bpc" id="L70" title="1 of 2 branches missed.">            if (Character.toLowerCase(nodeMaster.mType) == 'z') {</span>
+                //Injecting a 'z' means we need to counterbalance the last path position with an extra 'm'
+<span class="nc" id="L72">                PathParser.PathDataNode extraMoveNodePlaceholder = new PathParser.PathDataNode('M', new float[]{lastPlaceholderX, lastPlaceholderY});</span>
+<span class="nc" id="L73">                PathParser.PathDataNode extraMoveNodeMaster = new PathParser.PathDataNode('M', new float[]{lastMasterX, lastMasterY});</span>
+
+<span class="nc" id="L75">                listMaster.add(i, extraMoveNodeMaster);</span>
+<span class="nc" id="L76">                listPlaceholder.add(i, extraMoveNodePlaceholder);</span>
+<span class="nc" id="L77">                i++; //next item is already filled, we just added it</span>
+
+                //Recalculate penpos arrays //TODO do this more efficiently
+<span class="nc" id="L80">                penPosFrom = PathNodeUtils.calculatePenPosition(from);</span>
+<span class="nc" id="L81">                penPosTo = PathNodeUtils.calculatePenPosition(to);</span>
+
+<span class="pc bfc" id="L83" title="All 2 branches covered.">            } else if (Character.isLowerCase(nodePlaceholder.mType)) { // this is a relative movement. If we want to create extra nodes, we need to create neutral relative commands</span>
+<span class="fc" id="L84">                Arrays.fill(nodePlaceholder.mParams, 0.0f); //FIXME is good?</span>
+            } else {
+<span class="fc bfc" id="L86" title="All 2 branches covered.">                if (nodePlaceholder.mType == 'V') {</span>
+<span class="fc" id="L87">                    nodePlaceholder.mParams[0] = lastPlaceholderY;</span>
+<span class="pc bpc" id="L88" title="1 of 2 branches missed.">                } else if (nodePlaceholder.mType == 'H') {</span>
+<span class="nc" id="L89">                    nodePlaceholder.mParams[0] = lastPlaceholderX;</span>
+                } else {
+<span class="fc bfc" id="L91" title="All 2 branches covered.">                    for (int j = 0; j &lt; nodePlaceholder.mParams.length; j++) {</span>
+<span class="fc" id="L92">                        nodePlaceholder.mParams[j++] = lastPlaceholderX;</span>
+<span class="fc" id="L93">                        nodePlaceholder.mParams[j] = lastPlaceholderY;</span>
+                    }
+                }
+            }
+        }
+
+<span class="fc" id="L99">        penPosFromAfter = PathNodeUtils.calculatePenPosition(from);</span>
+<span class="fc" id="L100">        penPosToAfter = PathNodeUtils.calculatePenPosition(to);</span>
+<span class="fc" id="L101">        checkPenPosValidity();</span>
+<span class="fc" id="L102">    }</span>
+
+
+    /**
+     * Check injection validity //TODO this is an approximated check which needs improvements
+     * @return
+     */
+    protected boolean checkPenPosValidity() {
+<span class="pc bpc" id="L110" title="2 of 8 branches missed.">        if ((penPosFromAfter[penPosFromAfter.length - 1][0] == penPosFrom[penPosFrom.length - 1][0])</span>
+                &amp;&amp; (penPosFromAfter[penPosFromAfter.length - 1][1] == penPosFrom[penPosFrom.length - 1][1])
+                &amp;&amp; (penPosToAfter[penPosToAfter.length - 1][0] == penPosTo[penPosTo.length - 1][0])
+                &amp;&amp; (penPosToAfter[penPosToAfter.length - 1][1] == penPosTo[penPosTo.length - 1][1])) {
+
+<span class="fc" id="L115">            System.out.println(&quot;Injection completed correctly!&quot;);</span>
+<span class="fc" id="L116">            return true;</span>
+        } else {
+<span class="fc" id="L118">            System.out.println(&quot;PROBLEM during injection!&quot;);</span>
+<span class="fc" id="L119">            System.out.println(&quot;PenPos from&quot;);</span>
+<span class="fc" id="L120">            StringBuffer sb = new StringBuffer();</span>
+<span class="fc" id="L121">            int i = 0;</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">            for (float[] coord : penPosFrom) {</span>
+<span class="fc" id="L123">                sb.append((++i) + &quot;p. &quot; + coord[0] + &quot; , &quot; + coord[1] + &quot;\n&quot;);</span>
+            }
+<span class="fc" id="L125">            System.out.println(sb.toString());</span>
+
+
+<span class="fc" id="L128">            System.out.println(&quot;PenPos fromAfter&quot;);</span>
+<span class="fc" id="L129">            sb = new StringBuffer();</span>
+<span class="fc" id="L130">            i = 0;</span>
+<span class="fc bfc" id="L131" title="All 2 branches covered.">            for (float[] coord : penPosFromAfter) {</span>
+<span class="fc" id="L132">                sb.append((++i) + &quot;p. &quot; + coord[0] + &quot; , &quot; + coord[1] + &quot;\n&quot;);</span>
+            }
+<span class="fc" id="L134">            System.out.println(sb.toString());</span>
+
+
+<span class="fc" id="L137">            System.out.println(&quot;PenPos to&quot;);</span>
+<span class="fc" id="L138">            sb = new StringBuffer();</span>
+<span class="fc" id="L139">            i = 0;</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">            for (float[] coord : penPosTo) {</span>
+<span class="fc" id="L141">                sb.append((++i) + &quot;p. &quot; + coord[0] + &quot; , &quot; + coord[1] + &quot;\n&quot;);</span>
+            }
+<span class="fc" id="L143">            System.out.println(sb.toString());</span>
+
+
+<span class="fc" id="L146">            System.out.println(&quot;PenPos toAfter&quot;);</span>
+<span class="fc" id="L147">            sb = new StringBuffer();</span>
+<span class="fc" id="L148">            i = 0;</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">            for (float[] coord : penPosToAfter) {</span>
+<span class="fc" id="L150">                sb.append((++i) + &quot;p. &quot; + coord[0] + &quot; , &quot; + coord[1] + &quot;\n&quot;);</span>
+            }
+<span class="fc" id="L152">            System.out.println(sb.toString());</span>
+
+<span class="fc" id="L154">            return false;</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

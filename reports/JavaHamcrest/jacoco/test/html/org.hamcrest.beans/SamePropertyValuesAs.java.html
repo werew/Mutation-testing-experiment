@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SamePropertyValuesAs.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JavaHamcrest</a> &gt; <a href="index.source.html" class="el_package">org.hamcrest.beans</a> &gt; <span class="el_source">SamePropertyValuesAs.java</span></div><h1>SamePropertyValuesAs.java</h1><pre class="source lang-java linenums">package org.hamcrest.beans;
+
+import org.hamcrest.Description;
+import org.hamcrest.DiagnosingMatcher;
+import org.hamcrest.Matcher;
+
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import static org.hamcrest.beans.PropertyUtil.NO_ARGUMENTS;
+import static org.hamcrest.beans.PropertyUtil.propertyDescriptorsFor;
+import static org.hamcrest.core.IsEqual.equalTo;
+
+public class SamePropertyValuesAs&lt;T&gt; extends DiagnosingMatcher&lt;T&gt; {
+    private final T expectedBean;
+    private final Set&lt;String&gt; propertyNames;
+    private final List&lt;PropertyMatcher&gt; propertyMatchers;
+
+    @SuppressWarnings(&quot;WeakerAccess&quot;)
+<span class="fc" id="L24">    public SamePropertyValuesAs(T expectedBean) {</span>
+<span class="fc" id="L25">        PropertyDescriptor[] descriptors = propertyDescriptorsFor(expectedBean, Object.class);</span>
+<span class="fc" id="L26">        this.expectedBean = expectedBean;</span>
+<span class="fc" id="L27">        this.propertyNames = propertyNamesFrom(descriptors);</span>
+<span class="fc" id="L28">        this.propertyMatchers = propertyMatchersFor(expectedBean, descriptors);</span>
+<span class="fc" id="L29">    }</span>
+
+    @Override
+    protected boolean matches(Object actual, Description mismatch) {
+<span class="fc bfc" id="L33" title="All 2 branches covered.">        return isNotNull(actual, mismatch)</span>
+<span class="fc bfc" id="L34" title="All 2 branches covered.">                &amp;&amp; isCompatibleType(actual, mismatch)</span>
+<span class="fc bfc" id="L35" title="All 2 branches covered.">                &amp;&amp; hasNoExtraProperties(actual, mismatch)</span>
+<span class="fc bfc" id="L36" title="All 2 branches covered.">                &amp;&amp; hasMatchingValues(actual, mismatch);</span>
+    }
+
+    @Override
+    public void describeTo(Description description) {
+<span class="fc" id="L41">        description.appendText(&quot;same property values as &quot; + expectedBean.getClass().getSimpleName())</span>
+<span class="fc" id="L42">                   .appendList(&quot; [&quot;, &quot;, &quot;, &quot;]&quot;, propertyMatchers);</span>
+<span class="fc" id="L43">    }</span>
+
+
+    private boolean isCompatibleType(Object actual, Description mismatchDescription) {
+<span class="fc bfc" id="L47" title="All 2 branches covered.">        if (expectedBean.getClass().isAssignableFrom(actual.getClass())) {</span>
+<span class="fc" id="L48">            return true;</span>
+        }
+
+<span class="fc" id="L51">        mismatchDescription.appendText(&quot;is incompatible type: &quot; + actual.getClass().getSimpleName());</span>
+<span class="fc" id="L52">        return false;</span>
+    }
+
+    private boolean hasNoExtraProperties(Object actual, Description mismatchDescription) {
+<span class="fc" id="L56">        Set&lt;String&gt; actualPropertyNames = propertyNamesFrom(propertyDescriptorsFor(actual, Object.class));</span>
+<span class="fc" id="L57">        actualPropertyNames.removeAll(propertyNames);</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">        if (!actualPropertyNames.isEmpty()) {</span>
+<span class="fc" id="L59">            mismatchDescription.appendText(&quot;has extra properties called &quot; + actualPropertyNames);</span>
+<span class="fc" id="L60">            return false;</span>
+        }
+<span class="fc" id="L62">        return true;</span>
+    }
+
+    private boolean hasMatchingValues(Object actual, Description mismatchDescription) {
+<span class="fc bfc" id="L66" title="All 2 branches covered.">        for (PropertyMatcher propertyMatcher : propertyMatchers) {</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">            if (!propertyMatcher.matches(actual)) {</span>
+<span class="fc" id="L68">                propertyMatcher.describeMismatch(actual, mismatchDescription);</span>
+<span class="fc" id="L69">                return false;</span>
+            }
+<span class="fc" id="L71">        }</span>
+<span class="fc" id="L72">        return true;</span>
+    }
+
+    private static &lt;T&gt; List&lt;PropertyMatcher&gt; propertyMatchersFor(T bean, PropertyDescriptor[] descriptors) {
+<span class="fc" id="L76">        List&lt;PropertyMatcher&gt; result = new ArrayList&lt;&gt;(descriptors.length);</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">        for (PropertyDescriptor propertyDescriptor : descriptors) {</span>
+<span class="fc" id="L78">            result.add(new PropertyMatcher(propertyDescriptor, bean));</span>
+        }
+<span class="fc" id="L80">        return result;</span>
+    }
+
+    private static Set&lt;String&gt; propertyNamesFrom(PropertyDescriptor[] descriptors) {
+<span class="fc" id="L84">        HashSet&lt;String&gt; result = new HashSet&lt;&gt;();</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">        for (PropertyDescriptor propertyDescriptor : descriptors) {</span>
+<span class="fc" id="L86">            result.add(propertyDescriptor.getDisplayName());</span>
+        }
+<span class="fc" id="L88">        return result;</span>
+    }
+
+    private static class PropertyMatcher extends DiagnosingMatcher&lt;Object&gt; {
+        private final Method readMethod;
+        private final Matcher&lt;Object&gt; matcher;
+        private final String propertyName;
+
+<span class="fc" id="L96">        public PropertyMatcher(PropertyDescriptor descriptor, Object expectedObject) {</span>
+<span class="fc" id="L97">            this.propertyName = descriptor.getDisplayName();</span>
+<span class="fc" id="L98">            this.readMethod = descriptor.getReadMethod();</span>
+<span class="fc" id="L99">            this.matcher = equalTo(readProperty(readMethod, expectedObject));</span>
+<span class="fc" id="L100">        }</span>
+
+        @Override
+        public boolean matches(Object actual, Description mismatch) {
+<span class="fc" id="L104">            final Object actualValue = readProperty(readMethod, actual);</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">            if (!matcher.matches(actualValue)) {</span>
+<span class="fc" id="L106">                mismatch.appendText(propertyName + &quot; &quot;);</span>
+<span class="fc" id="L107">                matcher.describeMismatch(actualValue, mismatch);</span>
+<span class="fc" id="L108">                return false;</span>
+            }
+<span class="fc" id="L110">            return true;</span>
+        }
+
+        @Override
+        public void describeTo(Description description) {
+<span class="fc" id="L115">            description.appendText(propertyName + &quot;: &quot;).appendDescriptionOf(matcher);</span>
+<span class="fc" id="L116">        }</span>
+    }
+
+    private static Object readProperty(Method method, Object target) {
+        try {
+<span class="fc" id="L121">            return method.invoke(target, NO_ARGUMENTS);</span>
+<span class="nc" id="L122">        } catch (Exception e) {</span>
+<span class="nc" id="L123">            throw new IllegalArgumentException(&quot;Could not invoke &quot; + method + &quot; on &quot; + target, e);</span>
+        }
+    }
+
+    /**
+     * Creates a matcher that matches when the examined object has values for all of
+     * its JavaBean properties that are equal to the corresponding values of the
+     * specified bean.
+     * For example:
+     * &lt;pre&gt;assertThat(myBean, samePropertyValuesAs(myExpectedBean))&lt;/pre&gt;
+     * 
+     * @param expectedBean
+     *     the bean against which examined beans are compared
+     */
+    public static &lt;B&gt; Matcher&lt;B&gt; samePropertyValuesAs(B expectedBean) {
+<span class="fc" id="L138">        return new SamePropertyValuesAs&lt;&gt;(expectedBean);</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

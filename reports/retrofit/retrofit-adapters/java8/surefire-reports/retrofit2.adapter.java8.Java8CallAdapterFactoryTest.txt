@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: retrofit2.adapter.java8.Java8CallAdapterFactoryTest
+-------------------------------------------------------------------------------
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.07 sec - in retrofit2.adapter.java8.Java8CallAdapterFactoryTest

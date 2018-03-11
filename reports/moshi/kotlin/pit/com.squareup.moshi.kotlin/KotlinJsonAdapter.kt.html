@@ -1,0 +1,4359 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="../style.css">
+</head>
+<body>
+
+
+<h1>KotlinJsonAdapter.kt</h1>
+
+<table class="src">
+
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_1'/>
+1
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_1'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>/*</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_2'/>
+2
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_2'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * Copyright (C) 2017 Square, Inc.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_3'/>
+3
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_3'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_4'/>
+4
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_4'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_5'/>
+5
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_5'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * you may not use this file except in compliance with the License.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_6'/>
+6
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_6'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * You may obtain a copy of the License at</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_7'/>
+7
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_7'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_8'/>
+8
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_8'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *      http://www.apache.org/licenses/LICENSE-2.0</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_9'/>
+9
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_9'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_10'/>
+10
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_10'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * Unless required by applicable law or agreed to in writing, software</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_11'/>
+11
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_11'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * distributed under the License is distributed on an &#34;AS IS&#34; BASIS,</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_12'/>
+12
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_12'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_13'/>
+13
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_13'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * See the License for the specific language governing permissions and</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_14'/>
+14
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_14'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * limitations under the License.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_15'/>
+15
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_15'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> */</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_16'/>
+16
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_16'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>package com.squareup.moshi.kotlin</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_17'/>
+17
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_17'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_18'/>
+18
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_18'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import com.squareup.moshi.Json</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_19'/>
+19
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_19'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import com.squareup.moshi.JsonAdapter</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_20'/>
+20
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_20'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import com.squareup.moshi.JsonDataException</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_21'/>
+21
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_21'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import com.squareup.moshi.JsonReader</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_22'/>
+22
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_22'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import com.squareup.moshi.JsonWriter</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_23'/>
+23
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_23'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import com.squareup.moshi.Moshi</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_24'/>
+24
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_24'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import com.squareup.moshi.Types</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_25'/>
+25
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_25'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import com.squareup.moshi.internal.Util</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_26'/>
+26
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_26'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.lang.reflect.Modifier</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_27'/>
+27
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_27'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.lang.reflect.Type</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_28'/>
+28
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_28'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.util.AbstractMap.SimpleEntry</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_29'/>
+29
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_29'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import kotlin.collections.Map.Entry</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_30'/>
+30
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_30'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import kotlin.reflect.KFunction</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_31'/>
+31
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_31'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import kotlin.reflect.KMutableProperty1</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_32'/>
+32
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_32'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import kotlin.reflect.KParameter</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_33'/>
+33
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_33'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import kotlin.reflect.KProperty1</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_34'/>
+34
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_34'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import kotlin.reflect.full.findAnnotation</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_35'/>
+35
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_35'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import kotlin.reflect.full.memberProperties</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_36'/>
+36
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_36'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import kotlin.reflect.full.primaryConstructor</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_37'/>
+37
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_37'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import kotlin.reflect.jvm.isAccessible</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_38'/>
+38
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_38'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import kotlin.reflect.jvm.javaField</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_39'/>
+39
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_39'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import kotlin.reflect.jvm.javaType</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_40'/>
+40
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_40'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_41'/>
+41
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_41'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>/** Classes annotated with this are eligible for this adapter. */</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_42'/>
+42
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_42'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>private val KOTLIN_METADATA = Class.forName(&#34;kotlin.Metadata&#34;) as Class&#60;out Annotation&#62;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_43'/>
+43
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_43'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_44'/>
+44
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_44'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>/**</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_45'/>
+45
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_45'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * Placeholder value used when a field is absent from the JSON. Note that this code</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_46'/>
+46
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_46'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * distinguishes between absent values and present-but-null values.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_47'/>
+47
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_47'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> */</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_48'/>
+48
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_48'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>private object ABSENT_VALUE</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_49'/>
+49
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_49'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_50'/>
+50
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_50'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>/**</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_51'/>
+51
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_51'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * This class encodes Kotlin classes using their properties. It decodes them by first invoking the</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_52'/>
+52
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_52'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * constructor, and then by setting any additional properties that exist, if any.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_53'/>
+53
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_53'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> */</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_54'/>
+54
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_54'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>internal class KotlinJsonAdapter&#60;T&#62;(</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_55'/>
+55
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_55'>1</a>
+<span>
+1. getConstructor : mutated return of Object value for com/squareup/moshi/kotlin/KotlinJsonAdapter::getConstructor to ( if (x != null) null else throw new RuntimeException ) &rarr; NO_COVERAGE<br/>
+
+</span>
+</td>
+<td class='uncovered'><pre><span  class='survived'>    val constructor: KFunction&#60;T&#62;,</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_56'/>
+56
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_56'>1</a>
+<span>
+1. getBindings : mutated return of Object value for com/squareup/moshi/kotlin/KotlinJsonAdapter::getBindings to ( if (x != null) null else throw new RuntimeException ) &rarr; NO_COVERAGE<br/>
+
+</span>
+</td>
+<td class='uncovered'><pre><span  class='survived'>    val bindings: List&#60;Binding&#60;T, Any?&#62;?&#62;,</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_57'/>
+57
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_57'>1</a>
+<span>
+1. getOptions : mutated return of Object value for com/squareup/moshi/kotlin/KotlinJsonAdapter::getOptions to ( if (x != null) null else throw new RuntimeException ) &rarr; SURVIVED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>    val options: JsonReader.Options) : JsonAdapter&#60;T&#62;() {</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_58'/>
+58
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_58'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_59'/>
+59
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_59'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  override fun fromJson(reader: JsonReader): T {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_60'/>
+60
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_60'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    val constructorSize = constructor.parameters.size</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_61'/>
+61
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_61'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_62'/>
+62
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_62'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    // Read each value into its slot in the array.</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_63'/>
+63
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_63'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    val values = Array&#60;Any?&#62;(bindings.size) { ABSENT_VALUE }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_64'/>
+64
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_64'>1</a>
+<span>
+1. fromJson : removed call to com/squareup/moshi/JsonReader::beginObject &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    reader.beginObject()</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_65'/>
+65
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_65'>1</a>
+<span>
+1. fromJson : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    while (reader.hasNext()) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_66'/>
+66
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_66'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      val index = reader.selectName(options)</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_67'/>
+67
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_67'>1</a>
+<span>
+1. fromJson : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      val binding = if (index != -1) bindings[index] else null</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_68'/>
+68
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_68'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_69'/>
+69
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_69'>1</a>
+<span>
+1. fromJson : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      if (binding == null) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_70'/>
+70
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_70'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>        reader.nextName()</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_71'/>
+71
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_71'>1</a>
+<span>
+1. fromJson : removed call to com/squareup/moshi/JsonReader::skipValue &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        reader.skipValue()</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_72'/>
+72
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_72'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>        continue</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_73'/>
+73
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_73'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_74'/>
+74
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_74'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_75'/>
+75
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_75'>1</a>
+<span>
+1. fromJson : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      if (values[index] !== ABSENT_VALUE) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_76'/>
+76
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_76'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>        throw JsonDataException(</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_77'/>
+77
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_77'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>            &#34;Multiple values for &#39;${constructor.parameters[index].name}&#39; at ${reader.path}&#34;)</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_78'/>
+78
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_78'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_79'/>
+79
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_79'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_80'/>
+80
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_80'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      values[index] = binding.adapter.fromJson(reader)</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_81'/>
+81
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_81'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_82'/>
+82
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_82'>1</a>
+<span>
+1. fromJson : removed call to com/squareup/moshi/JsonReader::endObject &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    reader.endObject()</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_83'/>
+83
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_83'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_84'/>
+84
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_84'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    // Confirm all parameters are present, optional, or nullable.</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_85'/>
+85
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_85'>3</a>
+<span>
+1. fromJson : changed conditional boundary &rarr; KILLED<br/>
+2. fromJson : Changed increment from 1 to -1 &rarr; KILLED<br/>
+3. fromJson : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    for (i in 0 until constructorSize) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_86'/>
+86
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_86'>2</a>
+<span>
+1. fromJson : negated conditional &rarr; KILLED<br/>
+2. fromJson : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      if (values[i] === ABSENT_VALUE &#38;&#38; !constructor.parameters[i].isOptional) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_87'/>
+87
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_87'>1</a>
+<span>
+1. fromJson : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        if (!constructor.parameters[i].type.isMarkedNullable) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_88'/>
+88
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_88'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>          throw JsonDataException(</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_89'/>
+89
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_89'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>              &#34;Required value &#39;${constructor.parameters[i].name}&#39; missing at ${reader.path}&#34;)</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_90'/>
+90
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_90'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_91'/>
+91
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_91'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>        values[i] = null // Replace absent with null.</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_92'/>
+92
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_92'>2</a>
+<span>
+1. fromJson : negated conditional &rarr; KILLED<br/>
+2. fromJson : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      } else if (values[i] == null &#38;&#38; !constructor.parameters[i].type.isMarkedNullable) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_93'/>
+93
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_93'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>        throw JsonDataException(&#34;Non-null value &#39;${constructor.parameters[i].name}&#39; &#34; +</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_94'/>
+94
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_94'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>            &#34;was null at ${reader.path}&#34;)</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_95'/>
+95
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_95'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_96'/>
+96
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_96'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_97'/>
+97
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_97'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_98'/>
+98
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_98'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    // Call the constructor using a Map so that absent optionals get defaults.</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_99'/>
+99
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_99'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    val result = constructor.callBy(IndexedParameterMap(constructor.parameters, values))</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_100'/>
+100
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_100'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_101'/>
+101
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_101'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    // Set remaining properties.</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_102'/>
+102
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_102'>3</a>
+<span>
+1. fromJson : changed conditional boundary &rarr; KILLED<br/>
+2. fromJson : Changed increment from 1 to -1 &rarr; KILLED<br/>
+3. fromJson : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    for (i in constructorSize until bindings.size) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_103'/>
+103
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_103'>2</a>
+<span>
+1. fromJson : removed call to kotlin/jvm/internal/Intrinsics::throwNpe &rarr; SURVIVED<br/>
+2. fromJson : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>      val binding = bindings[i]!!</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_104'/>
+104
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_104'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      val value = values[i]</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_105'/>
+105
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_105'>2</a>
+<span>
+1. fromJson : negated conditional &rarr; KILLED<br/>
+2. fromJson : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      if (value == null &#38;&#38; !binding.property.returnType.isMarkedNullable) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_106'/>
+106
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_106'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>        throw JsonDataException(&#34;Non-null value &#39;${binding.property.name}&#39; &#34; +</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_107'/>
+107
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_107'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>            &#34;was null at ${reader.path}&#34;)</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_108'/>
+108
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_108'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_109'/>
+109
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_109'>1</a>
+<span>
+1. fromJson : removed call to com/squareup/moshi/kotlin/KotlinJsonAdapter$Binding::set &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      binding.set(result, value)</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_110'/>
+110
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_110'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_111'/>
+111
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_111'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_112'/>
+112
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_112'>1</a>
+<span>
+1. fromJson : mutated return of Object value for com/squareup/moshi/kotlin/KotlinJsonAdapter::fromJson to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    return result</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_113'/>
+113
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_113'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_114'/>
+114
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_114'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_115'/>
+115
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_115'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  override fun toJson(writer: JsonWriter, value: T?) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_116'/>
+116
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_116'>1</a>
+<span>
+1. toJson : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    if (value == null) throw NullPointerException(&#34;value == null&#34;)</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_117'/>
+117
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_117'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_118'/>
+118
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_118'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    writer.beginObject()</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_119'/>
+119
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_119'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    for (binding in bindings) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_120'/>
+120
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_120'>1</a>
+<span>
+1. toJson : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      if (binding == null) continue // Skip constructor parameters that aren&#39;t properties.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_121'/>
+121
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_121'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_122'/>
+122
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_122'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      writer.name(binding.name)</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_123'/>
+123
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_123'>1</a>
+<span>
+1. toJson : removed call to com/squareup/moshi/JsonAdapter::toJson &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      binding.adapter.toJson(writer, binding.get(value))</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_124'/>
+124
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_124'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_125'/>
+125
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_125'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    writer.endObject()</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_126'/>
+126
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_126'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_127'/>
+127
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_127'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_128'/>
+128
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_128'>1</a>
+<span>
+1. toString : mutated return of Object value for com/squareup/moshi/kotlin/KotlinJsonAdapter::toString to ( if (x != null) null else throw new RuntimeException ) &rarr; NO_COVERAGE<br/>
+
+</span>
+</td>
+<td class='uncovered'><pre><span  class='survived'>  override fun toString() = &#34;KotlinJsonAdapter(${constructor.returnType})&#34;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_129'/>
+129
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_129'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_130'/>
+130
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_130'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>  data class Binding&#60;K, P&#62;(</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_131'/>
+131
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_131'>1</a>
+<span>
+1. getName : mutated return of Object value for com/squareup/moshi/kotlin/KotlinJsonAdapter$Binding::getName to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      val name: String,</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_132'/>
+132
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_132'>1</a>
+<span>
+1. getAdapter : mutated return of Object value for com/squareup/moshi/kotlin/KotlinJsonAdapter$Binding::getAdapter to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      val adapter: JsonAdapter&#60;P&#62;,</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_133'/>
+133
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_133'>1</a>
+<span>
+1. getProperty : mutated return of Object value for com/squareup/moshi/kotlin/KotlinJsonAdapter$Binding::getProperty to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      val property: KProperty1&#60;K, P&#62;,</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_134'/>
+134
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_134'>1</a>
+<span>
+1. getParameter : mutated return of Object value for com/squareup/moshi/kotlin/KotlinJsonAdapter$Binding::getParameter to ( if (x != null) null else throw new RuntimeException ) &rarr; NO_COVERAGE<br/>
+
+</span>
+</td>
+<td class='uncovered'><pre><span  class='survived'>      val parameter: KParameter?) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_135'/>
+135
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_135'>1</a>
+<span>
+1. get : mutated return of Object value for com/squareup/moshi/kotlin/KotlinJsonAdapter$Binding::get to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    fun get(value: K) = property.get(value)</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_136'/>
+136
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_136'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_137'/>
+137
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_137'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    fun set(result: K, value: P) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_138'/>
+138
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_138'>1</a>
+<span>
+1. set : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      if (value !== ABSENT_VALUE) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_139'/>
+139
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_139'>2</a>
+<span>
+1. set : negated conditional &rarr; KILLED<br/>
+2. set : removed call to kotlin/reflect/KMutableProperty1::set &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        (property as KMutableProperty1&#60;K, P&#62;).set(result, value)</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_140'/>
+140
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_140'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_141'/>
+141
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_141'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_142'/>
+142
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_142'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_143'/>
+143
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_143'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_144'/>
+144
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_144'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  /** A simple [Map] that uses parameter indexes instead of sorting or hashing. */</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_145'/>
+145
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_145'>12</a>
+<span>
+1. containsKey : replaced return of integer sized value with (x == 0 ? 1 : 0) &rarr; SURVIVED<br/>
+2. get : mutated return of Object value for com/squareup/moshi/kotlin/KotlinJsonAdapter$IndexedParameterMap::get to ( if (x != null) null else throw new RuntimeException ) &rarr; SURVIVED<br/>
+3. getOrDefault : negated conditional &rarr; SURVIVED<br/>
+4. getOrDefault : mutated return of Object value for com/squareup/moshi/kotlin/KotlinJsonAdapter$IndexedParameterMap::getOrDefault to ( if (x != null) null else throw new RuntimeException ) &rarr; SURVIVED<br/>
+5. getOrDefault : mutated return of Object value for com/squareup/moshi/kotlin/KotlinJsonAdapter$IndexedParameterMap::getOrDefault to ( if (x != null) null else throw new RuntimeException ) &rarr; SURVIVED<br/>
+6. getOrDefault : mutated return of Object value for com/squareup/moshi/kotlin/KotlinJsonAdapter$IndexedParameterMap::getOrDefault to ( if (x != null) null else throw new RuntimeException ) &rarr; SURVIVED<br/>
+7. getParameterKeys : mutated return of Object value for com/squareup/moshi/kotlin/KotlinJsonAdapter$IndexedParameterMap::getParameterKeys to ( if (x != null) null else throw new RuntimeException ) &rarr; SURVIVED<br/>
+8. getParameterValues : mutated return of Object value for com/squareup/moshi/kotlin/KotlinJsonAdapter$IndexedParameterMap::getParameterValues to ( if (x != null) null else throw new RuntimeException ) &rarr; SURVIVED<br/>
+9. containsKey : negated conditional &rarr; KILLED<br/>
+10. containsKey : replaced return of integer sized value with (x == 0 ? 1 : 0) &rarr; KILLED<br/>
+11. get : negated conditional &rarr; KILLED<br/>
+12. get : mutated return of Object value for com/squareup/moshi/kotlin/KotlinJsonAdapter$IndexedParameterMap::get to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>  class IndexedParameterMap(val parameterKeys: List&#60;KParameter&#62;, val parameterValues: Array&#60;Any?&#62;)</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_146'/>
+146
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_146'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    : AbstractMap&#60;KParameter, Any?&#62;() {</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_147'/>
+147
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_147'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_148'/>
+148
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_148'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    override val entries: Set&#60;Entry&#60;KParameter, Any?&#62;&#62;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_149'/>
+149
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_149'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      get() {</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_150'/>
+150
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_150'></a>
+<span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>        val allPossibleEntries = parameterKeys.mapIndexed { index, value -&#62;</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_151'/>
+151
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_151'></a>
+<span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>          SimpleEntry&#60;KParameter, Any?&#62;(value, parameterValues[index])</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_152'/>
+152
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_152'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        }</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_153'/>
+153
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_153'></a>
+<span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>        return allPossibleEntries.filterTo(LinkedHashSet&#60;Entry&#60;KParameter, Any?&#62;&#62;()) {</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_154'/>
+154
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_154'>2</a>
+<span>
+1. getEntries : negated conditional &rarr; NO_COVERAGE<br/>
+2. getEntries : negated conditional &rarr; NO_COVERAGE<br/>
+
+</span>
+</td>
+<td class='uncovered'><pre><span  class='survived'>          it.value !== ABSENT_VALUE</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_155'/>
+155
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_155'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_156'/>
+156
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_156'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_157'/>
+157
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_157'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_158'/>
+158
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_158'>2</a>
+<span>
+1. containsKey : negated conditional &rarr; KILLED<br/>
+2. containsKey : replaced return of integer sized value with (x == 0 ? 1 : 0) &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    override fun containsKey(key: KParameter) = parameterValues[key.index] !== ABSENT_VALUE</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_159'/>
+159
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_159'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_160'/>
+160
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_160'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    override fun get(key: KParameter): Any? {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_161'/>
+161
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_161'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      val value = parameterValues[key.index]</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_162'/>
+162
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_162'>2</a>
+<span>
+1. get : negated conditional &rarr; KILLED<br/>
+2. get : mutated return of Object value for com/squareup/moshi/kotlin/KotlinJsonAdapter$IndexedParameterMap::get to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      return if (value !== ABSENT_VALUE) value else null</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_163'/>
+163
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_163'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_164'/>
+164
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_164'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_165'/>
+165
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_165'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>}</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_166'/>
+166
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_166'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_167'/>
+167
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_167'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>class KotlinJsonAdapterFactory : JsonAdapter.Factory {</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_168'/>
+168
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_168'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  override fun create(type: Type, annotations: MutableSet&#60;out Annotation&#62;, moshi: Moshi)</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_169'/>
+169
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_169'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      : JsonAdapter&#60;*&#62;? {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_170'/>
+170
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_170'>2</a>
+<span>
+1. create : negated conditional &rarr; KILLED<br/>
+2. create : mutated return of Object value for com/squareup/moshi/kotlin/KotlinJsonAdapterFactory::create to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    if (!annotations.isEmpty()) return null</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_171'/>
+171
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_171'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_172'/>
+172
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_172'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    val rawType = Types.getRawType(type)</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_173'/>
+173
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_173'>2</a>
+<span>
+1. create : negated conditional &rarr; KILLED<br/>
+2. create : mutated return of Object value for com/squareup/moshi/kotlin/KotlinJsonAdapterFactory::create to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    if (rawType.isInterface) return null</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_174'/>
+174
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_174'>2</a>
+<span>
+1. create : negated conditional &rarr; KILLED<br/>
+2. create : mutated return of Object value for com/squareup/moshi/kotlin/KotlinJsonAdapterFactory::create to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    if (rawType.isEnum) return null</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_175'/>
+175
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_175'>2</a>
+<span>
+1. create : negated conditional &rarr; KILLED<br/>
+2. create : mutated return of Object value for com/squareup/moshi/kotlin/KotlinJsonAdapterFactory::create to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    if (!rawType.isAnnotationPresent(KOTLIN_METADATA)) return null</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_176'/>
+176
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_176'>2</a>
+<span>
+1. create : negated conditional &rarr; KILLED<br/>
+2. create : mutated return of Object value for com/squareup/moshi/kotlin/KotlinJsonAdapterFactory::create to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    if (Util.isPlatformType(rawType)) return null</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_177'/>
+177
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_177'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_178'/>
+178
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_178'>1</a>
+<span>
+1. create : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    if (rawType.isLocalClass) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_179'/>
+179
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_179'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      throw IllegalArgumentException(&#34;Cannot serialize local class or object expression ${rawType.name}&#34;)</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_180'/>
+180
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_180'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_181'/>
+181
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_181'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    val rawTypeKotlin = rawType.kotlin</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_182'/>
+182
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_182'>1</a>
+<span>
+1. create : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    if (rawTypeKotlin.isAbstract) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_183'/>
+183
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_183'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      throw IllegalArgumentException(&#34;Cannot serialize abstract class ${rawType.name}&#34;)</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_184'/>
+184
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_184'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_185'/>
+185
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_185'>1</a>
+<span>
+1. create : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    if (rawTypeKotlin.isInner) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_186'/>
+186
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_186'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      throw IllegalArgumentException(&#34;Cannot serialize inner class ${rawType.name}&#34;)</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_187'/>
+187
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_187'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_188'/>
+188
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_188'>1</a>
+<span>
+1. create : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    if (rawTypeKotlin.objectInstance != null) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_189'/>
+189
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_189'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      throw IllegalArgumentException(&#34;Cannot serialize object declaration ${rawType.name}&#34;)</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_190'/>
+190
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_190'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_191'/>
+191
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_191'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_192'/>
+192
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_192'>2</a>
+<span>
+1. create : mutated return of Object value for com/squareup/moshi/kotlin/KotlinJsonAdapterFactory::create to ( if (x != null) null else throw new RuntimeException ) &rarr; SURVIVED<br/>
+2. create : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>    val constructor = rawTypeKotlin.primaryConstructor ?: return null</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_193'/>
+193
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_193'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    val parametersByName = constructor.parameters.associateBy { it.name }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_194'/>
+194
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_194'>1</a>
+<span>
+1. create : removed call to kotlin/reflect/jvm/KCallablesJvm::setAccessible &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    constructor.isAccessible = true</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_195'/>
+195
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_195'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_196'/>
+196
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_196'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    val bindingsByName = LinkedHashMap&#60;String, KotlinJsonAdapter.Binding&#60;Any, Any?&#62;&#62;()</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_197'/>
+197
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_197'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_198'/>
+198
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_198'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    for (property in rawTypeKotlin.memberProperties) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_199'/>
+199
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_199'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      val parameter = parametersByName[property.name]</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_200'/>
+200
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_200'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_201'/>
+201
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_201'>2</a>
+<span>
+1. create : negated conditional &rarr; KILLED<br/>
+2. create : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      if (Modifier.isTransient(property.javaField?.modifiers ?: 0)) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_202'/>
+202
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_202'>2</a>
+<span>
+1. create : negated conditional &rarr; KILLED<br/>
+2. create : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        if (parameter != null &#38;&#38; !parameter.isOptional) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_203'/>
+203
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_203'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>          throw IllegalArgumentException(</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_204'/>
+204
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_204'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>              &#34;No default value for transient constructor $parameter&#34;)</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_205'/>
+205
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_205'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_206'/>
+206
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_206'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>        continue</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_207'/>
+207
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_207'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_208'/>
+208
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_208'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_209'/>
+209
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_209'>3</a>
+<span>
+1. create : Replaced XOR with AND &rarr; KILLED<br/>
+2. create : negated conditional &rarr; KILLED<br/>
+3. create : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      if (parameter != null &#38;&#38; parameter.type != property.returnType) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_210'/>
+210
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_210'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>        throw IllegalArgumentException(&#34;&#39;${property.name}&#39; has a constructor parameter of type &#34; +</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_211'/>
+211
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_211'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>            &#34;${parameter.type} but a property of type ${property.returnType}.&#34;)</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_212'/>
+212
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_212'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_213'/>
+213
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_213'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_214'/>
+214
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_214'>2</a>
+<span>
+1. create : negated conditional &rarr; KILLED<br/>
+2. create : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      if (property !is KMutableProperty1 &#38;&#38; parameter == null) continue</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_215'/>
+215
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_215'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_216'/>
+216
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_216'>1</a>
+<span>
+1. create : removed call to kotlin/reflect/jvm/KCallablesJvm::setAccessible &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      property.isAccessible = true</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_217'/>
+217
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_217'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      var allAnnotations = property.annotations</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_218'/>
+218
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_218'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      var jsonAnnotation = property.findAnnotation&#60;Json&#62;()</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_219'/>
+219
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_219'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_220'/>
+220
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_220'>1</a>
+<span>
+1. create : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      if (parameter != null) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_221'/>
+221
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_221'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>        allAnnotations += parameter.annotations</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_222'/>
+222
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_222'>1</a>
+<span>
+1. create : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        if (jsonAnnotation == null) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_223'/>
+223
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_223'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>          jsonAnnotation = parameter.findAnnotation&#60;Json&#62;()</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_224'/>
+224
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_224'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_225'/>
+225
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_225'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_226'/>
+226
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_226'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_227'/>
+227
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_227'>2</a>
+<span>
+1. create : negated conditional &rarr; KILLED<br/>
+2. create : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      val name = jsonAnnotation?.name ?: property.name</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_228'/>
+228
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_228'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      val adapter = moshi.adapter&#60;Any&#62;(</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_229'/>
+229
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_229'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>          property.returnType.javaType, Util.jsonAnnotations(allAnnotations.toTypedArray()))</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_230'/>
+230
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_230'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_231'/>
+231
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_231'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      bindingsByName[property.name] =</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_232'/>
+232
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_232'>2</a>
+<span>
+1. create : removed call to kotlin/jvm/internal/Intrinsics::checkExpressionValueIsNotNull &rarr; SURVIVED<br/>
+2. create : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>          KotlinJsonAdapter.Binding(name, adapter, property as KProperty1&#60;Any, Any?&#62;, parameter)</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_233'/>
+233
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_233'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_234'/>
+234
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_234'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_235'/>
+235
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_235'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    val bindings = ArrayList&#60;KotlinJsonAdapter.Binding&#60;Any, Any?&#62;?&#62;()</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_236'/>
+236
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_236'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_237'/>
+237
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_237'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    for (parameter in constructor.parameters) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_238'/>
+238
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_238'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      val binding = bindingsByName.remove(parameter.name)</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_239'/>
+239
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_239'>2</a>
+<span>
+1. create : negated conditional &rarr; KILLED<br/>
+2. create : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      if (binding == null &#38;&#38; !parameter.isOptional) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_240'/>
+240
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_240'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>        throw IllegalArgumentException(&#34;No property for required constructor ${parameter}&#34;)</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_241'/>
+241
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_241'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_242'/>
+242
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_242'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      bindings += binding</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_243'/>
+243
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_243'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_244'/>
+244
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_244'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_245'/>
+245
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_245'>1</a>
+<span>
+1. create : removed call to kotlin/jvm/internal/Intrinsics::checkExpressionValueIsNotNull &rarr; SURVIVED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>    bindings += bindingsByName.values</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_246'/>
+246
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_246'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_247'/>
+247
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_247'>2</a>
+<span>
+1. create : negated conditional &rarr; KILLED<br/>
+2. create : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    val options = JsonReader.Options.of(*bindings.map { it?.name ?: &#34;\u0000&#34; }.toTypedArray())</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_248'/>
+248
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_248'>2</a>
+<span>
+1. create : removed call to kotlin/jvm/internal/Intrinsics::checkExpressionValueIsNotNull &rarr; SURVIVED<br/>
+2. create : mutated return of Object value for com/squareup/moshi/kotlin/KotlinJsonAdapterFactory::create to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>    return KotlinJsonAdapter(constructor, bindings, options).nullSafe()</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_249'/>
+249
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_249'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e621d05_250'/>
+250
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_250'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>}</span></pre></td></tr>
+
+
+
+<tr><td></td><td></td><td><h2>Mutations</h2></td></tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_55'>55</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_55'/> 
+
+<p class='NO_COVERAGE'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>getConstructor<br/><b>Killed by : </b>none</span></span> mutated return of Object value for com/squareup/moshi/kotlin/KotlinJsonAdapter::getConstructor to ( if (x != null) null else throw new RuntimeException ) &rarr; NO_COVERAGE</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_56'>56</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_56'/> 
+
+<p class='NO_COVERAGE'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>getBindings<br/><b>Killed by : </b>none</span></span> mutated return of Object value for com/squareup/moshi/kotlin/KotlinJsonAdapter::getBindings to ( if (x != null) null else throw new RuntimeException ) &rarr; NO_COVERAGE</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_57'>57</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_57'/> 
+
+<p class='SURVIVED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>getOptions<br/><b>Killed by : </b>none</span></span> mutated return of Object value for com/squareup/moshi/kotlin/KotlinJsonAdapter::getOptions to ( if (x != null) null else throw new RuntimeException ) &rarr; SURVIVED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_64'>64</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_64'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>fromJson<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.nonNullConstructorParameterCalledWithNullFailsWithJsonDataException(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> removed call to com/squareup/moshi/JsonReader::beginObject &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_65'>65</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_65'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>fromJson<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.nonNullConstructorParameterCalledWithNullFailsWithJsonDataException(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_67'>67</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_67'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>fromJson<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.nonNullConstructorParameterCalledWithNullFailsWithJsonDataException(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_69'>69</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_69'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>fromJson<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.nonNullConstructorParameterCalledWithNullFailsWithJsonDataException(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_71'>71</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_71'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>fromJson<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.transientConstructorParameter(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> removed call to com/squareup/moshi/JsonReader::skipValue &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_75'>75</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_75'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>fromJson<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.nonNullConstructorParameterCalledWithNullFailsWithJsonDataException(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_82'>82</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_82'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>fromJson<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.nonNullConstructorParameterCalledWithNullFailsWithJsonDataException(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> removed call to com/squareup/moshi/JsonReader::endObject &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_85'>85</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_85'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>fromJson<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.nonNullPropertySetToNullFailsWithJsonDataException(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> changed conditional boundary &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>fromJson<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.kotlinEnumsAreNotCovered(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> Changed increment from 1 to -1 &rarr; KILLED</p> <p class='KILLED'><span class='pop'>3.<span><b>3</b><br/><b>Location : </b>fromJson<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.nonNullConstructorParameterCalledWithNullFailsWithJsonDataException(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_86'>86</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_86'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>fromJson<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.nonNullConstructorParameterCalledWithNullFailsWithJsonDataException(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>fromJson<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.requiredValueAbsent(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_87'>87</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_87'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>fromJson<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.requiredValueAbsent(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_92'>92</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_92'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>fromJson<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.nonNullConstructorParameterCalledWithNullFailsWithJsonDataException(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>fromJson<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.nonNullConstructorParameterCalledWithNullFailsWithJsonDataException(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_102'>102</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_102'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>fromJson<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.kotlinEnumsAreNotCovered(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> changed conditional boundary &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>fromJson<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.supertypeProperties(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> Changed increment from 1 to -1 &rarr; KILLED</p> <p class='KILLED'><span class='pop'>3.<span><b>3</b><br/><b>Location : </b>fromJson<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.nonNullPropertySetToNullFailsWithJsonDataException(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_103'>103</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_103'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>fromJson<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.nonNullPropertySetToNullFailsWithJsonDataException(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> <p class='SURVIVED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>fromJson<br/><b>Killed by : </b>none</span></span> removed call to kotlin/jvm/internal/Intrinsics::throwNpe &rarr; SURVIVED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_105'>105</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_105'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>fromJson<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.nonNullPropertySetToNullFailsWithJsonDataException(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>fromJson<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.nonNullPropertySetToNullFailsWithJsonDataException(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_109'>109</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_109'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>fromJson<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.supertypeProperties(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> removed call to com/squareup/moshi/kotlin/KotlinJsonAdapter$Binding::set &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_112'>112</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_112'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>fromJson<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.kotlinEnumsAreNotCovered(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> mutated return of Object value for com/squareup/moshi/kotlin/KotlinJsonAdapter::fromJson to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_116'>116</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_116'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>toJson<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.immutableConstructorParameters(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_120'>120</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_120'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>toJson<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.immutableConstructorParameters(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_123'>123</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_123'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>toJson<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.immutableConstructorParameters(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> removed call to com/squareup/moshi/JsonAdapter::toJson &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_128'>128</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_128'/> 
+
+<p class='NO_COVERAGE'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>toString<br/><b>Killed by : </b>none</span></span> mutated return of Object value for com/squareup/moshi/kotlin/KotlinJsonAdapter::toString to ( if (x != null) null else throw new RuntimeException ) &rarr; NO_COVERAGE</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_131'>131</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_131'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>getName<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.nonNullConstructorParameterCalledWithNullFailsWithJsonDataException(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> mutated return of Object value for com/squareup/moshi/kotlin/KotlinJsonAdapter$Binding::getName to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_132'>132</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_132'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>getAdapter<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.nonNullConstructorParameterCalledWithNullFailsWithJsonDataException(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> mutated return of Object value for com/squareup/moshi/kotlin/KotlinJsonAdapter$Binding::getAdapter to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_133'>133</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_133'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>getProperty<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.nonNullPropertySetToNullFailsWithJsonDataException(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> mutated return of Object value for com/squareup/moshi/kotlin/KotlinJsonAdapter$Binding::getProperty to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_134'>134</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_134'/> 
+
+<p class='NO_COVERAGE'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>getParameter<br/><b>Killed by : </b>none</span></span> mutated return of Object value for com/squareup/moshi/kotlin/KotlinJsonAdapter$Binding::getParameter to ( if (x != null) null else throw new RuntimeException ) &rarr; NO_COVERAGE</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_135'>135</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_135'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>get<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.immutableConstructorParameters(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> mutated return of Object value for com/squareup/moshi/kotlin/KotlinJsonAdapter$Binding::get to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_138'>138</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_138'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>set<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.supertypeProperties(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_139'>139</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_139'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>set<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.supertypeProperties(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>set<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.supertypeProperties(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> removed call to kotlin/reflect/KMutableProperty1::set &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_145'>145</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_145'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>containsKey<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.kotlinEnumsAreNotCovered(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> <p class='SURVIVED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>containsKey<br/><b>Killed by : </b>none</span></span> replaced return of integer sized value with (x == 0 ? 1 : 0) &rarr; SURVIVED</p> <p class='KILLED'><span class='pop'>3.<span><b>3</b><br/><b>Location : </b>containsKey<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.kotlinEnumsAreNotCovered(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> replaced return of integer sized value with (x == 0 ? 1 : 0) &rarr; KILLED</p> <p class='KILLED'><span class='pop'>4.<span><b>4</b><br/><b>Location : </b>get<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.kotlinEnumsAreNotCovered(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> <p class='SURVIVED'><span class='pop'>5.<span><b>5</b><br/><b>Location : </b>get<br/><b>Killed by : </b>none</span></span> mutated return of Object value for com/squareup/moshi/kotlin/KotlinJsonAdapter$IndexedParameterMap::get to ( if (x != null) null else throw new RuntimeException ) &rarr; SURVIVED</p> <p class='KILLED'><span class='pop'>6.<span><b>6</b><br/><b>Location : </b>get<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.kotlinEnumsAreNotCovered(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> mutated return of Object value for com/squareup/moshi/kotlin/KotlinJsonAdapter$IndexedParameterMap::get to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED</p> <p class='SURVIVED'><span class='pop'>7.<span><b>7</b><br/><b>Location : </b>getOrDefault<br/><b>Killed by : </b>none</span></span> negated conditional &rarr; SURVIVED</p> <p class='SURVIVED'><span class='pop'>8.<span><b>8</b><br/><b>Location : </b>getOrDefault<br/><b>Killed by : </b>none</span></span> mutated return of Object value for com/squareup/moshi/kotlin/KotlinJsonAdapter$IndexedParameterMap::getOrDefault to ( if (x != null) null else throw new RuntimeException ) &rarr; SURVIVED</p> <p class='SURVIVED'><span class='pop'>9.<span><b>9</b><br/><b>Location : </b>getOrDefault<br/><b>Killed by : </b>none</span></span> mutated return of Object value for com/squareup/moshi/kotlin/KotlinJsonAdapter$IndexedParameterMap::getOrDefault to ( if (x != null) null else throw new RuntimeException ) &rarr; SURVIVED</p> <p class='SURVIVED'><span class='pop'>10.<span><b>10</b><br/><b>Location : </b>getOrDefault<br/><b>Killed by : </b>none</span></span> mutated return of Object value for com/squareup/moshi/kotlin/KotlinJsonAdapter$IndexedParameterMap::getOrDefault to ( if (x != null) null else throw new RuntimeException ) &rarr; SURVIVED</p> <p class='SURVIVED'><span class='pop'>11.<span><b>11</b><br/><b>Location : </b>getParameterKeys<br/><b>Killed by : </b>none</span></span> mutated return of Object value for com/squareup/moshi/kotlin/KotlinJsonAdapter$IndexedParameterMap::getParameterKeys to ( if (x != null) null else throw new RuntimeException ) &rarr; SURVIVED</p> <p class='SURVIVED'><span class='pop'>12.<span><b>12</b><br/><b>Location : </b>getParameterValues<br/><b>Killed by : </b>none</span></span> mutated return of Object value for com/squareup/moshi/kotlin/KotlinJsonAdapter$IndexedParameterMap::getParameterValues to ( if (x != null) null else throw new RuntimeException ) &rarr; SURVIVED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_154'>154</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_154'/> 
+
+<p class='NO_COVERAGE'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>getEntries<br/><b>Killed by : </b>none</span></span> negated conditional &rarr; NO_COVERAGE</p> <p class='NO_COVERAGE'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>getEntries<br/><b>Killed by : </b>none</span></span> negated conditional &rarr; NO_COVERAGE</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_158'>158</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_158'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>containsKey<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.kotlinEnumsAreNotCovered(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>containsKey<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.kotlinEnumsAreNotCovered(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> replaced return of integer sized value with (x == 0 ? 1 : 0) &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_162'>162</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_162'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>get<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.kotlinEnumsAreNotCovered(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>get<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.kotlinEnumsAreNotCovered(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> mutated return of Object value for com/squareup/moshi/kotlin/KotlinJsonAdapter$IndexedParameterMap::get to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_170'>170</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_170'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>create<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.localClassesNotSupported(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>create<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.propertyWithQualifier(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> mutated return of Object value for com/squareup/moshi/kotlin/KotlinJsonAdapterFactory::create to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_173'>173</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_173'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>create<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.localClassesNotSupported(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>create<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.interfacesNotSupported(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> mutated return of Object value for com/squareup/moshi/kotlin/KotlinJsonAdapterFactory::create to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_174'>174</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_174'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>create<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.localClassesNotSupported(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>create<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.kotlinEnumsAreNotCovered(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> mutated return of Object value for com/squareup/moshi/kotlin/KotlinJsonAdapterFactory::create to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_175'>175</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_175'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>create<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.localClassesNotSupported(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>create<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.nonPropertyConstructorParameter(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> mutated return of Object value for com/squareup/moshi/kotlin/KotlinJsonAdapterFactory::create to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_176'>176</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_176'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>create<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.localClassesNotSupported(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>create<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.platformTypeThrows(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> mutated return of Object value for com/squareup/moshi/kotlin/KotlinJsonAdapterFactory::create to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_178'>178</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_178'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>create<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.localClassesNotSupported(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_182'>182</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_182'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>create<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.innerClassesNotSupported(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_185'>185</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_185'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>create<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.innerClassesNotSupported(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_188'>188</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_188'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>create<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.objectDeclarationsNotSupported(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_192'>192</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_192'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>create<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.nonPropertyConstructorParameter(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> <p class='SURVIVED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>create<br/><b>Killed by : </b>none</span></span> mutated return of Object value for com/squareup/moshi/kotlin/KotlinJsonAdapterFactory::create to ( if (x != null) null else throw new RuntimeException ) &rarr; SURVIVED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_194'>194</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_194'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>create<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.privateConstructor(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> removed call to kotlin/reflect/jvm/KCallablesJvm::setAccessible &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_201'>201</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_201'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>create<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.requiredTransientConstructorParameterFails(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>create<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.nonPropertyConstructorParameter(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_202'>202</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_202'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>create<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.requiredTransientConstructorParameterFails(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>create<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.requiredTransientConstructorParameterFails(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_209'>209</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_209'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>create<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.nonPropertyConstructorParameter(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> Replaced XOR with AND &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>create<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.nonNullPropertySetToNullFailsWithJsonDataException(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>3.<span><b>3</b><br/><b>Location : </b>create<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.nonPropertyConstructorParameter(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_214'>214</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_214'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>create<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.nonNullPropertySetToNullFailsWithJsonDataException(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>create<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.nonNullConstructorParameterCalledWithNullFailsWithJsonDataException(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_216'>216</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_216'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>create<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.privateConstructorParameters(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> removed call to kotlin/reflect/jvm/KCallablesJvm::setAccessible &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_220'>220</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_220'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>create<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.nonNullPropertySetToNullFailsWithJsonDataException(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_222'>222</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_222'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>create<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.constructorParameterWithJsonName(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_227'>227</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_227'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>create<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.nonPropertyConstructorParameter(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>create<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.propertyWithJsonName(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_232'>232</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_232'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>create<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.nonPropertyConstructorParameter(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> <p class='SURVIVED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>create<br/><b>Killed by : </b>none</span></span> removed call to kotlin/jvm/internal/Intrinsics::checkExpressionValueIsNotNull &rarr; SURVIVED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_239'>239</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_239'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>create<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.nonPropertyConstructorParameter(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>create<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.nonPropertyConstructorParameter(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_245'>245</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_245'/> 
+
+<p class='SURVIVED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>create<br/><b>Killed by : </b>none</span></span> removed call to kotlin/jvm/internal/Intrinsics::checkExpressionValueIsNotNull &rarr; SURVIVED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_247'>247</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_247'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>create<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.nonNullConstructorParameterCalledWithNullFailsWithJsonDataException(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>create<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.nonNullConstructorParameterCalledWithNullFailsWithJsonDataException(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_248'>248</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_248'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>create<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.nonNullConstructorParameterCalledWithNullFailsWithJsonDataException(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> mutated return of Object value for com/squareup/moshi/kotlin/KotlinJsonAdapterFactory::create to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED</p> <p class='SURVIVED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>create<br/><b>Killed by : </b>none</span></span> removed call to kotlin/jvm/internal/Intrinsics::checkExpressionValueIsNotNull &rarr; SURVIVED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_253'>253</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_253'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>fromJson<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.nonNullConstructorParameterCalledWithNullFailsWithJsonDataException(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> changed conditional boundary &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>fromJson<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.nonNullConstructorParameterCalledWithNullFailsWithJsonDataException(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> Changed increment from 1 to -1 &rarr; KILLED</p> <p class='KILLED'><span class='pop'>3.<span><b>3</b><br/><b>Location : </b>fromJson<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.nonNullConstructorParameterCalledWithNullFailsWithJsonDataException(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_255'>255</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_255'/> 
+
+<p class='NO_COVERAGE'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>getEntries<br/><b>Killed by : </b>none</span></span> Changed increment from 1 to -1 &rarr; NO_COVERAGE</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_258'>258</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_258'/> 
+
+<p class='NO_COVERAGE'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>getEntries<br/><b>Killed by : </b>none</span></span> mutated return of Object value for com/squareup/moshi/kotlin/KotlinJsonAdapter$IndexedParameterMap::getEntries to ( if (x != null) null else throw new RuntimeException ) &rarr; NO_COVERAGE</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_259'>259</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_259'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>create<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.propertyWithQualifier(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_263'>263</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_263'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>create<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.constructorParameterWithQualifier(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_266'>266</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_266'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>create<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.nonPropertyConstructorParameter(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_267'>267</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_267'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>create<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.nonPropertyConstructorParameter(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e621d05_273'>273</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e621d05_273'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>create<br/><b>Killed by : </b>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.nonNullConstructorParameterCalledWithNullFailsWithJsonDataException(com.squareup.moshi.kotlin.KotlinJsonAdapterTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+
+</table>
+
+
+<h2>Active mutators</h2>
+<ul>
+<li class='mutator'>INCREMENTS_MUTATOR</li>
+<li class='mutator'>VOID_METHOD_CALL_MUTATOR</li>
+<li class='mutator'>RETURN_VALS_MUTATOR</li>
+<li class='mutator'>MATH_MUTATOR</li>
+<li class='mutator'>NEGATE_CONDITIONALS_MUTATOR</li>
+<li class='mutator'>INVERT_NEGS_MUTATOR</li>
+<li class='mutator'>CONDITIONALS_BOUNDARY_MUTATOR</li>
+
+</ul>
+
+<h2>Tests examined</h2>
+<ul>
+<li>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.privateConstructorParameters(com.squareup.moshi.kotlin.KotlinJsonAdapterTest) (5 ms)</li><li>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.propertyWithQualifier(com.squareup.moshi.kotlin.KotlinJsonAdapterTest) (8 ms)</li><li>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.requiredTransientConstructorParameterFails(com.squareup.moshi.kotlin.KotlinJsonAdapterTest) (10 ms)</li><li>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.privateProperties(com.squareup.moshi.kotlin.KotlinJsonAdapterTest) (6 ms)</li><li>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.repeatedValue(com.squareup.moshi.kotlin.KotlinJsonAdapterTest) (4 ms)</li><li>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.transientConstructorParameter(com.squareup.moshi.kotlin.KotlinJsonAdapterTest) (3 ms)</li><li>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.unsettablePropertyIgnored(com.squareup.moshi.kotlin.KotlinJsonAdapterTest) (19 ms)</li><li>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.constructorParameters(com.squareup.moshi.kotlin.KotlinJsonAdapterTest) (6 ms)</li><li>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.extendsPlatformClassWithProtectedField(com.squareup.moshi.kotlin.KotlinJsonAdapterTest) (42 ms)</li><li>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.innerClassesNotSupported(com.squareup.moshi.kotlin.KotlinJsonAdapterTest) (2 ms)</li><li>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.privateConstructor(com.squareup.moshi.kotlin.KotlinJsonAdapterTest) (5 ms)</li><li>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.manyProperties32(com.squareup.moshi.kotlin.KotlinJsonAdapterTest) (24 ms)</li><li>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.platformTypeThrows(com.squareup.moshi.kotlin.KotlinJsonAdapterTest) (2 ms)</li><li>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.immutableConstructorParameters(com.squareup.moshi.kotlin.KotlinJsonAdapterTest) (4 ms)</li><li>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.manyProperties33(com.squareup.moshi.kotlin.KotlinJsonAdapterTest) (18 ms)</li><li>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.constructorParametersAndProperties(com.squareup.moshi.kotlin.KotlinJsonAdapterTest) (5 ms)</li><li>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.interfacesNotSupported(com.squareup.moshi.kotlin.KotlinJsonAdapterTest) (2 ms)</li><li>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.localClassesNotSupported(com.squareup.moshi.kotlin.KotlinJsonAdapterTest) (1 ms)</li><li>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.supertypeProperties(com.squareup.moshi.kotlin.KotlinJsonAdapterTest) (4 ms)</li><li>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.transientProperty(com.squareup.moshi.kotlin.KotlinJsonAdapterTest) (10 ms)</li><li>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.constructorParameterWithJsonName(com.squareup.moshi.kotlin.KotlinJsonAdapterTest) (30 ms)</li><li>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.constructorDefaults(com.squareup.moshi.kotlin.KotlinJsonAdapterTest) (7 ms)</li><li>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.constructorParameterWithQualifier(com.squareup.moshi.kotlin.KotlinJsonAdapterTest) (14 ms)</li><li>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.constructorParametersAndPropertiesWithSameNamesMustHaveSameTypes(com.squareup.moshi.kotlin.KotlinJsonAdapterTest) (26 ms)</li><li>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.kotlinEnumsAreNotCovered(com.squareup.moshi.kotlin.KotlinJsonAdapterTest) (8 ms)</li><li>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.requiredValueAbsent(com.squareup.moshi.kotlin.KotlinJsonAdapterTest) (9 ms)</li><li>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.nonNullPropertySetToNullFailsWithJsonDataException(com.squareup.moshi.kotlin.KotlinJsonAdapterTest) (3 ms)</li><li>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.getterAndSetterNoBackingField(com.squareup.moshi.kotlin.KotlinJsonAdapterTest) (6 ms)</li><li>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.supertypeConstructorParameters(com.squareup.moshi.kotlin.KotlinJsonAdapterTest) (11 ms)</li><li>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.explicitNull(com.squareup.moshi.kotlin.KotlinJsonAdapterTest) (5 ms)</li><li>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.duplicatedValue(com.squareup.moshi.kotlin.KotlinJsonAdapterTest) (5 ms)</li><li>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.absentNull(com.squareup.moshi.kotlin.KotlinJsonAdapterTest) (688 ms)</li><li>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.abstractClassesNotSupported(com.squareup.moshi.kotlin.KotlinJsonAdapterTest) (5 ms)</li><li>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.nonPropertyConstructorParameter(com.squareup.moshi.kotlin.KotlinJsonAdapterTest) (5 ms)</li><li>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.nonNullConstructorParameterCalledWithNullFailsWithJsonDataException(com.squareup.moshi.kotlin.KotlinJsonAdapterTest) (3 ms)</li><li>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.extendsPlatformClassWithPrivateField(com.squareup.moshi.kotlin.KotlinJsonAdapterTest) (194 ms)</li><li>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.objectExpressionsNotSupported(com.squareup.moshi.kotlin.KotlinJsonAdapterTest) (1 ms)</li><li>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.getterOnlyNoBackingField(com.squareup.moshi.kotlin.KotlinJsonAdapterTest) (8 ms)</li><li>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.properties(com.squareup.moshi.kotlin.KotlinJsonAdapterTest) (61 ms)</li><li>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.objectDeclarationsNotSupported(com.squareup.moshi.kotlin.KotlinJsonAdapterTest) (2 ms)</li><li>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.immutableProperties(com.squareup.moshi.kotlin.KotlinJsonAdapterTest) (5 ms)</li><li>com.squareup.moshi.kotlin.KotlinJsonAdapterTest.propertyWithJsonName(com.squareup.moshi.kotlin.KotlinJsonAdapterTest) (21 ms)</li>
+</ul>
+
+<br/>
+
+Report generated by <a href='http://pitest.org'>PIT</a> 1.3.2
+
+</body>
+</html>

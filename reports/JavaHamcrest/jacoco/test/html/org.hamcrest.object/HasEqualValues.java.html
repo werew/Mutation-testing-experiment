@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HasEqualValues.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JavaHamcrest</a> &gt; <a href="index.source.html" class="el_package">org.hamcrest.object</a> &gt; <span class="el_source">HasEqualValues.java</span></div><h1>HasEqualValues.java</h1><pre class="source lang-java linenums">package org.hamcrest.object;
+
+import org.hamcrest.Description;
+import org.hamcrest.DiagnosingMatcher;
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeDiagnosingMatcher;
+import org.hamcrest.core.IsEqual;
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.lang.String.format;
+
+public class HasEqualValues&lt;T&gt; extends TypeSafeDiagnosingMatcher&lt;T&gt; {
+    private final T expectedObject;
+    private final List&lt;FieldMatcher&gt; fieldMatchers;
+
+    public HasEqualValues(T expectedObject) {
+<span class="fc" id="L20">        super(expectedObject.getClass());</span>
+<span class="fc" id="L21">        this.expectedObject = expectedObject;</span>
+<span class="fc" id="L22">        this.fieldMatchers = fieldMatchers(expectedObject);</span>
+<span class="fc" id="L23">    }</span>
+
+    @Override
+    protected boolean matchesSafely(T item, Description mismatch) {
+<span class="fc bfc" id="L27" title="All 2 branches covered.">        for (FieldMatcher fieldMatcher : fieldMatchers) {</span>
+<span class="fc bfc" id="L28" title="All 2 branches covered.">            if (!fieldMatcher.matches(item, mismatch)) {</span>
+<span class="fc" id="L29">                return false;</span>
+            }
+<span class="fc" id="L31">        }</span>
+<span class="fc" id="L32">        return true;</span>
+    }
+
+    @Override
+    public void describeTo(Description description) {
+<span class="fc" id="L37">        description.appendText(expectedObject.getClass().getSimpleName())</span>
+<span class="fc" id="L38">                .appendText(&quot; has values &quot;)</span>
+<span class="fc" id="L39">                .appendList(&quot;[&quot;, &quot;, &quot;, &quot;]&quot;, fieldMatchers);</span>
+<span class="fc" id="L40">    }</span>
+
+    private static class FieldMatcher extends DiagnosingMatcher&lt;Object&gt; {
+        private final Field field;
+        private final Matcher&lt;Object&gt; matcher;
+
+<span class="fc" id="L46">        public FieldMatcher(Field field, Object expectedObject) {</span>
+<span class="fc" id="L47">            this.field = field;</span>
+<span class="fc" id="L48">            this.matcher = IsEqual.equalTo(uncheckedGet(field, expectedObject));</span>
+<span class="fc" id="L49">        }</span>
+        @Override
+        protected boolean matches(Object item, Description mismatch) {
+<span class="fc" id="L52">            final Object actual = uncheckedGet(field, item);</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">            if (!matcher.matches(actual)) {</span>
+<span class="fc" id="L54">                mismatch.appendText(&quot;'&quot;).appendText(field.getName()).appendText(&quot;' &quot;);</span>
+<span class="fc" id="L55">                matcher.describeMismatch(actual, mismatch);</span>
+<span class="fc" id="L56">                return false;</span>
+            }
+<span class="fc" id="L58">            return true;</span>
+        }
+
+        @Override
+        public void describeTo(Description description) {
+<span class="fc" id="L63">            description.appendText(field.getName())</span>
+<span class="fc" id="L64">                    .appendText(&quot;: &quot;)</span>
+<span class="fc" id="L65">                    .appendDescriptionOf(matcher);</span>
+<span class="fc" id="L66">        }</span>
+    }
+
+    private static List&lt;FieldMatcher&gt; fieldMatchers(Object expectedObject) {
+<span class="fc" id="L70">        final List&lt;FieldMatcher&gt; result = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">        for (Field field : expectedObject.getClass().getFields()) {</span>
+<span class="fc" id="L72">            result.add(new FieldMatcher(field, expectedObject));</span>
+        }
+<span class="fc" id="L74">        return result;</span>
+    }
+
+    private static Object uncheckedGet(Field field, Object object) {
+        try {
+<span class="fc" id="L79">            return field.get(object);</span>
+<span class="nc" id="L80">        } catch (Exception e) {</span>
+<span class="nc" id="L81">            throw new AssertionError(format(&quot;IllegalAccess, reading field '%s' from %s&quot;, field.getName(), object));</span>
+        }
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

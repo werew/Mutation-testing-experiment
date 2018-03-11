@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>StandardJsonAdapters.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Moshi</a> &gt; <a href="index.source.html" class="el_package">com.squareup.moshi</a> &gt; <span class="el_source">StandardJsonAdapters.java</span></div><h1>StandardJsonAdapters.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2014 Square, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.squareup.moshi;
+
+import com.squareup.moshi.internal.Util;
+import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+final class StandardJsonAdapters {
+  private StandardJsonAdapters() {
+  }
+
+<span class="fc" id="L32">  public static final JsonAdapter.Factory FACTORY = new JsonAdapter.Factory() {</span>
+    @Override public JsonAdapter&lt;?&gt; create(
+        Type type, Set&lt;? extends Annotation&gt; annotations, Moshi moshi) {
+<span class="fc bfc" id="L35" title="All 2 branches covered.">      if (!annotations.isEmpty()) return null;</span>
+<span class="fc bfc" id="L36" title="All 2 branches covered.">      if (type == boolean.class) return BOOLEAN_JSON_ADAPTER;</span>
+<span class="fc bfc" id="L37" title="All 2 branches covered.">      if (type == byte.class) return BYTE_JSON_ADAPTER;</span>
+<span class="fc bfc" id="L38" title="All 2 branches covered.">      if (type == char.class) return CHARACTER_JSON_ADAPTER;</span>
+<span class="fc bfc" id="L39" title="All 2 branches covered.">      if (type == double.class) return DOUBLE_JSON_ADAPTER;</span>
+<span class="fc bfc" id="L40" title="All 2 branches covered.">      if (type == float.class) return FLOAT_JSON_ADAPTER;</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">      if (type == int.class) return INTEGER_JSON_ADAPTER;</span>
+<span class="fc bfc" id="L42" title="All 2 branches covered.">      if (type == long.class) return LONG_JSON_ADAPTER;</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">      if (type == short.class) return SHORT_JSON_ADAPTER;</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">      if (type == Boolean.class) return BOOLEAN_JSON_ADAPTER.nullSafe();</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">      if (type == Byte.class) return BYTE_JSON_ADAPTER.nullSafe();</span>
+<span class="fc bfc" id="L46" title="All 2 branches covered.">      if (type == Character.class) return CHARACTER_JSON_ADAPTER.nullSafe();</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">      if (type == Double.class) return DOUBLE_JSON_ADAPTER.nullSafe();</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">      if (type == Float.class) return FLOAT_JSON_ADAPTER.nullSafe();</span>
+<span class="fc bfc" id="L49" title="All 2 branches covered.">      if (type == Integer.class) return INTEGER_JSON_ADAPTER.nullSafe();</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">      if (type == Long.class) return LONG_JSON_ADAPTER.nullSafe();</span>
+<span class="fc bfc" id="L51" title="All 2 branches covered.">      if (type == Short.class) return SHORT_JSON_ADAPTER.nullSafe();</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">      if (type == String.class) return STRING_JSON_ADAPTER.nullSafe();</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">      if (type == Object.class) return new ObjectJsonAdapter(moshi).nullSafe();</span>
+
+<span class="fc" id="L55">      Class&lt;?&gt; rawType = Types.getRawType(type);</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">      if (rawType.isEnum()) {</span>
+        //noinspection unchecked
+<span class="fc" id="L58">        return new EnumJsonAdapter&lt;&gt;((Class&lt;? extends Enum&gt;) rawType).nullSafe();</span>
+      }
+<span class="fc" id="L60">      return null;</span>
+    }
+  };
+
+  private static final String ERROR_FORMAT = &quot;Expected %s but was %s at path %s&quot;;
+
+  static int rangeCheckNextInt(JsonReader reader, String typeMessage, int min, int max)
+      throws IOException {
+<span class="fc" id="L68">    int value = reader.nextInt();</span>
+<span class="fc bfc" id="L69" title="All 4 branches covered.">    if (value &lt; min || value &gt; max) {</span>
+<span class="fc" id="L70">      throw new JsonDataException(</span>
+<span class="fc" id="L71">          String.format(ERROR_FORMAT, typeMessage, value, reader.getPath()));</span>
+    }
+<span class="fc" id="L73">    return value;</span>
+  }
+
+<span class="fc" id="L76">  static final JsonAdapter&lt;Boolean&gt; BOOLEAN_JSON_ADAPTER = new JsonAdapter&lt;Boolean&gt;() {</span>
+    @Override public Boolean fromJson(JsonReader reader) throws IOException {
+<span class="fc" id="L78">      return reader.nextBoolean();</span>
+    }
+
+    @Override public void toJson(JsonWriter writer, Boolean value) throws IOException {
+<span class="fc" id="L82">      writer.value(value.booleanValue());</span>
+<span class="fc" id="L83">    }</span>
+
+    @Override public String toString() {
+<span class="nc" id="L86">      return &quot;JsonAdapter(Boolean)&quot;;</span>
+    }
+  };
+
+<span class="fc" id="L90">  static final JsonAdapter&lt;Byte&gt; BYTE_JSON_ADAPTER = new JsonAdapter&lt;Byte&gt;() {</span>
+    @Override public Byte fromJson(JsonReader reader) throws IOException {
+<span class="fc" id="L92">      return (byte) rangeCheckNextInt(reader, &quot;a byte&quot;, Byte.MIN_VALUE, 0xff);</span>
+    }
+
+    @Override public void toJson(JsonWriter writer, Byte value) throws IOException {
+<span class="fc" id="L96">      writer.value(value.intValue() &amp; 0xff);</span>
+<span class="fc" id="L97">    }</span>
+
+    @Override public String toString() {
+<span class="nc" id="L100">      return &quot;JsonAdapter(Byte)&quot;;</span>
+    }
+  };
+
+<span class="fc" id="L104">  static final JsonAdapter&lt;Character&gt; CHARACTER_JSON_ADAPTER = new JsonAdapter&lt;Character&gt;() {</span>
+    @Override public Character fromJson(JsonReader reader) throws IOException {
+<span class="fc" id="L106">      String value = reader.nextString();</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">      if (value.length() &gt; 1) {</span>
+<span class="fc" id="L108">        throw new JsonDataException(</span>
+<span class="fc" id="L109">            String.format(ERROR_FORMAT, &quot;a char&quot;, '&quot;' + value + '&quot;', reader.getPath()));</span>
+      }
+<span class="fc" id="L111">      return value.charAt(0);</span>
+    }
+
+    @Override public void toJson(JsonWriter writer, Character value) throws IOException {
+<span class="fc" id="L115">      writer.value(value.toString());</span>
+<span class="fc" id="L116">    }</span>
+
+    @Override public String toString() {
+<span class="nc" id="L119">      return &quot;JsonAdapter(Character)&quot;;</span>
+    }
+  };
+
+<span class="fc" id="L123">  static final JsonAdapter&lt;Double&gt; DOUBLE_JSON_ADAPTER = new JsonAdapter&lt;Double&gt;() {</span>
+    @Override public Double fromJson(JsonReader reader) throws IOException {
+<span class="fc" id="L125">      return reader.nextDouble();</span>
+    }
+
+    @Override public void toJson(JsonWriter writer, Double value) throws IOException {
+<span class="fc" id="L129">      writer.value(value.doubleValue());</span>
+<span class="fc" id="L130">    }</span>
+
+    @Override public String toString() {
+<span class="nc" id="L133">      return &quot;JsonAdapter(Double)&quot;;</span>
+    }
+  };
+
+<span class="fc" id="L137">  static final JsonAdapter&lt;Float&gt; FLOAT_JSON_ADAPTER = new JsonAdapter&lt;Float&gt;() {</span>
+    @Override public Float fromJson(JsonReader reader) throws IOException {
+<span class="fc" id="L139">      float value = (float) reader.nextDouble();</span>
+      // Double check for infinity after float conversion; many doubles &gt; Float.MAX
+<span class="pc bpc" id="L141" title="1 of 4 branches missed.">      if (!reader.isLenient() &amp;&amp; Float.isInfinite(value)) {</span>
+<span class="fc" id="L142">        throw new JsonDataException(&quot;JSON forbids NaN and infinities: &quot; + value</span>
+<span class="fc" id="L143">            + &quot; at path &quot; + reader.getPath());</span>
+      }
+<span class="fc" id="L145">      return value;</span>
+    }
+
+    @Override public void toJson(JsonWriter writer, Float value) throws IOException {
+      // Manual null pointer check for the float.class adapter.
+<span class="fc bfc" id="L150" title="All 2 branches covered.">      if (value == null) {</span>
+<span class="fc" id="L151">        throw new NullPointerException();</span>
+      }
+      // Use the Number overload so we write out float precision instead of double precision.
+<span class="fc" id="L154">      writer.value(value);</span>
+<span class="fc" id="L155">    }</span>
+
+    @Override public String toString() {
+<span class="nc" id="L158">      return &quot;JsonAdapter(Float)&quot;;</span>
+    }
+  };
+
+<span class="fc" id="L162">  static final JsonAdapter&lt;Integer&gt; INTEGER_JSON_ADAPTER = new JsonAdapter&lt;Integer&gt;() {</span>
+    @Override public Integer fromJson(JsonReader reader) throws IOException {
+<span class="fc" id="L164">      return reader.nextInt();</span>
+    }
+
+    @Override public void toJson(JsonWriter writer, Integer value) throws IOException {
+<span class="fc" id="L168">      writer.value(value.intValue());</span>
+<span class="fc" id="L169">    }</span>
+
+    @Override public String toString() {
+<span class="nc" id="L172">      return &quot;JsonAdapter(Integer)&quot;;</span>
+    }
+  };
+
+<span class="fc" id="L176">  static final JsonAdapter&lt;Long&gt; LONG_JSON_ADAPTER = new JsonAdapter&lt;Long&gt;() {</span>
+    @Override public Long fromJson(JsonReader reader) throws IOException {
+<span class="fc" id="L178">      return reader.nextLong();</span>
+    }
+
+    @Override public void toJson(JsonWriter writer, Long value) throws IOException {
+<span class="fc" id="L182">      writer.value(value.longValue());</span>
+<span class="fc" id="L183">    }</span>
+
+    @Override public String toString() {
+<span class="nc" id="L186">      return &quot;JsonAdapter(Long)&quot;;</span>
+    }
+  };
+
+<span class="fc" id="L190">  static final JsonAdapter&lt;Short&gt; SHORT_JSON_ADAPTER = new JsonAdapter&lt;Short&gt;() {</span>
+    @Override public Short fromJson(JsonReader reader) throws IOException {
+<span class="fc" id="L192">      return (short) rangeCheckNextInt(reader, &quot;a short&quot;, Short.MIN_VALUE, Short.MAX_VALUE);</span>
+    }
+
+    @Override public void toJson(JsonWriter writer, Short value) throws IOException {
+<span class="fc" id="L196">      writer.value(value.intValue());</span>
+<span class="fc" id="L197">    }</span>
+
+    @Override public String toString() {
+<span class="nc" id="L200">      return &quot;JsonAdapter(Short)&quot;;</span>
+    }
+  };
+
+<span class="fc" id="L204">  static final JsonAdapter&lt;String&gt; STRING_JSON_ADAPTER = new JsonAdapter&lt;String&gt;() {</span>
+    @Override public String fromJson(JsonReader reader) throws IOException {
+<span class="fc" id="L206">      return reader.nextString();</span>
+    }
+
+    @Override public void toJson(JsonWriter writer, String value) throws IOException {
+<span class="fc" id="L210">      writer.value(value);</span>
+<span class="fc" id="L211">    }</span>
+
+    @Override public String toString() {
+<span class="nc" id="L214">      return &quot;JsonAdapter(String)&quot;;</span>
+    }
+  };
+
+  static final class EnumJsonAdapter&lt;T extends Enum&lt;T&gt;&gt; extends JsonAdapter&lt;T&gt; {
+    private final Class&lt;T&gt; enumType;
+    private final String[] nameStrings;
+    private final T[] constants;
+    private final JsonReader.Options options;
+
+<span class="fc" id="L224">    EnumJsonAdapter(Class&lt;T&gt; enumType) {</span>
+<span class="fc" id="L225">      this.enumType = enumType;</span>
+      try {
+<span class="fc" id="L227">        constants = enumType.getEnumConstants();</span>
+<span class="fc" id="L228">        nameStrings = new String[constants.length];</span>
+<span class="fc bfc" id="L229" title="All 2 branches covered.">        for (int i = 0; i &lt; constants.length; i++) {</span>
+<span class="fc" id="L230">          T constant = constants[i];</span>
+<span class="fc" id="L231">          Json annotation = enumType.getField(constant.name()).getAnnotation(Json.class);</span>
+<span class="fc bfc" id="L232" title="All 2 branches covered.">          String name = annotation != null ? annotation.name() : constant.name();</span>
+<span class="fc" id="L233">          nameStrings[i] = name;</span>
+        }
+<span class="fc" id="L235">        options = JsonReader.Options.of(nameStrings);</span>
+<span class="nc" id="L236">      } catch (NoSuchFieldException e) {</span>
+<span class="nc" id="L237">        throw new AssertionError(&quot;Missing field in &quot; + enumType.getName(), e);</span>
+<span class="fc" id="L238">      }</span>
+<span class="fc" id="L239">    }</span>
+
+    @Override public T fromJson(JsonReader reader) throws IOException {
+<span class="fc" id="L242">      int index = reader.selectString(options);</span>
+<span class="fc bfc" id="L243" title="All 2 branches covered.">      if (index != -1) return constants[index];</span>
+
+      // We can consume the string safely, we are terminating anyway.
+<span class="fc" id="L246">      String name = reader.nextString();</span>
+<span class="fc" id="L247">      throw new JsonDataException(&quot;Expected one of &quot;</span>
+<span class="fc" id="L248">          + Arrays.asList(nameStrings) + &quot; but was &quot; + name + &quot; at path &quot;</span>
+<span class="fc" id="L249">          + reader.getPath());</span>
+    }
+
+    @Override public void toJson(JsonWriter writer, T value) throws IOException {
+<span class="fc" id="L253">      writer.value(nameStrings[value.ordinal()]);</span>
+<span class="fc" id="L254">    }</span>
+
+    @Override public String toString() {
+<span class="nc" id="L257">      return &quot;JsonAdapter(&quot; + enumType.getName() + &quot;)&quot;;</span>
+    }
+  }
+
+  /**
+   * This adapter is used when the declared type is {@code java.lang.Object}. Typically the runtime
+   * type is something else, and when encoding JSON this delegates to the runtime type's adapter.
+   * For decoding (where there is no runtime type to inspect), this uses maps and lists.
+   *
+   * &lt;p&gt;This adapter needs a Moshi instance to look up the appropriate adapter for runtime types as
+   * they are encountered.
+   */
+  static final class ObjectJsonAdapter extends JsonAdapter&lt;Object&gt; {
+    private final Moshi moshi;
+    private final JsonAdapter&lt;List&gt; listJsonAdapter;
+    private final JsonAdapter&lt;Map&gt; mapAdapter;
+    private final JsonAdapter&lt;String&gt; stringAdapter;
+    private final JsonAdapter&lt;Double&gt; doubleAdapter;
+    private final JsonAdapter&lt;Boolean&gt; booleanAdapter;
+
+<span class="fc" id="L277">    ObjectJsonAdapter(Moshi moshi) {</span>
+<span class="fc" id="L278">      this.moshi = moshi;</span>
+<span class="fc" id="L279">      this.listJsonAdapter = moshi.adapter(List.class);</span>
+<span class="fc" id="L280">      this.mapAdapter = moshi.adapter(Map.class);</span>
+<span class="fc" id="L281">      this.stringAdapter = moshi.adapter(String.class);</span>
+<span class="fc" id="L282">      this.doubleAdapter = moshi.adapter(Double.class);</span>
+<span class="fc" id="L283">      this.booleanAdapter = moshi.adapter(Boolean.class);</span>
+<span class="fc" id="L284">    }</span>
+
+    @Override public Object fromJson(JsonReader reader) throws IOException {
+<span class="pc bpc" id="L287" title="2 of 7 branches missed.">      switch (reader.peek()) {</span>
+        case BEGIN_ARRAY:
+<span class="fc" id="L289">          return listJsonAdapter.fromJson(reader);</span>
+
+        case BEGIN_OBJECT:
+<span class="fc" id="L292">          return mapAdapter.fromJson(reader);</span>
+
+        case STRING:
+<span class="fc" id="L295">          return stringAdapter.fromJson(reader);</span>
+
+        case NUMBER:
+<span class="fc" id="L298">          return doubleAdapter.fromJson(reader);</span>
+
+        case BOOLEAN:
+<span class="fc" id="L301">          return booleanAdapter.fromJson(reader);</span>
+
+        case NULL:
+<span class="nc" id="L304">          return reader.nextNull();</span>
+
+        default:
+<span class="nc" id="L307">          throw new IllegalStateException(</span>
+<span class="nc" id="L308">              &quot;Expected a value but was &quot; + reader.peek() + &quot; at path &quot; + reader.getPath());</span>
+      }
+    }
+
+    @Override public void toJson(JsonWriter writer, Object value) throws IOException {
+<span class="fc" id="L313">      Class&lt;?&gt; valueClass = value.getClass();</span>
+<span class="fc bfc" id="L314" title="All 2 branches covered.">      if (valueClass == Object.class) {</span>
+        // Don't recurse infinitely when the runtime type is also Object.class.
+<span class="fc" id="L316">        writer.beginObject();</span>
+<span class="fc" id="L317">        writer.endObject();</span>
+      } else {
+<span class="fc" id="L319">        moshi.adapter(toJsonType(valueClass), Util.NO_ANNOTATIONS).toJson(writer, value);</span>
+      }
+<span class="fc" id="L321">    }</span>
+
+    /**
+     * Returns the type to look up a type adapter for when writing {@code value} to JSON. Without
+     * this, attempts to emit standard types like `LinkedHashMap` would fail because Moshi doesn't
+     * provide built-in adapters for implementation types. It knows how to &lt;strong&gt;write&lt;/strong&gt;
+     * those types, but lacks a mechanism to read them because it doesn't know how to find the
+     * appropriate constructor.
+     */
+    private Class&lt;?&gt; toJsonType(Class&lt;?&gt; valueClass) {
+<span class="fc bfc" id="L331" title="All 2 branches covered.">      if (Map.class.isAssignableFrom(valueClass)) return Map.class;</span>
+<span class="fc bfc" id="L332" title="All 2 branches covered.">      if (Collection.class.isAssignableFrom(valueClass)) return Collection.class;</span>
+<span class="fc" id="L333">      return valueClass;</span>
+    }
+
+    @Override public String toString() {
+<span class="nc" id="L337">      return &quot;JsonAdapter(Object)&quot;;</span>
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

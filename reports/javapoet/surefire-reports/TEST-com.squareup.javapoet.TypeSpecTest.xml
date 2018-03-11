@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.squareup.javapoet.TypeSpecTest" time="2.278" tests="107" errors="0" skipped="0" failures="0">
+  <properties>
+    <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
+    <property name="sun.boot.library.path" value="/usr/lib/jvm/java-8-oracle/jre/lib/amd64"/>
+    <property name="java.vm.version" value="25.161-b12"/>
+    <property name="java.vm.vendor" value="Oracle Corporation"/>
+    <property name="maven.multiModuleProjectDirectory" value="/root/projects/javapoet"/>
+    <property name="java.vendor.url" value="http://java.oracle.com/"/>
+    <property name="path.separator" value=":"/>
+    <property name="guice.disable.misplaced.annotation.check" value="true"/>
+    <property name="java.vm.name" value="Java HotSpot(TM) 64-Bit Server VM"/>
+    <property name="file.encoding.pkg" value="sun.io"/>
+    <property name="user.country" value="US"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="sun.os.patch.level" value="unknown"/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="user.dir" value="/root/projects/javapoet"/>
+    <property name="java.runtime.version" value="1.8.0_161-b12"/>
+    <property name="java.awt.graphicsenv" value="sun.awt.X11GraphicsEnvironment"/>
+    <property name="java.endorsed.dirs" value="/usr/lib/jvm/java-8-oracle/jre/lib/endorsed"/>
+    <property name="os.arch" value="amd64"/>
+    <property name="java.io.tmpdir" value="/tmp"/>
+    <property name="line.separator" value="&#10;"/>
+    <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
+    <property name="os.name" value="Linux"/>
+    <property name="classworlds.conf" value="/usr/share/maven/bin/m2.conf"/>
+    <property name="sun.jnu.encoding" value="ANSI_X3.4-1968"/>
+    <property name="java.library.path" value="/usr/java/packages/lib/amd64:/usr/lib64:/lib64:/lib:/usr/lib"/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="java.class.version" value="52.0"/>
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
+    <property name="os.version" value="3.13.0-142-generic"/>
+    <property name="user.home" value="/root"/>
+    <property name="user.timezone" value="Etc/UTC"/>
+    <property name="java.awt.printerjob" value="sun.print.PSPrinterJob"/>
+    <property name="file.encoding" value="ANSI_X3.4-1968"/>
+    <property name="java.specification.version" value="1.8"/>
+    <property name="user.name" value="root"/>
+    <property name="java.class.path" value="/usr/share/maven/boot/plexus-classworlds-2.x.jar"/>
+    <property name="java.vm.specification.version" value="1.8"/>
+    <property name="sun.arch.data.model" value="64"/>
+    <property name="java.home" value="/usr/lib/jvm/java-8-oracle/jre"/>
+    <property name="sun.java.command" value="org.codehaus.plexus.classworlds.launcher.Launcher clean test org.pitest:pitest-maven:mutationCoverage"/>
+    <property name="java.specification.vendor" value="Oracle Corporation"/>
+    <property name="user.language" value="en"/>
+    <property name="awt.toolkit" value="sun.awt.X11.XToolkit"/>
+    <property name="java.vm.info" value="mixed mode"/>
+    <property name="java.version" value="1.8.0_161"/>
+    <property name="java.ext.dirs" value="/usr/lib/jvm/java-8-oracle/jre/lib/ext:/usr/java/packages/lib/ext"/>
+    <property name="securerandom.source" value="file:/dev/./urandom"/>
+    <property name="sun.boot.class.path" value="/usr/lib/jvm/java-8-oracle/jre/lib/resources.jar:/usr/lib/jvm/java-8-oracle/jre/lib/rt.jar:/usr/lib/jvm/java-8-oracle/jre/lib/sunrsasign.jar:/usr/lib/jvm/java-8-oracle/jre/lib/jsse.jar:/usr/lib/jvm/java-8-oracle/jre/lib/jce.jar:/usr/lib/jvm/java-8-oracle/jre/lib/charsets.jar:/usr/lib/jvm/java-8-oracle/jre/lib/jfr.jar:/usr/lib/jvm/java-8-oracle/jre/classes"/>
+    <property name="java.vendor" value="Oracle Corporation"/>
+    <property name="maven.home" value="/usr/share/maven"/>
+    <property name="file.separator" value="/"/>
+    <property name="java.vendor.url.bug" value="http://bugreport.sun.com/bugreport/"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
+    <property name="sun.cpu.isalist" value=""/>
+  </properties>
+  <testcase name="fieldToString" classname="com.squareup.javapoet.TypeSpecTest" time="0.027"/>
+  <testcase name="unusedArgumentsRelative" classname="com.squareup.javapoet.TypeSpecTest" time="0.026"/>
+  <testcase name="multipleSuperinterfaceAddition" classname="com.squareup.javapoet.TypeSpecTest" time="0.035"/>
+  <testcase name="annotationToString" classname="com.squareup.javapoet.TypeSpecTest" time="0.031"/>
+  <testcase name="literalFromAnything" classname="com.squareup.javapoet.TypeSpecTest" time="0.023"/>
+  <testcase name="codeBlockToString" classname="com.squareup.javapoet.TypeSpecTest" time="0.022"/>
+  <testcase name="nullSingleSuperinterfaceAddition" classname="com.squareup.javapoet.TypeSpecTest" time="0.022"/>
+  <testcase name="stringFromAnything" classname="com.squareup.javapoet.TypeSpecTest" time="0.023"/>
+  <testcase name="javadoc" classname="com.squareup.javapoet.TypeSpecTest" time="0.023"/>
+  <testcase name="nameFromCharSequence" classname="com.squareup.javapoet.TypeSpecTest" time="0.023"/>
+  <testcase name="nullFieldsAddition" classname="com.squareup.javapoet.TypeSpecTest" time="0.021"/>
+  <testcase name="annotation" classname="com.squareup.javapoet.TypeSpecTest" time="0.025"/>
+  <testcase name="nameFromParameter" classname="com.squareup.javapoet.TypeSpecTest" time="0.023"/>
+  <testcase name="nameFromField" classname="com.squareup.javapoet.TypeSpecTest" time="0.022"/>
+  <testcase name="typeFromUnsupportedType" classname="com.squareup.javapoet.TypeSpecTest" time="0.019"/>
+  <testcase name="arrayType" classname="com.squareup.javapoet.TypeSpecTest" time="0.022"/>
+  <testcase name="codeBlocks" classname="com.squareup.javapoet.TypeSpecTest" time="0.02"/>
+  <testcase name="multipleFieldAddition" classname="com.squareup.javapoet.TypeSpecTest" time="0.02"/>
+  <testcase name="typeVariables" classname="com.squareup.javapoet.TypeSpecTest" time="0.025"/>
+  <testcase name="methodToString" classname="com.squareup.javapoet.TypeSpecTest" time="0.016"/>
+  <testcase name="elseIf" classname="com.squareup.javapoet.TypeSpecTest" time="0.018"/>
+  <testcase name="nullTypesAddition" classname="com.squareup.javapoet.TypeSpecTest" time="0.021"/>
+  <testcase name="interestingTypes" classname="com.squareup.javapoet.TypeSpecTest" time="0.022"/>
+  <testcase name="ifElse" classname="com.squareup.javapoet.TypeSpecTest" time="0.023"/>
+  <testcase name="interfaceClassToString" classname="com.squareup.javapoet.TypeSpecTest" time="0.023"/>
+  <testcase name="classImplementsNestedClass" classname="com.squareup.javapoet.TypeSpecTest" time="0.024"/>
+  <testcase name="enumWithSubclassing" classname="com.squareup.javapoet.TypeSpecTest" time="0.022"/>
+  <testcase name="initializerBlockUnsupportedExceptionOnInterface" classname="com.squareup.javapoet.TypeSpecTest" time="0.031"/>
+  <testcase name="annotationsAndJavaLangTypes" classname="com.squareup.javapoet.TypeSpecTest" time="0.025"/>
+  <testcase name="retrofitStyleInterface" classname="com.squareup.javapoet.TypeSpecTest" time="0.024"/>
+  <testcase name="typeFromReflectType" classname="com.squareup.javapoet.TypeSpecTest" time="0.031"/>
+  <testcase name="nestedClasses" classname="com.squareup.javapoet.TypeSpecTest" time="0.024"/>
+  <testcase name="enumImplements" classname="com.squareup.javapoet.TypeSpecTest" time="0.028"/>
+  <testcase name="multipleAnnotationAddition" classname="com.squareup.javapoet.TypeSpecTest" time="0.023"/>
+  <testcase name="initializerBlockInRightPlace" classname="com.squareup.javapoet.TypeSpecTest" time="0.024"/>
+  <testcase name="defaultModifiersForMemberInterfacesAndEnums" classname="com.squareup.javapoet.TypeSpecTest" time="0.022"/>
+  <testcase name="anonymousClassToString" classname="com.squareup.javapoet.TypeSpecTest" time="0.024"/>
+  <testcase name="initializerBlockUnsupportedExceptionOnAnnotation" classname="com.squareup.javapoet.TypeSpecTest" time="0.024"/>
+  <testcase name="nullModifiersAddition" classname="com.squareup.javapoet.TypeSpecTest" time="0.025"/>
+  <testcase name="classToString" classname="com.squareup.javapoet.TypeSpecTest" time="0.023"/>
+  <testcase name="referencedAndDeclaredSimpleNamesConflict" classname="com.squareup.javapoet.TypeSpecTest" time="0.019"/>
+  <testcase name="equalsAndHashCode" classname="com.squareup.javapoet.TypeSpecTest" time="0.026"/>
+  <testcase name="classNameFactories" classname="com.squareup.javapoet.TypeSpecTest" time="0.023"/>
+  <testcase name="typeFromTypeName" classname="com.squareup.javapoet.TypeSpecTest" time="0.022"/>
+  <testcase name="nullAnnotationsAddition" classname="com.squareup.javapoet.TypeSpecTest" time="0.022"/>
+  <testcase name="interfaceDefaultMethods" classname="com.squareup.javapoet.TypeSpecTest" time="0.021"/>
+  <testcase name="nameFromType" classname="com.squareup.javapoet.TypeSpecTest" time="0.022"/>
+  <testcase name="nullInSuperinterfaceIterableAddition" classname="com.squareup.javapoet.TypeSpecTest" time="0.018"/>
+  <testcase name="annotatedParameters" classname="com.squareup.javapoet.TypeSpecTest" time="0.024"/>
+  <testcase name="nativeMethods" classname="com.squareup.javapoet.TypeSpecTest" time="0.022"/>
+  <testcase name="invalidSuperClass" classname="com.squareup.javapoet.TypeSpecTest" time="0.022"/>
+  <testcase name="basic" classname="com.squareup.javapoet.TypeSpecTest" time="0.022"/>
+  <testcase name="inlineIndent" classname="com.squareup.javapoet.TypeSpecTest" time="0.022"/>
+  <testcase name="typeVariableWithBounds" classname="com.squareup.javapoet.TypeSpecTest" time="0.021"/>
+  <testcase name="annotationsInAnnotations" classname="com.squareup.javapoet.TypeSpecTest" time="0.023"/>
+  <testcase name="constructorToString" classname="com.squareup.javapoet.TypeSpecTest" time="0.022"/>
+  <testcase name="multipleMethodAddition" classname="com.squareup.javapoet.TypeSpecTest" time="0.108"/>
+  <testcase name="unusedArgumentsIndexed" classname="com.squareup.javapoet.TypeSpecTest" time="0.02"/>
+  <testcase name="varargs" classname="com.squareup.javapoet.TypeSpecTest" time="0.021"/>
+  <testcase name="annotationDeclarationToString" classname="com.squareup.javapoet.TypeSpecTest" time="0.021"/>
+  <testcase name="nullMethodsAddition" classname="com.squareup.javapoet.TypeSpecTest" time="0.019"/>
+  <testcase name="initializersToBuilder" classname="com.squareup.javapoet.TypeSpecTest" time="0.025"/>
+  <testcase name="typeFromTypeMirror" classname="com.squareup.javapoet.TypeSpecTest" time="0.021"/>
+  <testcase name="intersectionType" classname="com.squareup.javapoet.TypeSpecTest" time="0.022"/>
+  <testcase name="codeBlockAddStatementOfCodeBlockToString" classname="com.squareup.javapoet.TypeSpecTest" time="0.02"/>
+  <testcase name="classCannotHaveDefaultMethods" classname="com.squareup.javapoet.TypeSpecTest" time="0.021"/>
+  <testcase name="originatingElementsIncludesThoseOfNestedTypes" classname="com.squareup.javapoet.TypeSpecTest" time="0.021"/>
+  <testcase name="nameFromUnsupportedType" classname="com.squareup.javapoet.TypeSpecTest" time="0.018"/>
+  <testcase name="multilineStatement" classname="com.squareup.javapoet.TypeSpecTest" time="0.028"/>
+  <testcase name="nullStringLiteral" classname="com.squareup.javapoet.TypeSpecTest" time="0.022"/>
+  <testcase name="annotationWithFields" classname="com.squareup.javapoet.TypeSpecTest" time="0.02"/>
+  <testcase name="doubleFieldInitialization" classname="com.squareup.javapoet.TypeSpecTest" time="0.022"/>
+  <testcase name="interfaceStaticMethods" classname="com.squareup.javapoet.TypeSpecTest" time="0.021"/>
+  <testcase name="methodThrows" classname="com.squareup.javapoet.TypeSpecTest" time="0.015"/>
+  <testcase name="nullTypeVariablesAddition" classname="com.squareup.javapoet.TypeSpecTest" time="0.013"/>
+  <testcase name="lineWrappingWithZeroWidthSpace" classname="com.squareup.javapoet.TypeSpecTest" time="0.018"/>
+  <testcase name="multilineStrings" classname="com.squareup.javapoet.TypeSpecTest" time="0.02"/>
+  <testcase name="interfaceExtends" classname="com.squareup.javapoet.TypeSpecTest" time="0.019"/>
+  <testcase name="classCannotHaveDefaultValueForMethod" classname="com.squareup.javapoet.TypeSpecTest" time="0.018"/>
+  <testcase name="membersOrdering" classname="com.squareup.javapoet.TypeSpecTest" time="0.016"/>
+  <testcase name="indexedElseIf" classname="com.squareup.javapoet.TypeSpecTest" time="0.014"/>
+  <testcase name="enumWithAnnotatedValues" classname="com.squareup.javapoet.TypeSpecTest" time="0.013"/>
+  <testcase name="staticCodeBlock" classname="com.squareup.javapoet.TypeSpecTest" time="0.016"/>
+  <testcase name="lineWrapping" classname="com.squareup.javapoet.TypeSpecTest" time="0.023"/>
+  <testcase name="multilineStatementWithAnonymousClass" classname="com.squareup.javapoet.TypeSpecTest" time="0.018"/>
+  <testcase name="enumWithMembersButNoConstructorCall" classname="com.squareup.javapoet.TypeSpecTest" time="0.019"/>
+  <testcase name="multipleTypeAddition" classname="com.squareup.javapoet.TypeSpecTest" time="0.02"/>
+  <testcase name="nullSuperinterfacesAddition" classname="com.squareup.javapoet.TypeSpecTest" time="0.03"/>
+  <testcase name="nameFromMethod" classname="com.squareup.javapoet.TypeSpecTest" time="0.018"/>
+  <testcase name="enumConstantsRequired" classname="com.squareup.javapoet.TypeSpecTest" time="0.012"/>
+  <testcase name="stringFromNull" classname="com.squareup.javapoet.TypeSpecTest" time="0.015"/>
+  <testcase name="enumsMayDefineAbstractMethods" classname="com.squareup.javapoet.TypeSpecTest" time="0.013"/>
+  <testcase name="simpleNamesConflictInThisAndOtherPackage" classname="com.squareup.javapoet.TypeSpecTest" time="0.013"/>
+  <testcase name="anonymousInnerClass" classname="com.squareup.javapoet.TypeSpecTest" time="0.013"/>
+  <testcase name="typeFromTypeElement" classname="com.squareup.javapoet.TypeSpecTest" time="0.012"/>
+  <testcase name="defaultModifiersForInterfaceMembers" classname="com.squareup.javapoet.TypeSpecTest" time="0.012"/>
+  <testcase name="onlyEnumsMayHaveEnumConstants" classname="com.squareup.javapoet.TypeSpecTest" time="0.012"/>
+  <testcase name="parameterToString" classname="com.squareup.javapoet.TypeSpecTest" time="0.013"/>
+  <testcase name="multipleTypeVariableAddition" classname="com.squareup.javapoet.TypeSpecTest" time="0.014"/>
+  <testcase name="doWhile" classname="com.squareup.javapoet.TypeSpecTest" time="0.013"/>
+  <testcase name="annotatedClass" classname="com.squareup.javapoet.TypeSpecTest" time="0.014"/>
+  <testcase name="annotatedField" classname="com.squareup.javapoet.TypeSpecTest" time="0.012"/>
+  <testcase name="superClassOnlyValidForClasses" classname="com.squareup.javapoet.TypeSpecTest" time="0.015"/>
+  <testcase name="tryCatch" classname="com.squareup.javapoet.TypeSpecTest" time="0.017"/>
+  <testcase name="classImplementsExtends" classname="com.squareup.javapoet.TypeSpecTest" time="0.014"/>
+  <testcase name="innerAnnotationInAnnotationDeclaration" classname="com.squareup.javapoet.TypeSpecTest" time="0.012"/>
+  <testcase name="tooFewArguments" classname="com.squareup.javapoet.TypeSpecTest" time="0.012"/>
+</testsuite>

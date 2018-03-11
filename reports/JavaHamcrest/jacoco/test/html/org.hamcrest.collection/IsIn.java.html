@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>IsIn.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JavaHamcrest</a> &gt; <a href="index.source.html" class="el_package">org.hamcrest.collection</a> &gt; <span class="el_source">IsIn.java</span></div><h1>IsIn.java</h1><pre class="source lang-java linenums">package org.hamcrest.collection;
+
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+
+import java.util.Arrays;
+import java.util.Collection;
+
+public class IsIn&lt;T&gt; extends BaseMatcher&lt;T&gt; {
+    private final Collection&lt;T&gt; collection;
+
+<span class="fc" id="L13">    public IsIn(Collection&lt;T&gt; collection) {</span>
+<span class="fc" id="L14">        this.collection = collection;</span>
+<span class="fc" id="L15">    }</span>
+    
+<span class="fc" id="L17">    public IsIn(T[] elements) {</span>
+<span class="fc" id="L18">        collection = Arrays.asList(elements);</span>
+<span class="fc" id="L19">    }</span>
+    
+    @SuppressWarnings(&quot;SuspiciousMethodCalls&quot;)
+    @Override
+    public boolean matches(Object o) {
+<span class="fc" id="L24">        return collection.contains(o);</span>
+    }
+
+    @Override
+    public void describeTo(Description buffer) {
+<span class="fc" id="L29">        buffer.appendText(&quot;one of &quot;);</span>
+<span class="fc" id="L30">        buffer.appendValueList(&quot;{&quot;, &quot;, &quot;, &quot;}&quot;, collection);</span>
+<span class="fc" id="L31">    }</span>
+    
+    /**
+     * Creates a matcher that matches when the examined object is found within the
+     * specified collection.
+     * For example:
+     * &lt;pre&gt;assertThat(&quot;foo&quot;, isIn(Arrays.asList(&quot;bar&quot;, &quot;foo&quot;)))&lt;/pre&gt;
+     * 
+     * @deprecated use is(in(...)) instead
+     * 
+     * @param collection
+     *     the collection in which matching items must be found
+     * 
+     */
+    @Deprecated
+    public static &lt;T&gt; Matcher&lt;T&gt; isIn(Collection&lt;T&gt; collection) {
+<span class="nc" id="L47">        return in(collection);</span>
+    }
+    
+    /**
+     * Creates a matcher that matches when the examined object is found within the
+     * specified collection.
+     * For example:
+     * &lt;pre&gt;assertThat(&quot;foo&quot;, is(in(Arrays.asList(&quot;bar&quot;, &quot;foo&quot;))))&lt;/pre&gt;
+     * 
+     * @param collection
+     *     the collection in which matching items must be found
+     * 
+     */
+    public static &lt;T&gt; Matcher&lt;T&gt; in(Collection&lt;T&gt; collection) {
+<span class="nc" id="L61">        return new IsIn&lt;&gt;(collection);</span>
+    }
+
+    /**
+     * Creates a matcher that matches when the examined object is found within the
+     * specified array.
+     * For example:
+     * &lt;pre&gt;assertThat(&quot;foo&quot;, isIn(new String[]{&quot;bar&quot;, &quot;foo&quot;}))&lt;/pre&gt;
+     * 
+     * @deprecated use is(in(...)) instead
+     * 
+     * @param elements
+     *     the array in which matching items must be found
+     * 
+     */
+    @Deprecated
+    public static &lt;T&gt; Matcher&lt;T&gt; isIn(T[] elements) {
+<span class="nc" id="L78">        return in(elements);</span>
+    }
+    
+    /**
+     * Creates a matcher that matches when the examined object is found within the
+     * specified array.
+     * For example:
+     * &lt;pre&gt;assertThat(&quot;foo&quot;, is(in(new String[]{&quot;bar&quot;, &quot;foo&quot;})))&lt;/pre&gt;
+     * 
+     * @param elements
+     *     the array in which matching items must be found
+     * 
+     */
+    public static &lt;T&gt; Matcher&lt;T&gt; in(T[] elements) {
+<span class="nc" id="L92">        return new IsIn&lt;&gt;(elements);</span>
+    }
+    
+    /**
+     * Creates a matcher that matches when the examined object is equal to one of the
+     * specified elements.
+     * For example:
+     * &lt;pre&gt;assertThat(&quot;foo&quot;, isOneOf(&quot;bar&quot;, &quot;foo&quot;))&lt;/pre&gt;
+     * 
+     * @deprecated use is(oneOf(...)) instead
+     * 
+     * @param elements
+     *     the elements amongst which matching items will be found 
+     * 
+     */
+    @SafeVarargs
+    @Deprecated
+    public static &lt;T&gt; Matcher&lt;T&gt; isOneOf(T... elements) {
+<span class="nc" id="L110">        return oneOf(elements);</span>
+    }
+    
+    /**
+     * Creates a matcher that matches when the examined object is equal to one of the
+     * specified elements.
+     * For example:
+     * &lt;pre&gt;assertThat(&quot;foo&quot;, is(oneOf(&quot;bar&quot;, &quot;foo&quot;)))&lt;/pre&gt;
+     *  
+     * @param elements
+     *     the elements amongst which matching items will be found 
+     * 
+     */
+    @SafeVarargs
+    public static &lt;T&gt; Matcher&lt;T&gt; oneOf(T... elements) {
+<span class="nc" id="L125">        return in(elements);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

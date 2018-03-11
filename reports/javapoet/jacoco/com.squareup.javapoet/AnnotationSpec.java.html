@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AnnotationSpec.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JavaPoet</a> &gt; <a href="index.source.html" class="el_package">com.squareup.javapoet</a> &gt; <span class="el_source">AnnotationSpec.java</span></div><h1>AnnotationSpec.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2015 Square, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.squareup.javapoet;
+
+import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Array;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import javax.lang.model.SourceVersion;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.SimpleAnnotationValueVisitor8;
+
+import static com.squareup.javapoet.Util.characterLiteralWithoutSingleQuotes;
+import static com.squareup.javapoet.Util.checkArgument;
+import static com.squareup.javapoet.Util.checkNotNull;
+
+/** A generated annotation on a declaration. */
+public final class AnnotationSpec {
+  public final TypeName type;
+  public final Map&lt;String, List&lt;CodeBlock&gt;&gt; members;
+
+<span class="fc" id="L48">  private AnnotationSpec(Builder builder) {</span>
+<span class="fc" id="L49">    this.type = builder.type;</span>
+<span class="fc" id="L50">    this.members = Util.immutableMultimap(builder.members);</span>
+<span class="fc" id="L51">  }</span>
+
+  void emit(CodeWriter codeWriter, boolean inline) throws IOException {
+<span class="fc bfc" id="L54" title="All 2 branches covered.">    String whitespace = inline ? &quot;&quot; : &quot;\n&quot;;</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">    String memberSeparator = inline ? &quot;, &quot; : &quot;,\n&quot;;</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">    if (members.isEmpty()) {</span>
+      // @Singleton
+<span class="fc" id="L58">      codeWriter.emit(&quot;@$T&quot;, type);</span>
+<span class="fc bfc" id="L59" title="All 4 branches covered.">    } else if (members.size() == 1 &amp;&amp; members.containsKey(&quot;value&quot;)) {</span>
+      // @Named(&quot;foo&quot;)
+<span class="fc" id="L61">      codeWriter.emit(&quot;@$T(&quot;, type);</span>
+<span class="fc" id="L62">      emitAnnotationValues(codeWriter, whitespace, memberSeparator, members.get(&quot;value&quot;));</span>
+<span class="fc" id="L63">      codeWriter.emit(&quot;)&quot;);</span>
+    } else {
+      // Inline:
+      //   @Column(name = &quot;updated_at&quot;, nullable = false)
+      //
+      // Not inline:
+      //   @Column(
+      //       name = &quot;updated_at&quot;,
+      //       nullable = false
+      //   )
+<span class="fc" id="L73">      codeWriter.emit(&quot;@$T(&quot; + whitespace, type);</span>
+<span class="fc" id="L74">      codeWriter.indent(2);</span>
+<span class="fc" id="L75">      for (Iterator&lt;Map.Entry&lt;String, List&lt;CodeBlock&gt;&gt;&gt; i</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">          = members.entrySet().iterator(); i.hasNext(); ) {</span>
+<span class="fc" id="L77">        Map.Entry&lt;String, List&lt;CodeBlock&gt;&gt; entry = i.next();</span>
+<span class="fc" id="L78">        codeWriter.emit(&quot;$L = &quot;, entry.getKey());</span>
+<span class="fc" id="L79">        emitAnnotationValues(codeWriter, whitespace, memberSeparator, entry.getValue());</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">        if (i.hasNext()) codeWriter.emit(memberSeparator);</span>
+<span class="fc" id="L81">      }</span>
+<span class="fc" id="L82">      codeWriter.unindent(2);</span>
+<span class="fc" id="L83">      codeWriter.emit(whitespace + &quot;)&quot;);</span>
+    }
+<span class="fc" id="L85">  }</span>
+
+  private void emitAnnotationValues(CodeWriter codeWriter, String whitespace,
+      String memberSeparator, List&lt;CodeBlock&gt; values) throws IOException {
+<span class="fc bfc" id="L89" title="All 2 branches covered.">    if (values.size() == 1) {</span>
+<span class="fc" id="L90">      codeWriter.indent(2);</span>
+<span class="fc" id="L91">      codeWriter.emit(values.get(0));</span>
+<span class="fc" id="L92">      codeWriter.unindent(2);</span>
+<span class="fc" id="L93">      return;</span>
+    }
+
+<span class="fc" id="L96">    codeWriter.emit(&quot;{&quot; + whitespace);</span>
+<span class="fc" id="L97">    codeWriter.indent(2);</span>
+<span class="fc" id="L98">    boolean first = true;</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">    for (CodeBlock codeBlock : values) {</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">      if (!first) codeWriter.emit(memberSeparator);</span>
+<span class="fc" id="L101">      codeWriter.emit(codeBlock);</span>
+<span class="fc" id="L102">      first = false;</span>
+<span class="fc" id="L103">    }</span>
+<span class="fc" id="L104">    codeWriter.unindent(2);</span>
+<span class="fc" id="L105">    codeWriter.emit(whitespace + &quot;}&quot;);</span>
+<span class="fc" id="L106">  }</span>
+
+  public static AnnotationSpec get(Annotation annotation) {
+<span class="fc" id="L109">    return get(annotation, false);</span>
+  }
+
+  public static AnnotationSpec get(Annotation annotation, boolean includeDefaultValues) {
+<span class="fc" id="L113">    Builder builder = builder(annotation.annotationType());</span>
+    try {
+<span class="fc" id="L115">      Method[] methods = annotation.annotationType().getDeclaredMethods();</span>
+<span class="fc" id="L116">      Arrays.sort(methods, Comparator.comparing(Method::getName));</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">      for (Method method : methods) {</span>
+<span class="fc" id="L118">        Object value = method.invoke(annotation);</span>
+<span class="fc bfc" id="L119" title="All 2 branches covered.">        if (!includeDefaultValues) {</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">          if (Objects.deepEquals(value, method.getDefaultValue())) {</span>
+<span class="fc" id="L121">            continue;</span>
+          }
+        }
+<span class="fc bfc" id="L124" title="All 2 branches covered.">        if (value.getClass().isArray()) {</span>
+<span class="fc bfc" id="L125" title="All 2 branches covered.">          for (int i = 0; i &lt; Array.getLength(value); i++) {</span>
+<span class="fc" id="L126">            builder.addMemberForValue(method.getName(), Array.get(value, i));</span>
+          }
+<span class="fc" id="L128">          continue;</span>
+        }
+<span class="fc bfc" id="L130" title="All 2 branches covered.">        if (value instanceof Annotation) {</span>
+<span class="fc" id="L131">          builder.addMember(method.getName(), &quot;$L&quot;, get((Annotation) value));</span>
+<span class="fc" id="L132">          continue;</span>
+        }
+<span class="fc" id="L134">        builder.addMemberForValue(method.getName(), value);</span>
+      }
+<span class="nc" id="L136">    } catch (Exception e) {</span>
+<span class="nc" id="L137">      throw new RuntimeException(&quot;Reflecting &quot; + annotation + &quot; failed!&quot;, e);</span>
+<span class="fc" id="L138">    }</span>
+<span class="fc" id="L139">    return builder.build();</span>
+  }
+
+  public static AnnotationSpec get(AnnotationMirror annotation) {
+<span class="fc" id="L143">    TypeElement element = (TypeElement) annotation.getAnnotationType().asElement();</span>
+<span class="fc" id="L144">    AnnotationSpec.Builder builder = AnnotationSpec.builder(ClassName.get(element));</span>
+<span class="fc" id="L145">    Visitor visitor = new Visitor(builder);</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">    for (ExecutableElement executableElement : annotation.getElementValues().keySet()) {</span>
+<span class="fc" id="L147">      String name = executableElement.getSimpleName().toString();</span>
+<span class="fc" id="L148">      AnnotationValue value = annotation.getElementValues().get(executableElement);</span>
+<span class="fc" id="L149">      value.accept(visitor, name);</span>
+<span class="fc" id="L150">    }</span>
+<span class="fc" id="L151">    return builder.build();</span>
+  }
+
+  public static Builder builder(ClassName type) {
+<span class="fc" id="L155">    checkNotNull(type, &quot;type == null&quot;);</span>
+<span class="fc" id="L156">    return new Builder(type);</span>
+  }
+
+  public static Builder builder(Class&lt;?&gt; type) {
+<span class="fc" id="L160">    return builder(ClassName.get(type));</span>
+  }
+
+  public Builder toBuilder() {
+<span class="fc" id="L164">    Builder builder = new Builder(type);</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">    for (Map.Entry&lt;String, List&lt;CodeBlock&gt;&gt; entry : members.entrySet()) {</span>
+<span class="fc" id="L166">      builder.members.put(entry.getKey(), new ArrayList&lt;&gt;(entry.getValue()));</span>
+<span class="fc" id="L167">    }</span>
+<span class="fc" id="L168">    return builder;</span>
+  }
+
+  @Override public boolean equals(Object o) {
+<span class="pc bpc" id="L172" title="1 of 2 branches missed.">    if (this == o) return true;</span>
+<span class="pc bpc" id="L173" title="1 of 2 branches missed.">    if (o == null) return false;</span>
+<span class="pc bpc" id="L174" title="1 of 2 branches missed.">    if (getClass() != o.getClass()) return false;</span>
+<span class="fc" id="L175">    return toString().equals(o.toString());</span>
+  }
+
+  @Override public int hashCode() {
+<span class="fc" id="L179">    return toString().hashCode();</span>
+  }
+
+  @Override public String toString() {
+<span class="fc" id="L183">    StringBuilder out = new StringBuilder();</span>
+    try {
+<span class="fc" id="L185">      CodeWriter codeWriter = new CodeWriter(out);</span>
+<span class="fc" id="L186">      codeWriter.emit(&quot;$L&quot;, this);</span>
+<span class="fc" id="L187">      return out.toString();</span>
+<span class="nc" id="L188">    } catch (IOException e) {</span>
+<span class="nc" id="L189">      throw new AssertionError();</span>
+    }
+  }
+
+  public static final class Builder {
+    private final TypeName type;
+<span class="fc" id="L195">    private final Map&lt;String, List&lt;CodeBlock&gt;&gt; members = new LinkedHashMap&lt;&gt;();</span>
+
+<span class="fc" id="L197">    private Builder(TypeName type) {</span>
+<span class="fc" id="L198">      this.type = type;</span>
+<span class="fc" id="L199">    }</span>
+
+    public Builder addMember(String name, String format, Object... args) {
+<span class="fc" id="L202">      return addMember(name, CodeBlock.of(format, args));</span>
+    }
+
+    public Builder addMember(String name, CodeBlock codeBlock) {
+<span class="fc" id="L206">      checkNotNull(name, &quot;name == null&quot;);</span>
+<span class="fc" id="L207">      checkArgument(SourceVersion.isName(name), &quot;not a valid name: %s&quot;, name);</span>
+<span class="fc" id="L208">      List&lt;CodeBlock&gt; values = members.computeIfAbsent(name, k -&gt; new ArrayList&lt;&gt;());</span>
+<span class="fc" id="L209">      values.add(codeBlock);</span>
+<span class="fc" id="L210">      return this;</span>
+    }
+
+    /**
+     * Delegates to {@link #addMember(String, String, Object...)}, with parameter {@code format}
+     * depending on the given {@code value} object. Falls back to {@code &quot;$L&quot;} literal format if
+     * the class of the given {@code value} object is not supported.
+     */
+    Builder addMemberForValue(String memberName, Object value) {
+<span class="fc" id="L219">      checkNotNull(memberName, &quot;memberName == null&quot;);</span>
+<span class="fc" id="L220">      checkNotNull(value, &quot;value == null, constant non-null value expected for %s&quot;, memberName);</span>
+<span class="fc" id="L221">      checkArgument(SourceVersion.isName(memberName), &quot;not a valid name: %s&quot;, memberName);</span>
+<span class="fc bfc" id="L222" title="All 2 branches covered.">      if (value instanceof Class&lt;?&gt;) {</span>
+<span class="fc" id="L223">        return addMember(memberName, &quot;$T.class&quot;, value);</span>
+      }
+<span class="fc bfc" id="L225" title="All 2 branches covered.">      if (value instanceof Enum) {</span>
+<span class="fc" id="L226">        return addMember(memberName, &quot;$T.$L&quot;, value.getClass(), ((Enum&lt;?&gt;) value).name());</span>
+      }
+<span class="fc bfc" id="L228" title="All 2 branches covered.">      if (value instanceof String) {</span>
+<span class="fc" id="L229">        return addMember(memberName, &quot;$S&quot;, value);</span>
+      }
+<span class="fc bfc" id="L231" title="All 2 branches covered.">      if (value instanceof Float) {</span>
+<span class="fc" id="L232">        return addMember(memberName, &quot;$Lf&quot;, value);</span>
+      }
+<span class="fc bfc" id="L234" title="All 2 branches covered.">      if (value instanceof Character) {</span>
+<span class="fc" id="L235">        return addMember(memberName, &quot;'$L'&quot;, characterLiteralWithoutSingleQuotes((char) value));</span>
+      }
+<span class="fc" id="L237">      return addMember(memberName, &quot;$L&quot;, value);</span>
+    }
+
+    public AnnotationSpec build() {
+<span class="fc" id="L241">      return new AnnotationSpec(this);</span>
+    }
+  }
+
+  /**
+   * Annotation value visitor adding members to the given builder instance.
+   */
+  private static class Visitor extends SimpleAnnotationValueVisitor8&lt;Builder, String&gt; {
+    final Builder builder;
+
+    Visitor(Builder builder) {
+<span class="fc" id="L252">      super(builder);</span>
+<span class="fc" id="L253">      this.builder = builder;</span>
+<span class="fc" id="L254">    }</span>
+
+    @Override protected Builder defaultAction(Object o, String name) {
+<span class="fc" id="L257">      return builder.addMemberForValue(name, o);</span>
+    }
+
+    @Override public Builder visitAnnotation(AnnotationMirror a, String name) {
+<span class="fc" id="L261">      return builder.addMember(name, &quot;$L&quot;, get(a));</span>
+    }
+
+    @Override public Builder visitEnumConstant(VariableElement c, String name) {
+<span class="fc" id="L265">      return builder.addMember(name, &quot;$T.$L&quot;, c.asType(), c.getSimpleName());</span>
+    }
+
+    @Override public Builder visitType(TypeMirror t, String name) {
+<span class="fc" id="L269">      return builder.addMember(name, &quot;$T.class&quot;, t);</span>
+    }
+
+    @Override public Builder visitArray(List&lt;? extends AnnotationValue&gt; values, String name) {
+<span class="fc bfc" id="L273" title="All 2 branches covered.">      for (AnnotationValue value : values) {</span>
+<span class="fc" id="L274">        value.accept(this, name);</span>
+<span class="fc" id="L275">      }</span>
+<span class="fc" id="L276">      return builder;</span>
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

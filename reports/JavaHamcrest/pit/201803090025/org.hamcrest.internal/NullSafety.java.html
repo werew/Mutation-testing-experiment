@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="../style.css">
+</head>
+<body>
+
+
+<h1>NullSafety.java</h1>
+
+<table class="src">
+
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@25f73119_1'/>
+1
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@25f73119_1'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>package org.hamcrest.internal;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@25f73119_2'/>
+2
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@25f73119_2'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@25f73119_3'/>
+3
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@25f73119_3'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import org.hamcrest.Matcher;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@25f73119_4'/>
+4
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@25f73119_4'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import org.hamcrest.core.IsNull;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@25f73119_5'/>
+5
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@25f73119_5'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@25f73119_6'/>
+6
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@25f73119_6'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.util.ArrayList;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@25f73119_7'/>
+7
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@25f73119_7'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.util.List;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@25f73119_8'/>
+8
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@25f73119_8'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@25f73119_9'/>
+9
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@25f73119_9'></a>
+<span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>public class NullSafety {</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@25f73119_10'/>
+10
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@25f73119_10'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    @SuppressWarnings(&#34;unchecked&#34;)</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@25f73119_11'/>
+11
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@25f73119_11'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    public static &#60;E&#62; List&#60;Matcher&#60;? super E&#62;&#62; nullSafe(Matcher&#60;? super E&#62;[] itemMatchers) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@25f73119_12'/>
+12
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@25f73119_12'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>        final List&#60;Matcher&#60;? super E&#62;&#62; matchers = new ArrayList&#60;Matcher&#60;? super E&#62;&#62;(itemMatchers.length);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@25f73119_13'/>
+13
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@25f73119_13'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>        for (final Matcher&#60;? super E&#62; itemMatcher : itemMatchers) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@25f73119_14'/>
+14
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@25f73119_14'>1</a>
+<span>
+1. nullSafe : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>            matchers.add((Matcher&#60;? super E&#62;) (itemMatcher == null ? IsNull.nullValue() : itemMatcher));</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@25f73119_15'/>
+15
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@25f73119_15'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@25f73119_16'/>
+16
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@25f73119_16'>1</a>
+<span>
+1. nullSafe : mutated return of Object value for org/hamcrest/internal/NullSafety::nullSafe to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return matchers;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@25f73119_17'/>
+17
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@25f73119_17'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@25f73119_18'/>
+18
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@25f73119_18'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>}</span></pre></td></tr>
+
+
+
+<tr><td></td><td></td><td><h2>Mutations</h2></td></tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@25f73119_14'>14</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@25f73119_14'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>nullSafe<br/><b>Killed by : </b>org.hamcrest.collection.IsArrayContainingInOrderTest.testAppliesMatchersInOrder(org.hamcrest.collection.IsArrayContainingInOrderTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@25f73119_16'>16</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@25f73119_16'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>nullSafe<br/><b>Killed by : </b>org.hamcrest.collection.IsArrayContainingInOrderTest.testAppliesMatchersInOrder(org.hamcrest.collection.IsArrayContainingInOrderTest)</span></span> mutated return of Object value for org/hamcrest/internal/NullSafety::nullSafe to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED</p> 
+</td>
+</tr>
+
+</table>
+
+
+<h2>Active mutators</h2>
+<ul>
+<li class='mutator'>INCREMENTS_MUTATOR</li>
+<li class='mutator'>VOID_METHOD_CALL_MUTATOR</li>
+<li class='mutator'>RETURN_VALS_MUTATOR</li>
+<li class='mutator'>MATH_MUTATOR</li>
+<li class='mutator'>NEGATE_CONDITIONALS_MUTATOR</li>
+<li class='mutator'>INVERT_NEGS_MUTATOR</li>
+<li class='mutator'>CONDITIONALS_BOUNDARY_MUTATOR</li>
+
+</ul>
+
+<h2>Tests examined</h2>
+<ul>
+<li>org.hamcrest.collection.IsIterableContainingInOrderTest.testDoesNotMatchEmptyIterable(org.hamcrest.collection.IsIterableContainingInOrderTest) (2 ms)</li><li>org.hamcrest.collection.IsIterableContainingInOrderTest.testHasAReadableDescription(org.hamcrest.collection.IsIterableContainingInOrderTest) (9 ms)</li><li>org.hamcrest.collection.IsArrayContainingInOrderTest.testCanHandleNullValuesInAnArray(org.hamcrest.collection.IsArrayContainingInOrderTest) (6 ms)</li><li>org.hamcrest.collection.IsArrayContainingInOrderTest.testHasAReadableDescription(org.hamcrest.collection.IsArrayContainingInOrderTest) (3 ms)</li><li>org.hamcrest.collection.IsIterableContainingInOrderTest.testDoesNotMatchIfSingleItemMismatches(org.hamcrest.collection.IsIterableContainingInOrderTest) (1 ms)</li><li>org.hamcrest.collection.IsIterableContainingInOrderTest.testDoesNotMatchIfOneOfMultipleItemsMismatch(org.hamcrest.collection.IsIterableContainingInOrderTest) (1 ms)</li><li>org.hamcrest.collection.IsIterableContainingInOrderTest.testCopesWithUnknownTypes(org.hamcrest.collection.IsIterableContainingInOrderTest) (1 ms)</li><li>org.hamcrest.collection.IsArrayContainingInOrderTest.testIsNullSafe(org.hamcrest.collection.IsArrayContainingInOrderTest) (3 ms)</li><li>org.hamcrest.collection.IsIterableContainingInOrderTest.testCanHandleNullMatchers(org.hamcrest.collection.IsIterableContainingInOrderTest) (1 ms)</li><li>org.hamcrest.collection.IsIterableContainingInOrderTest.testDoesNotMatchWithMoreElementsThanExpected(org.hamcrest.collection.IsIterableContainingInOrderTest) (2 ms)</li><li>org.hamcrest.collection.IsArrayContainingInOrderTest.testCopesWithUnknownTypes(org.hamcrest.collection.IsArrayContainingInOrderTest) (0 ms)</li><li>org.hamcrest.collection.IsIterableContainingInOrderTest.testDoesNotMatchWithFewerElementsThanExpected(org.hamcrest.collection.IsIterableContainingInOrderTest) (1 ms)</li><li>org.hamcrest.collection.IsIterableContainingInOrderTest.testMatchingMultipleItemIterable(org.hamcrest.collection.IsIterableContainingInOrderTest) (1 ms)</li><li>org.hamcrest.collection.IsIterableContainingInOrderTest.testIsNullSafe(org.hamcrest.collection.IsIterableContainingInOrderTest) (1 ms)</li><li>org.hamcrest.collection.IsArrayContainingInOrderTest.testAppliesMatchersInOrder(org.hamcrest.collection.IsArrayContainingInOrderTest) (1 ms)</li><li>org.hamcrest.collection.IsIterableContainingInOrderTest.testMatchingSingleItemIterable(org.hamcrest.collection.IsIterableContainingInOrderTest) (1 ms)</li>
+</ul>
+
+<br/>
+
+Report generated by <a href='http://pitest.org'>PIT</a> 1.3.1
+
+</body>
+</html>

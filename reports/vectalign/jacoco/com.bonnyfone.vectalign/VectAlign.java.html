@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>VectAlign.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">vectalign</a> &gt; <a href="index.source.html" class="el_package">com.bonnyfone.vectalign</a> &gt; <span class="el_source">VectAlign.java</span></div><h1>VectAlign.java</h1><pre class="source lang-java linenums">package com.bonnyfone.vectalign;
+
+import android.support.v7.graphics.drawable.PathParser;
+import com.bonnyfone.vectalign.techniques.*;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+
+/**
+ * Class used to align VectorDrawable sequences in order to allow morphing animations between them.
+ */
+<span class="nc" id="L12">public class VectAlign {</span>
+
+    public static final int MAX_ALIGN_ITERATIONS = 5;
+
+    /**
+     * Alignment technique
+     */
+<span class="fc" id="L19">    public enum Mode {</span>
+        /**
+         * Inject necessary elements by repeating existing ones
+         */
+<span class="fc" id="L23">        BASE(0),</span>
+
+        /**
+         * Inject necessary elements and interpolates coordinates where possible
+         */
+<span class="fc" id="L28">        LINEAR(4),</span>
+
+        /**
+         * Use sub-aligning and inject necessary elements by repeating existing ones
+         */
+<span class="fc" id="L33">        SUB_BASE(1),</span>
+
+        /**
+         * Use sub-aligning and inject necessary elements and interpolates coordinates where possible
+         */
+<span class="fc" id="L38">        SUB_LINEAR(5);</span>
+
+        //TODO more technique
+
+        private int mode;
+<span class="fc" id="L43">        Mode(int mode){</span>
+<span class="fc" id="L44">            this.mode = mode;</span>
+<span class="fc" id="L45">        }</span>
+    }
+
+    /**
+     * @param from The source path represented in a String
+     * @param to The target path represented in a String
+     * @return whether the &lt;code&gt;from&lt;/code&gt; can morph into &lt;code&gt;to&lt;/code&gt;
+     */
+    public static boolean canMorph(String from, String to) {
+<span class="fc" id="L54">        return PathParser.canMorph(PathParser.createNodesFromPathData(from), PathParser.createNodesFromPathData(to));</span>
+    }
+
+    /**
+     * Align two VectorDrawable sequences in order to make them &lt;i&gt;morphable&lt;/i&gt;
+     * @param from
+     * @param to
+     * @param alignMode
+     * @return
+     */
+    public static String[] align(String from, String to, Mode alignMode){
+<span class="fc" id="L65">        String result[] = null;</span>
+
+        //read data as nodes
+<span class="fc" id="L68">        PathParser.PathDataNode[] fromList = PathParser.createNodesFromPathData(from);</span>
+<span class="fc" id="L69">        PathParser.PathDataNode[] toList = PathParser.createNodesFromPathData(to);</span>
+
+<span class="fc" id="L71">        System.out.println(&quot;Sequences sizes: &quot; + fromList.length  + &quot; / &quot; + toList.length);</span>
+<span class="fc" id="L72">        System.out.println(&quot;Aligning mode: &quot;+ alignMode);</span>
+
+<span class="pc bpc" id="L74" title="1 of 2 branches missed.">        if(PathParser.canMorph(fromList, toList)){</span>
+<span class="nc" id="L75">            result = new String[]{from, to};</span>
+<span class="nc" id="L76">            System.out.println(&quot; &gt;&gt; Paths are already morphable!!! Leaving sequences untouched &lt;&lt;&quot;);</span>
+        }
+        else{
+            /* ## ALIGN TECHNIQUE ## */
+
+<span class="fc" id="L81">            ArrayList&lt;PathParser.PathDataNode&gt;[] aligns = null;</span>
+<span class="pc bpc" id="L82" title="1 of 3 branches missed.">            switch (alignMode){</span>
+                case BASE:
+                case LINEAR:
+<span class="fc" id="L85">                    aligns = new RawAlignMode().align(fromList, toList);</span>
+<span class="fc" id="L86">                    break;</span>
+                case SUB_BASE:
+                case SUB_LINEAR:
+<span class="fc" id="L89">                    aligns = new SubAlignMode().align(fromList, toList);</span>
+                    break;
+
+                //TODO handle more case here if needed
+            }
+
+<span class="pc bpc" id="L95" title="1 of 2 branches missed.">            if(aligns == null){</span>
+<span class="nc" id="L96">                System.err.println(&quot;Unable to NW-align lists!&quot;);</span>
+<span class="nc" id="L97">                return null;</span>
+            }
+            else
+<span class="fc" id="L100">                System.out.println(&quot;Sequence aligned! (&quot; + aligns[0].size()+ &quot; elements)&quot;);</span>
+
+
+            /* ## FILL TECHNIQUE ## */
+
+<span class="fc" id="L105">            AbstractFillMode fillMode = null;</span>
+<span class="pc bpc" id="L106" title="1 of 3 branches missed.">            switch (alignMode){</span>
+                case BASE:
+                case SUB_BASE:
+<span class="fc" id="L109">                    fillMode = new BaseFillMode();</span>
+<span class="fc" id="L110">                    break;</span>
+                case LINEAR:
+                case SUB_LINEAR:
+<span class="fc" id="L113">                    fillMode = new LinearInterpolateFillMode();</span>
+                    break;
+
+               //TODO handle more cases here if needed
+            }
+
+            //Fill
+<span class="fc" id="L120">            fillMode.fillInjectedNodes(aligns[0], aligns[1]);</span>
+
+            //Simplify
+<span class="fc" id="L123">            PathNodeUtils.simplify(aligns[0], aligns[1]);</span>
+
+<span class="fc" id="L125">            result = new String[]{PathNodeUtils.pathNodesToString(aligns[0]), PathNodeUtils.pathNodesToString(aligns[1])};</span>
+        }
+<span class="fc" id="L127">        return result;</span>
+    }
+
+
+    // ###### DEBUG ######
+    // ###################
+
+
+    static void printPathData(PathParser.PathDataNode[] data){
+<span class="nc" id="L136">        int i = 1;</span>
+<span class="nc bnc" id="L137" title="All 2 branches missed.">        for(PathParser.PathDataNode node : data){</span>
+<span class="nc" id="L138">            System.out.println((i++) +&quot;.\t&quot;+ node.mType + &quot; &quot; + Arrays.toString(node.mParams));</span>
+        }
+<span class="nc" id="L140">    }</span>
+
+    static void printPathData(ArrayList&lt;PathParser.PathDataNode&gt; data){
+<span class="nc" id="L143">        int i = 1;</span>
+<span class="nc bnc" id="L144" title="All 2 branches missed.">        for(PathParser.PathDataNode node : data){</span>
+<span class="nc" id="L145">            System.out.println((i++) +&quot;.\t&quot;+ node.mType + &quot; &quot; + Arrays.toString(node.mParams));</span>
+<span class="nc" id="L146">        }</span>
+<span class="nc" id="L147">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

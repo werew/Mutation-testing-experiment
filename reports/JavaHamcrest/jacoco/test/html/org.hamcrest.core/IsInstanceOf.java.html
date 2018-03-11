@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>IsInstanceOf.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JavaHamcrest</a> &gt; <a href="index.source.html" class="el_package">org.hamcrest.core</a> &gt; <span class="el_source">IsInstanceOf.java</span></div><h1>IsInstanceOf.java</h1><pre class="source lang-java linenums">package org.hamcrest.core;
+
+import org.hamcrest.Description;
+import org.hamcrest.DiagnosingMatcher;
+import org.hamcrest.Matcher;
+
+
+/**
+ * Tests whether the value is an instance of a class.
+ * Classes of basic types will be converted to the relevant &quot;Object&quot; classes
+ */
+public class IsInstanceOf extends DiagnosingMatcher&lt;Object&gt; {
+    private final Class&lt;?&gt; expectedClass;
+    private final Class&lt;?&gt; matchableClass;
+
+    /**
+     * Creates a new instance of IsInstanceOf
+     *
+     * @param expectedClass The predicate evaluates to true for instances of this class
+     *                 or one of its subclasses.
+     */
+<span class="fc" id="L22">    public IsInstanceOf(Class&lt;?&gt; expectedClass) {</span>
+<span class="fc" id="L23">        this.expectedClass = expectedClass;</span>
+<span class="fc" id="L24">        this.matchableClass = matchableClass(expectedClass);</span>
+<span class="fc" id="L25">    }</span>
+
+    private static Class&lt;?&gt; matchableClass(Class&lt;?&gt; expectedClass) {
+<span class="fc bfc" id="L28" title="All 2 branches covered.">      if (boolean.class.equals(expectedClass)) return Boolean.class; </span>
+<span class="fc bfc" id="L29" title="All 2 branches covered.">      if (byte.class.equals(expectedClass)) return Byte.class; </span>
+<span class="fc bfc" id="L30" title="All 2 branches covered.">      if (char.class.equals(expectedClass)) return Character.class; </span>
+<span class="fc bfc" id="L31" title="All 2 branches covered.">      if (double.class.equals(expectedClass)) return Double.class; </span>
+<span class="fc bfc" id="L32" title="All 2 branches covered.">      if (float.class.equals(expectedClass)) return Float.class; </span>
+<span class="fc bfc" id="L33" title="All 2 branches covered.">      if (int.class.equals(expectedClass)) return Integer.class; </span>
+<span class="fc bfc" id="L34" title="All 2 branches covered.">      if (long.class.equals(expectedClass)) return Long.class; </span>
+<span class="fc bfc" id="L35" title="All 2 branches covered.">      if (short.class.equals(expectedClass)) return Short.class; </span>
+<span class="fc" id="L36">      return expectedClass;</span>
+    }
+
+    @Override
+    protected boolean matches(Object item, Description mismatch) {
+<span class="fc bfc" id="L41" title="All 2 branches covered.">      if (null == item) {</span>
+<span class="fc" id="L42">        mismatch.appendText(&quot;null&quot;);</span>
+<span class="fc" id="L43">        return false;</span>
+      }
+      
+<span class="fc bfc" id="L46" title="All 2 branches covered.">      if (!matchableClass.isInstance(item)) {</span>
+<span class="fc" id="L47">        mismatch.appendValue(item).appendText(&quot; is a &quot; + item.getClass().getName());</span>
+<span class="fc" id="L48">        return false;</span>
+      }
+      
+<span class="fc" id="L51">      return true;</span>
+    }
+
+    @Override
+    public void describeTo(Description description) {
+<span class="fc" id="L56">        description.appendText(&quot;an instance of &quot;).appendText(expectedClass.getName());</span>
+<span class="fc" id="L57">    }</span>
+
+    /**
+     * Creates a matcher that matches when the examined object is an instance of the specified &lt;code&gt;type&lt;/code&gt;,
+     * as determined by calling the {@link java.lang.Class#isInstance(Object)} method on that type, passing the
+     * the examined object.
+     * 
+     * &lt;p&gt;The created matcher assumes no relationship between specified type and the examined object.&lt;/p&gt;
+     * For example:
+     * &lt;pre&gt;assertThat(new Canoe(), instanceOf(Paddlable.class));&lt;/pre&gt;
+     * 
+     */
+    @SuppressWarnings(&quot;unchecked&quot;)
+    public static &lt;T&gt; Matcher&lt;T&gt; instanceOf(Class&lt;?&gt; type) {
+<span class="fc" id="L71">        return (Matcher&lt;T&gt;) new IsInstanceOf(type);</span>
+    }
+    
+    /**
+     * Creates a matcher that matches when the examined object is an instance of the specified &lt;code&gt;type&lt;/code&gt;,
+     * as determined by calling the {@link java.lang.Class#isInstance(Object)} method on that type, passing the
+     * the examined object.
+     * 
+     * &lt;p&gt;The created matcher forces a relationship between specified type and the examined object, and should be
+     * used when it is necessary to make generics conform, for example in the JMock clause
+     * &lt;code&gt;with(any(Thing.class))&lt;/code&gt;&lt;/p&gt;
+     * For example:
+     * &lt;pre&gt;assertThat(new Canoe(), instanceOf(Canoe.class));&lt;/pre&gt;
+     *
+     */
+    @SuppressWarnings(&quot;unchecked&quot;)
+    public static &lt;T&gt; Matcher&lt;T&gt; any(Class&lt;T&gt; type) {
+<span class="fc" id="L88">        return (Matcher&lt;T&gt;) new IsInstanceOf(type);</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

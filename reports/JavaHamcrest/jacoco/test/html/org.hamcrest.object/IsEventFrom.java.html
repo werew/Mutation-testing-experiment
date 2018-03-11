@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>IsEventFrom.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JavaHamcrest</a> &gt; <a href="index.source.html" class="el_package">org.hamcrest.object</a> &gt; <span class="el_source">IsEventFrom.java</span></div><h1>IsEventFrom.java</h1><pre class="source lang-java linenums">package org.hamcrest.object;
+
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeDiagnosingMatcher;
+
+import java.util.EventObject;
+
+
+/**
+ * Tests if the value is an event announced by a specific object.
+ */
+public class IsEventFrom extends TypeSafeDiagnosingMatcher&lt;EventObject&gt; {
+    private final Class&lt;?&gt; eventClass;
+    private final Object source;
+
+<span class="fc" id="L17">    public IsEventFrom(Class&lt;?&gt; eventClass, Object source) {</span>
+<span class="fc" id="L18">        this.eventClass = eventClass;</span>
+<span class="fc" id="L19">        this.source = source;</span>
+<span class="fc" id="L20">    }</span>
+
+    @Override
+    public boolean matchesSafely(EventObject item, Description mismatchDescription) {
+<span class="fc bfc" id="L24" title="All 2 branches covered.">        if (!eventClass.isInstance(item)) {</span>
+<span class="fc" id="L25">          mismatchDescription.appendText(&quot;item type was &quot; + item.getClass().getName());</span>
+<span class="fc" id="L26">          return false;</span>
+        }
+        
+<span class="fc bfc" id="L29" title="All 2 branches covered.">        if (!eventHasSameSource(item)) {</span>
+<span class="fc" id="L30">          mismatchDescription.appendText(&quot;source was &quot;).appendValue(item.getSource());</span>
+<span class="fc" id="L31">          return false;</span>
+        }
+<span class="fc" id="L33">        return true;</span>
+    }
+
+    
+    private boolean eventHasSameSource(EventObject ev) {
+<span class="fc bfc" id="L38" title="All 2 branches covered.">        return ev.getSource() == source;</span>
+    }
+
+    @Override
+    public void describeTo(Description description) {
+<span class="nc" id="L43">        description.appendText(&quot;an event of type &quot;)</span>
+<span class="nc" id="L44">                .appendText(eventClass.getName())</span>
+<span class="nc" id="L45">                .appendText(&quot; from &quot;)</span>
+<span class="nc" id="L46">                .appendValue(source);</span>
+<span class="nc" id="L47">    }</span>
+
+    /**
+     * Creates a matcher of {@link java.util.EventObject} that matches any object
+     * derived from &lt;var&gt;eventClass&lt;/var&gt; announced by &lt;var&gt;source&lt;/var&gt;.
+     * For example:
+     * &lt;pre&gt;assertThat(myEvent, is(eventFrom(PropertyChangeEvent.class, myBean)))&lt;/pre&gt;
+     * 
+     * @param eventClass
+     *     the class of the event to match on
+     * @param source
+     *     the source of the event
+     */
+    public static Matcher&lt;EventObject&gt; eventFrom(Class&lt;? extends EventObject&gt; eventClass, Object source) {
+<span class="fc" id="L61">        return new IsEventFrom(eventClass, source);</span>
+    }
+
+    /**
+     * Creates a matcher of {@link java.util.EventObject} that matches any EventObject
+     * announced by &lt;var&gt;source&lt;/var&gt;.
+     * For example:
+     * &lt;pre&gt;assertThat(myEvent, is(eventFrom(myBean)))&lt;/pre&gt;
+     * 
+     * @param source
+     *     the source of the event
+     */
+    public static Matcher&lt;EventObject&gt; eventFrom(Object source) {
+<span class="fc" id="L74">        return eventFrom(EventObject.class, source);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

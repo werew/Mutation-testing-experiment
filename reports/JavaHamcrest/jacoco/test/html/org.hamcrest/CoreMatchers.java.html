@@ -1,0 +1,451 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CoreMatchers.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JavaHamcrest</a> &gt; <a href="index.source.html" class="el_package">org.hamcrest</a> &gt; <span class="el_source">CoreMatchers.java</span></div><h1>CoreMatchers.java</h1><pre class="source lang-java linenums">package org.hamcrest;
+
+import org.hamcrest.core.IsIterableContaining;
+
+@SuppressWarnings(&quot;UnusedDeclaration&quot;)
+<span class="nc" id="L6">public class CoreMatchers {</span>
+
+  /**
+   * Creates a matcher that matches if the examined object matches &lt;b&gt;ALL&lt;/b&gt; of the specified matchers.
+   * For example:
+   * &lt;pre&gt;assertThat(&quot;myValue&quot;, allOf(startsWith(&quot;my&quot;), containsString(&quot;Val&quot;)))&lt;/pre&gt;
+   */
+  public static &lt;T&gt; org.hamcrest.Matcher&lt;T&gt; allOf(java.lang.Iterable&lt;org.hamcrest.Matcher&lt;? super T&gt;&gt; matchers) {
+<span class="nc" id="L14">    return org.hamcrest.core.AllOf.allOf(matchers);</span>
+  }
+
+  /**
+   * Creates a matcher that matches if the examined object matches &lt;b&gt;ALL&lt;/b&gt; of the specified matchers.
+   * For example:
+   * &lt;pre&gt;assertThat(&quot;myValue&quot;, allOf(startsWith(&quot;my&quot;), containsString(&quot;Val&quot;)))&lt;/pre&gt;
+   */
+  @SafeVarargs
+  public static &lt;T&gt; org.hamcrest.Matcher&lt;T&gt; allOf(org.hamcrest.Matcher&lt;? super T&gt;... matchers) {
+<span class="nc" id="L24">    return org.hamcrest.core.AllOf.allOf(matchers);</span>
+  }
+
+
+  /**
+   * Creates a matcher that matches if the examined object matches &lt;b&gt;ANY&lt;/b&gt; of the specified matchers.
+   * For example:
+   * &lt;pre&gt;assertThat(&quot;myValue&quot;, anyOf(startsWith(&quot;foo&quot;), containsString(&quot;Val&quot;)))&lt;/pre&gt;
+   */
+  public static &lt;T&gt; org.hamcrest.core.AnyOf&lt;T&gt; anyOf(java.lang.Iterable&lt;org.hamcrest.Matcher&lt;? super T&gt;&gt; matchers) {
+<span class="nc" id="L34">    return org.hamcrest.core.AnyOf.anyOf(matchers);</span>
+  }
+
+  /**
+   * Creates a matcher that matches if the examined object matches &lt;b&gt;ANY&lt;/b&gt; of the specified matchers.
+   * For example:
+   * &lt;pre&gt;assertThat(&quot;myValue&quot;, anyOf(startsWith(&quot;foo&quot;), containsString(&quot;Val&quot;)))&lt;/pre&gt;
+   */
+  @SafeVarargs
+  public static &lt;T&gt; org.hamcrest.core.AnyOf&lt;T&gt; anyOf(org.hamcrest.Matcher&lt;? super T&gt;... matchers) {
+<span class="nc" id="L44">    return org.hamcrest.core.AnyOf.anyOf(matchers);</span>
+  }
+
+  /**
+   * Creates a matcher that matches when both of the specified matchers match the examined object.
+   * For example:
+   * &lt;pre&gt;assertThat(&quot;fab&quot;, both(containsString(&quot;a&quot;)).and(containsString(&quot;b&quot;)))&lt;/pre&gt;
+   */
+  public static &lt;LHS&gt; org.hamcrest.core.CombinableMatcher.CombinableBothMatcher&lt;LHS&gt; both(org.hamcrest.Matcher&lt;? super LHS&gt; matcher) {
+<span class="nc" id="L53">    return org.hamcrest.core.CombinableMatcher.both(matcher);</span>
+  }
+
+  /**
+   * Creates a matcher that matches when either of the specified matchers match the examined object.
+   * For example:
+   * &lt;pre&gt;assertThat(&quot;fan&quot;, either(containsString(&quot;a&quot;)).or(containsString(&quot;b&quot;)))&lt;/pre&gt;
+   */
+  public static &lt;LHS&gt; org.hamcrest.core.CombinableMatcher.CombinableEitherMatcher&lt;LHS&gt; either(org.hamcrest.Matcher&lt;? super LHS&gt; matcher) {
+<span class="nc" id="L62">    return org.hamcrest.core.CombinableMatcher.either(matcher);</span>
+  }
+
+  /**
+   * Wraps an existing matcher, overriding its description with that specified.  All other functions are
+   * delegated to the decorated matcher, including its mismatch description.
+   * For example:
+   * &lt;pre&gt;describedAs(&quot;a big decimal equal to %0&quot;, equalTo(myBigDecimal), myBigDecimal.toPlainString())&lt;/pre&gt;
+   * 
+   * @param description
+   *     the new description for the wrapped matcher
+   * @param matcher
+   *     the matcher to wrap
+   * @param values
+   *     optional values to insert into the tokenised description
+   */
+  public static &lt;T&gt; org.hamcrest.Matcher&lt;T&gt; describedAs(java.lang.String description, org.hamcrest.Matcher&lt;T&gt; matcher, java.lang.Object... values) {
+<span class="nc" id="L79">    return org.hamcrest.core.DescribedAs.describedAs(description, matcher, values);</span>
+  }
+
+  /**
+   * Creates a matcher for {@link Iterable}s that only matches when a single pass over the
+   * examined {@link Iterable} yields items that are all matched by the specified
+   * &lt;code&gt;itemMatcher&lt;/code&gt;.
+   * For example:
+   * &lt;pre&gt;assertThat(Arrays.asList(&quot;bar&quot;, &quot;baz&quot;), everyItem(startsWith(&quot;ba&quot;)))&lt;/pre&gt;
+   * 
+   * @param itemMatcher
+   *     the matcher to apply to every item provided by the examined {@link Iterable}
+   */
+  public static &lt;U&gt; org.hamcrest.Matcher&lt;java.lang.Iterable&lt;? extends U&gt;&gt; everyItem(org.hamcrest.Matcher&lt;U&gt; itemMatcher) {
+<span class="nc" id="L93">    return org.hamcrest.core.Every.everyItem(itemMatcher);</span>
+  }
+
+  /**
+   * Decorates another Matcher, retaining its behaviour, but allowing tests
+   * to be slightly more expressive.
+   * For example:
+   * &lt;pre&gt;assertThat(cheese, is(equalTo(smelly)))&lt;/pre&gt;
+   * instead of:
+   * &lt;pre&gt;assertThat(cheese, equalTo(smelly))&lt;/pre&gt;
+   */
+  public static &lt;T&gt; org.hamcrest.Matcher&lt;T&gt; is(org.hamcrest.Matcher&lt;T&gt; matcher) {
+<span class="nc" id="L105">    return org.hamcrest.core.Is.is(matcher);</span>
+  }
+
+  /**
+   * A shortcut to the frequently used &lt;code&gt;is(equalTo(x))&lt;/code&gt;.
+   * For example:
+   * &lt;pre&gt;assertThat(cheese, is(smelly))&lt;/pre&gt;
+   * instead of:
+   * &lt;pre&gt;assertThat(cheese, is(equalTo(smelly)))&lt;/pre&gt;
+   */
+  public static &lt;T&gt; org.hamcrest.Matcher&lt;T&gt; is(T value) {
+<span class="nc" id="L116">    return org.hamcrest.core.Is.is(value);</span>
+  }
+
+  /**
+   * A shortcut to the frequently used &lt;code&gt;is(instanceOf(SomeClass.class))&lt;/code&gt;.
+   * For example:
+   * &lt;pre&gt;assertThat(cheese, isA(Cheddar.class))&lt;/pre&gt;
+   * instead of:
+   * &lt;pre&gt;assertThat(cheese, is(instanceOf(Cheddar.class)))&lt;/pre&gt;
+   */
+  public static &lt;T&gt; org.hamcrest.Matcher&lt;T&gt; isA(java.lang.Class&lt;T&gt; type) {
+<span class="nc" id="L127">    return org.hamcrest.core.Is.isA(type);</span>
+  }
+
+  /**
+   * Creates a matcher that always matches, regardless of the examined object.
+   */
+  public static org.hamcrest.Matcher&lt;java.lang.Object&gt; anything() {
+<span class="nc" id="L134">    return org.hamcrest.core.IsAnything.anything();</span>
+  }
+
+  /**
+   * Creates a matcher that always matches, regardless of the examined object, but describes
+   * itself with the specified {@link String}.
+   * 
+   * @param description
+   *     a meaningful {@link String} used when describing itself
+   */
+  public static org.hamcrest.Matcher&lt;java.lang.Object&gt; anything(java.lang.String description) {
+<span class="nc" id="L145">    return org.hamcrest.core.IsAnything.anything(description);</span>
+  }
+
+  /**
+   * Creates a matcher for {@link Iterable}s that only matches when a single pass over the
+   * examined {@link Iterable} yields at least one item that is matched by the specified
+   * &lt;code&gt;itemMatcher&lt;/code&gt;.  Whilst matching, the traversal of the examined {@link Iterable}
+   * will stop as soon as a matching item is found.
+   * For example:
+   * &lt;pre&gt;assertThat(Arrays.asList(&quot;foo&quot;, &quot;bar&quot;), hasItem(startsWith(&quot;ba&quot;)))&lt;/pre&gt;
+   * 
+   * @param itemMatcher
+   *     the matcher to apply to items provided by the examined {@link Iterable}
+   */
+  public static &lt;T&gt; org.hamcrest.Matcher&lt;java.lang.Iterable&lt;? super T&gt;&gt; hasItem(org.hamcrest.Matcher&lt;? super T&gt; itemMatcher) {
+<span class="nc" id="L160">    return IsIterableContaining.hasItem(itemMatcher);</span>
+  }
+
+  /**
+   * Creates a matcher for {@link Iterable}s that only matches when a single pass over the
+   * examined {@link Iterable} yields at least one item that is equal to the specified
+   * &lt;code&gt;item&lt;/code&gt;.  Whilst matching, the traversal of the examined {@link Iterable}
+   * will stop as soon as a matching item is found.
+   * For example:
+   * &lt;pre&gt;assertThat(Arrays.asList(&quot;foo&quot;, &quot;bar&quot;), hasItem(&quot;bar&quot;))&lt;/pre&gt;
+   * 
+   * @param item
+   *     the item to compare against the items provided by the examined {@link Iterable}
+   */
+  public static &lt;T&gt; org.hamcrest.Matcher&lt;java.lang.Iterable&lt;? super T&gt;&gt; hasItem(T item) {
+<span class="nc" id="L175">    return IsIterableContaining.hasItem(item);</span>
+  }
+
+  /**
+   * Creates a matcher for {@link Iterable}s that matches when consecutive passes over the
+   * examined {@link Iterable} yield at least one item that is matched by the corresponding
+   * matcher from the specified &lt;code&gt;itemMatchers&lt;/code&gt;.  Whilst matching, each traversal of
+   * the examined {@link Iterable} will stop as soon as a matching item is found.
+   * For example:
+   * &lt;pre&gt;assertThat(Arrays.asList(&quot;foo&quot;, &quot;bar&quot;, &quot;baz&quot;), hasItems(endsWith(&quot;z&quot;), endsWith(&quot;o&quot;)))&lt;/pre&gt;
+   * 
+   * @param itemMatchers
+   *     the matchers to apply to items provided by the examined {@link Iterable}
+   */
+  @SafeVarargs
+  public static &lt;T&gt; org.hamcrest.Matcher&lt;java.lang.Iterable&lt;T&gt;&gt; hasItems(org.hamcrest.Matcher&lt;? super T&gt;... itemMatchers) {
+<span class="nc" id="L191">    return IsIterableContaining.hasItems(itemMatchers);</span>
+  }
+
+  /**
+   * Creates a matcher for {@link Iterable}s that matches when consecutive passes over the
+   * examined {@link Iterable} yield at least one item that is equal to the corresponding
+   * item from the specified &lt;code&gt;items&lt;/code&gt;.  Whilst matching, each traversal of the
+   * examined {@link Iterable} will stop as soon as a matching item is found.
+   * For example:
+   * &lt;pre&gt;assertThat(Arrays.asList(&quot;foo&quot;, &quot;bar&quot;, &quot;baz&quot;), hasItems(&quot;baz&quot;, &quot;foo&quot;))&lt;/pre&gt;
+   * 
+   * @param items
+   *     the items to compare against the items provided by the examined {@link Iterable}
+   */
+  @SafeVarargs
+  public static &lt;T&gt; org.hamcrest.Matcher&lt;java.lang.Iterable&lt;T&gt;&gt; hasItems(T... items) {
+<span class="nc" id="L207">    return IsIterableContaining.hasItems(items);</span>
+  }
+
+  /**
+   * Creates a matcher that matches when the examined object is logically equal to the specified
+   * &lt;code&gt;operand&lt;/code&gt;, as determined by calling the {@link java.lang.Object#equals} method on
+   * the &lt;b&gt;examined&lt;/b&gt; object.
+   * 
+   * &lt;p&gt;If the specified operand is &lt;code&gt;null&lt;/code&gt; then the created matcher will only match if
+   * the examined object's &lt;code&gt;equals&lt;/code&gt; method returns &lt;code&gt;true&lt;/code&gt; when passed a
+   * &lt;code&gt;null&lt;/code&gt; (which would be a violation of the &lt;code&gt;equals&lt;/code&gt; contract), unless the
+   * examined object itself is &lt;code&gt;null&lt;/code&gt;, in which case the matcher will return a positive
+   * match.&lt;/p&gt;
+   * 
+   * &lt;p&gt;The created matcher provides a special behaviour when examining &lt;code&gt;Array&lt;/code&gt;s, whereby
+   * it will match if both the operand and the examined object are arrays of the same length and
+   * contain items that are equal to each other (according to the above rules) &lt;b&gt;in the same
+   * indexes&lt;/b&gt;.&lt;/p&gt; 
+   * For example:
+   * &lt;pre&gt;
+   * assertThat(&quot;foo&quot;, equalTo(&quot;foo&quot;));
+   * assertThat(new String[] {&quot;foo&quot;, &quot;bar&quot;}, equalTo(new String[] {&quot;foo&quot;, &quot;bar&quot;}));
+   * &lt;/pre&gt;
+   */
+  public static &lt;T&gt; org.hamcrest.Matcher&lt;T&gt; equalTo(T operand) {
+<span class="nc" id="L232">    return org.hamcrest.core.IsEqual.equalTo(operand);</span>
+  }
+
+  /**
+   * Creates an {@link org.hamcrest.core.IsEqual} matcher that does not enforce the values being
+   * compared to be of the same static type.
+   */
+  public static org.hamcrest.Matcher&lt;java.lang.Object&gt; equalToObject(java.lang.Object operand) {
+<span class="nc" id="L240">    return org.hamcrest.core.IsEqual.equalToObject(operand);</span>
+  }
+
+  /**
+   * Creates a matcher that matches when the examined object is an instance of the specified &lt;code&gt;type&lt;/code&gt;,
+   * as determined by calling the {@link java.lang.Class#isInstance(Object)} method on that type, passing the
+   * the examined object.
+   * 
+   * &lt;p&gt;The created matcher forces a relationship between specified type and the examined object, and should be
+   * used when it is necessary to make generics conform, for example in the JMock clause
+   * &lt;code&gt;with(any(Thing.class))&lt;/code&gt;&lt;/p&gt;
+   * For example:
+   * &lt;pre&gt;assertThat(new Canoe(), instanceOf(Canoe.class));&lt;/pre&gt;
+   */
+  public static &lt;T&gt; org.hamcrest.Matcher&lt;T&gt; any(java.lang.Class&lt;T&gt; type) {
+<span class="nc" id="L255">    return org.hamcrest.core.IsInstanceOf.any(type);</span>
+  }
+
+  /**
+   * Creates a matcher that matches when the examined object is an instance of the specified &lt;code&gt;type&lt;/code&gt;,
+   * as determined by calling the {@link java.lang.Class#isInstance(Object)} method on that type, passing the
+   * the examined object.
+   * 
+   * &lt;p&gt;The created matcher assumes no relationship between specified type and the examined object.&lt;/p&gt;
+   * For example:
+   * &lt;pre&gt;assertThat(new Canoe(), instanceOf(Paddlable.class));&lt;/pre&gt;
+   */
+  public static &lt;T&gt; org.hamcrest.Matcher&lt;T&gt; instanceOf(java.lang.Class&lt;?&gt; type) {
+<span class="fc" id="L268">    return org.hamcrest.core.IsInstanceOf.instanceOf(type);</span>
+  }
+
+  /**
+   * Creates a matcher that wraps an existing matcher, but inverts the logic by which
+   * it will match.
+   * For example:
+   * &lt;pre&gt;assertThat(cheese, is(not(equalTo(smelly))))&lt;/pre&gt;
+   * 
+   * @param matcher
+   *     the matcher whose sense should be inverted
+   */
+  public static &lt;T&gt; org.hamcrest.Matcher&lt;T&gt; not(org.hamcrest.Matcher&lt;T&gt; matcher) {
+<span class="nc" id="L281">    return org.hamcrest.core.IsNot.not(matcher);</span>
+  }
+
+  /**
+   * A shortcut to the frequently used &lt;code&gt;not(equalTo(x))&lt;/code&gt;.
+   * For example:
+   * &lt;pre&gt;assertThat(cheese, is(not(smelly)))&lt;/pre&gt;
+   * instead of:
+   * &lt;pre&gt;assertThat(cheese, is(not(equalTo(smelly))))&lt;/pre&gt;
+   * 
+   * @param value
+   *     the value that any examined object should &lt;b&gt;not&lt;/b&gt; equal
+   */
+  public static &lt;T&gt; org.hamcrest.Matcher&lt;T&gt; not(T value) {
+<span class="nc" id="L295">    return org.hamcrest.core.IsNot.not(value);</span>
+  }
+
+  /**
+   * A shortcut to the frequently used &lt;code&gt;not(nullValue())&lt;/code&gt;.
+   * For example:
+   * &lt;pre&gt;assertThat(cheese, is(notNullValue()))&lt;/pre&gt;
+   * instead of:
+   * &lt;pre&gt;assertThat(cheese, is(not(nullValue())))&lt;/pre&gt;
+   */
+  public static org.hamcrest.Matcher&lt;java.lang.Object&gt; notNullValue() {
+<span class="nc" id="L306">    return org.hamcrest.core.IsNull.notNullValue();</span>
+  }
+
+  /**
+   * A shortcut to the frequently used &lt;code&gt;not(nullValue(X.class)). Accepts a
+   * single dummy argument to facilitate type inference.&lt;/code&gt;.
+   * For example:
+   * &lt;pre&gt;assertThat(cheese, is(notNullValue(X.class)))&lt;/pre&gt;
+   * instead of:
+   * &lt;pre&gt;assertThat(cheese, is(not(nullValue(X.class))))&lt;/pre&gt;
+   * 
+   * @param type
+   *     dummy parameter used to infer the generic type of the returned matcher
+   */
+  public static &lt;T&gt; org.hamcrest.Matcher&lt;T&gt; notNullValue(java.lang.Class&lt;T&gt; type) {
+<span class="nc" id="L321">    return org.hamcrest.core.IsNull.notNullValue(type);</span>
+  }
+
+  /**
+   * Creates a matcher that matches if examined object is &lt;code&gt;null&lt;/code&gt;.
+   * For example:
+   * &lt;pre&gt;assertThat(cheese, is(nullValue())&lt;/pre&gt;
+   */
+  public static org.hamcrest.Matcher&lt;java.lang.Object&gt; nullValue() {
+<span class="nc" id="L330">    return org.hamcrest.core.IsNull.nullValue();</span>
+  }
+
+  /**
+   * Creates a matcher that matches if examined object is &lt;code&gt;null&lt;/code&gt;. Accepts a
+   * single dummy argument to facilitate type inference.
+   * For example:
+   * &lt;pre&gt;assertThat(cheese, is(nullValue(Cheese.class))&lt;/pre&gt;
+   * 
+   * @param type
+   *     dummy parameter used to infer the generic type of the returned matcher
+   */
+  public static &lt;T&gt; org.hamcrest.Matcher&lt;T&gt; nullValue(java.lang.Class&lt;T&gt; type) {
+<span class="nc" id="L343">    return org.hamcrest.core.IsNull.nullValue(type);</span>
+  }
+
+  /**
+   * Creates a matcher that matches only when the examined object is the same instance as
+   * the specified target object.
+   * 
+   * @param target
+   *     the target instance against which others should be assessed
+   */
+  public static &lt;T&gt; org.hamcrest.Matcher&lt;T&gt; sameInstance(T target) {
+<span class="nc" id="L354">    return org.hamcrest.core.IsSame.sameInstance(target);</span>
+  }
+
+  /**
+   * Creates a matcher that matches only when the examined object is the same instance as
+   * the specified target object.
+   * 
+   * @param target
+   *     the target instance against which others should be assessed
+   */
+  public static &lt;T&gt; org.hamcrest.Matcher&lt;T&gt; theInstance(T target) {
+<span class="nc" id="L365">    return org.hamcrest.core.IsSame.theInstance(target);</span>
+  }
+
+  /**
+   * Creates a matcher that matches if the examined {@link String} contains the specified
+   * {@link String} anywhere.
+   * For example:
+   * &lt;pre&gt;assertThat(&quot;myStringOfNote&quot;, containsString(&quot;ring&quot;))&lt;/pre&gt;
+   * 
+   * @param substring
+   *     the substring that the returned matcher will expect to find within any examined string
+   */
+  public static org.hamcrest.Matcher&lt;java.lang.String&gt; containsString(java.lang.String substring) {
+<span class="nc" id="L378">    return org.hamcrest.core.StringContains.containsString(substring);</span>
+  }
+
+  /**
+   * Creates a matcher that matches if the examined {@link String} contains the specified
+   * {@link String} anywhere, ignoring case.
+   * For example:
+   * &lt;pre&gt;assertThat(&quot;myStringOfNote&quot;, containsString(&quot;ring&quot;))&lt;/pre&gt;
+   * 
+   * @param substring
+   *     the substring that the returned matcher will expect to find within any examined string
+   */
+  public static org.hamcrest.Matcher&lt;java.lang.String&gt; containsStringIgnoringCase(java.lang.String substring) {
+<span class="nc" id="L391">    return org.hamcrest.core.StringContains.containsStringIgnoringCase(substring);</span>
+  }
+
+  /**
+   * &lt;p&gt;
+   * Creates a matcher that matches if the examined {@link String} starts with the specified
+   * {@link String}.
+   * &lt;/p&gt;
+   * For example:
+   * &lt;pre&gt;assertThat(&quot;myStringOfNote&quot;, startsWith(&quot;my&quot;))&lt;/pre&gt;
+   * 
+   * @param prefix
+   *      the substring that the returned matcher will expect at the start of any examined string
+   */
+  public static org.hamcrest.Matcher&lt;java.lang.String&gt; startsWith(java.lang.String prefix) {
+<span class="nc" id="L406">    return org.hamcrest.core.StringStartsWith.startsWith(prefix);</span>
+  }
+
+  /**
+   * &lt;p&gt;
+   * Creates a matcher that matches if the examined {@link String} starts with the specified
+   * {@link String}, ignoring case
+   * &lt;/p&gt;
+   * For example:
+   * &lt;pre&gt;assertThat(&quot;myStringOfNote&quot;, startsWith(&quot;my&quot;))&lt;/pre&gt;
+   * 
+   * @param prefix
+   *      the substring that the returned matcher will expect at the start of any examined string
+   */
+  public static org.hamcrest.Matcher&lt;java.lang.String&gt; startsWithIgnoringCase(java.lang.String prefix) {
+<span class="nc" id="L421">    return org.hamcrest.core.StringStartsWith.startsWithIgnoringCase(prefix);</span>
+  }
+
+  /**
+   * Creates a matcher that matches if the examined {@link String} ends with the specified
+   * {@link String}.
+   * For example:
+   * &lt;pre&gt;assertThat(&quot;myStringOfNote&quot;, endsWith(&quot;Note&quot;))&lt;/pre&gt;
+   * 
+   * @param suffix
+   *      the substring that the returned matcher will expect at the end of any examined string
+   */
+  public static org.hamcrest.Matcher&lt;java.lang.String&gt; endsWith(java.lang.String suffix) {
+<span class="nc" id="L434">    return org.hamcrest.core.StringEndsWith.endsWith(suffix);</span>
+  }
+
+  /**
+   * Creates a matcher that matches if the examined {@link String} ends with the specified
+   * {@link String}, ignoring case.
+   * For example:
+   * &lt;pre&gt;assertThat(&quot;myStringOfNote&quot;, endsWith(&quot;Note&quot;))&lt;/pre&gt;
+   * 
+   * @param suffix
+   *      the substring that the returned matcher will expect at the end of any examined string
+   */
+  public static org.hamcrest.Matcher&lt;java.lang.String&gt; endsWithIgnoringCase(java.lang.String suffix) {
+<span class="nc" id="L447">    return org.hamcrest.core.StringEndsWith.endsWithIgnoringCase(suffix);</span>
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

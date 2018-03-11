@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RequestBuilder.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Retrofit</a> &gt; <a href="index.source.html" class="el_package">retrofit2</a> &gt; <span class="el_source">RequestBuilder.java</span></div><h1>RequestBuilder.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2012 Square, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package retrofit2;
+
+import java.io.IOException;
+import javax.annotation.Nullable;
+import okhttp3.FormBody;
+import okhttp3.Headers;
+import okhttp3.HttpUrl;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okio.Buffer;
+import okio.BufferedSink;
+
+final class RequestBuilder {
+<span class="fc" id="L31">  private static final char[] HEX_DIGITS =</span>
+      { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+  private static final String PATH_SEGMENT_ALWAYS_ENCODE_SET = &quot; \&quot;&lt;&gt;^`{}|\\?#&quot;;
+
+  private final String method;
+
+  private final HttpUrl baseUrl;
+  private @Nullable String relativeUrl;
+  private @Nullable HttpUrl.Builder urlBuilder;
+
+  private final Request.Builder requestBuilder;
+  private @Nullable MediaType contentType;
+
+  private final boolean hasBody;
+  private @Nullable MultipartBody.Builder multipartBuilder;
+  private @Nullable FormBody.Builder formBuilder;
+  private @Nullable RequestBody body;
+
+  RequestBuilder(String method, HttpUrl baseUrl, @Nullable String relativeUrl,
+      @Nullable Headers headers, @Nullable MediaType contentType, boolean hasBody,
+<span class="fc" id="L51">      boolean isFormEncoded, boolean isMultipart) {</span>
+<span class="fc" id="L52">    this.method = method;</span>
+<span class="fc" id="L53">    this.baseUrl = baseUrl;</span>
+<span class="fc" id="L54">    this.relativeUrl = relativeUrl;</span>
+<span class="fc" id="L55">    this.requestBuilder = new Request.Builder();</span>
+<span class="fc" id="L56">    this.contentType = contentType;</span>
+<span class="fc" id="L57">    this.hasBody = hasBody;</span>
+
+<span class="fc bfc" id="L59" title="All 2 branches covered.">    if (headers != null) {</span>
+<span class="fc" id="L60">      requestBuilder.headers(headers);</span>
+    }
+
+<span class="fc bfc" id="L63" title="All 2 branches covered.">    if (isFormEncoded) {</span>
+      // Will be set to 'body' in 'build'.
+<span class="fc" id="L65">      formBuilder = new FormBody.Builder();</span>
+<span class="fc bfc" id="L66" title="All 2 branches covered.">    } else if (isMultipart) {</span>
+      // Will be set to 'body' in 'build'.
+<span class="fc" id="L68">      multipartBuilder = new MultipartBody.Builder();</span>
+<span class="fc" id="L69">      multipartBuilder.setType(MultipartBody.FORM);</span>
+    }
+<span class="fc" id="L71">  }</span>
+
+  void setRelativeUrl(Object relativeUrl) {
+<span class="fc" id="L74">    this.relativeUrl = relativeUrl.toString();</span>
+<span class="fc" id="L75">  }</span>
+
+  void addHeader(String name, String value) {
+<span class="fc bfc" id="L78" title="All 2 branches covered.">    if (&quot;Content-Type&quot;.equalsIgnoreCase(name)) {</span>
+<span class="fc" id="L79">      MediaType type = MediaType.parse(value);</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">      if (type == null) {</span>
+<span class="fc" id="L81">        throw new IllegalArgumentException(&quot;Malformed content type: &quot; + value);</span>
+      }
+<span class="fc" id="L83">      contentType = type;</span>
+<span class="fc" id="L84">    } else {</span>
+<span class="fc" id="L85">      requestBuilder.addHeader(name, value);</span>
+    }
+<span class="fc" id="L87">  }</span>
+
+  void addPathParam(String name, String value, boolean encoded) {
+<span class="pc bpc" id="L90" title="1 of 2 branches missed.">    if (relativeUrl == null) {</span>
+      // The relative URL is cleared when the first query parameter is set.
+<span class="nc" id="L92">      throw new AssertionError();</span>
+    }
+<span class="fc" id="L94">    relativeUrl = relativeUrl.replace(&quot;{&quot; + name + &quot;}&quot;, canonicalizeForPath(value, encoded));</span>
+<span class="fc" id="L95">  }</span>
+
+  private static String canonicalizeForPath(String input, boolean alreadyEncoded) {
+    int codePoint;
+<span class="fc bfc" id="L99" title="All 2 branches covered.">    for (int i = 0, limit = input.length(); i &lt; limit; i += Character.charCount(codePoint)) {</span>
+<span class="fc" id="L100">      codePoint = input.codePointAt(i);</span>
+<span class="pc bpc" id="L101" title="1 of 4 branches missed.">      if (codePoint &lt; 0x20 || codePoint &gt;= 0x7f</span>
+<span class="pc bpc" id="L102" title="1 of 8 branches missed.">          || PATH_SEGMENT_ALWAYS_ENCODE_SET.indexOf(codePoint) != -1</span>
+          || (!alreadyEncoded &amp;&amp; (codePoint == '/' || codePoint == '%'))) {
+        // Slow path: the character at i requires encoding!
+<span class="fc" id="L105">        Buffer out = new Buffer();</span>
+<span class="fc" id="L106">        out.writeUtf8(input, 0, i);</span>
+<span class="fc" id="L107">        canonicalizeForPath(out, input, i, limit, alreadyEncoded);</span>
+<span class="fc" id="L108">        return out.readUtf8();</span>
+      }
+    }
+
+    // Fast path: no characters required encoding.
+<span class="fc" id="L113">    return input;</span>
+  }
+
+  private static void canonicalizeForPath(Buffer out, String input, int pos, int limit,
+      boolean alreadyEncoded) {
+<span class="fc" id="L118">    Buffer utf8Buffer = null; // Lazily allocated.</span>
+    int codePoint;
+<span class="fc bfc" id="L120" title="All 2 branches covered.">    for (int i = pos; i &lt; limit; i += Character.charCount(codePoint)) {</span>
+<span class="fc" id="L121">      codePoint = input.codePointAt(i);</span>
+<span class="pc bpc" id="L122" title="2 of 10 branches missed.">      if (alreadyEncoded</span>
+          &amp;&amp; (codePoint == '\t' || codePoint == '\n' || codePoint == '\f' || codePoint == '\r')) {
+        // Skip this character.
+<span class="pc bpc" id="L125" title="1 of 4 branches missed.">      } else if (codePoint &lt; 0x20 || codePoint &gt;= 0x7f</span>
+<span class="pc bpc" id="L126" title="1 of 8 branches missed.">          || PATH_SEGMENT_ALWAYS_ENCODE_SET.indexOf(codePoint) != -1</span>
+          || (!alreadyEncoded &amp;&amp; (codePoint == '/' || codePoint == '%'))) {
+        // Percent encode this character.
+<span class="fc bfc" id="L129" title="All 2 branches covered.">        if (utf8Buffer == null) {</span>
+<span class="fc" id="L130">          utf8Buffer = new Buffer();</span>
+        }
+<span class="fc" id="L132">        utf8Buffer.writeUtf8CodePoint(codePoint);</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">        while (!utf8Buffer.exhausted()) {</span>
+<span class="fc" id="L134">          int b = utf8Buffer.readByte() &amp; 0xff;</span>
+<span class="fc" id="L135">          out.writeByte('%');</span>
+<span class="fc" id="L136">          out.writeByte(HEX_DIGITS[(b &gt;&gt; 4) &amp; 0xf]);</span>
+<span class="fc" id="L137">          out.writeByte(HEX_DIGITS[b &amp; 0xf]);</span>
+<span class="fc" id="L138">        }</span>
+      } else {
+        // This character doesn't need encoding. Just copy it over.
+<span class="fc" id="L141">        out.writeUtf8CodePoint(codePoint);</span>
+      }
+    }
+<span class="fc" id="L144">  }</span>
+
+  void addQueryParam(String name, @Nullable String value, boolean encoded) {
+<span class="fc bfc" id="L147" title="All 2 branches covered.">    if (relativeUrl != null) {</span>
+      // Do a one-time combination of the built relative URL and the base URL.
+<span class="fc" id="L149">      urlBuilder = baseUrl.newBuilder(relativeUrl);</span>
+<span class="pc bpc" id="L150" title="1 of 2 branches missed.">      if (urlBuilder == null) {</span>
+<span class="nc" id="L151">        throw new IllegalArgumentException(</span>
+            &quot;Malformed URL. Base: &quot; + baseUrl + &quot;, Relative: &quot; + relativeUrl);
+      }
+<span class="fc" id="L154">      relativeUrl = null;</span>
+    }
+
+<span class="fc bfc" id="L157" title="All 2 branches covered.">    if (encoded) {</span>
+      //noinspection ConstantConditions Checked to be non-null by above 'if' block.
+<span class="fc" id="L159">      urlBuilder.addEncodedQueryParameter(name, value);</span>
+    } else {
+      //noinspection ConstantConditions Checked to be non-null by above 'if' block.
+<span class="fc" id="L162">      urlBuilder.addQueryParameter(name, value);</span>
+    }
+<span class="fc" id="L164">  }</span>
+
+  @SuppressWarnings(&quot;ConstantConditions&quot;) // Only called when isFormEncoded was true.
+  void addFormField(String name, String value, boolean encoded) {
+<span class="fc bfc" id="L168" title="All 2 branches covered.">    if (encoded) {</span>
+<span class="fc" id="L169">      formBuilder.addEncoded(name, value);</span>
+    } else {
+<span class="fc" id="L171">      formBuilder.add(name, value);</span>
+    }
+<span class="fc" id="L173">  }</span>
+
+  @SuppressWarnings(&quot;ConstantConditions&quot;) // Only called when isMultipart was true.
+  void addPart(Headers headers, RequestBody body) {
+<span class="fc" id="L177">    multipartBuilder.addPart(headers, body);</span>
+<span class="fc" id="L178">  }</span>
+
+  @SuppressWarnings(&quot;ConstantConditions&quot;) // Only called when isMultipart was true.
+  void addPart(MultipartBody.Part part) {
+<span class="fc" id="L182">    multipartBuilder.addPart(part);</span>
+<span class="fc" id="L183">  }</span>
+
+  void setBody(RequestBody body) {
+<span class="fc" id="L186">    this.body = body;</span>
+<span class="fc" id="L187">  }</span>
+
+  Request build() {
+    HttpUrl url;
+<span class="fc" id="L191">    HttpUrl.Builder urlBuilder = this.urlBuilder;</span>
+<span class="fc bfc" id="L192" title="All 2 branches covered.">    if (urlBuilder != null) {</span>
+<span class="fc" id="L193">      url = urlBuilder.build();</span>
+    } else {
+      // No query parameters triggered builder creation, just combine the relative URL and base URL.
+      //noinspection ConstantConditions Non-null if urlBuilder is null.
+<span class="fc" id="L197">      url = baseUrl.resolve(relativeUrl);</span>
+<span class="fc bfc" id="L198" title="All 2 branches covered.">      if (url == null) {</span>
+<span class="fc" id="L199">        throw new IllegalArgumentException(</span>
+            &quot;Malformed URL. Base: &quot; + baseUrl + &quot;, Relative: &quot; + relativeUrl);
+      }
+    }
+
+<span class="fc" id="L204">    RequestBody body = this.body;</span>
+<span class="fc bfc" id="L205" title="All 2 branches covered.">    if (body == null) {</span>
+      // Try to pull from one of the builders.
+<span class="fc bfc" id="L207" title="All 2 branches covered.">      if (formBuilder != null) {</span>
+<span class="fc" id="L208">        body = formBuilder.build();</span>
+<span class="fc bfc" id="L209" title="All 2 branches covered.">      } else if (multipartBuilder != null) {</span>
+<span class="fc" id="L210">        body = multipartBuilder.build();</span>
+<span class="fc bfc" id="L211" title="All 2 branches covered.">      } else if (hasBody) {</span>
+        // Body is absent, make an empty body.
+<span class="fc" id="L213">        body = RequestBody.create(null, new byte[0]);</span>
+      }
+    }
+
+<span class="fc" id="L217">    MediaType contentType = this.contentType;</span>
+<span class="fc bfc" id="L218" title="All 2 branches covered.">    if (contentType != null) {</span>
+<span class="fc bfc" id="L219" title="All 2 branches covered.">      if (body != null) {</span>
+<span class="fc" id="L220">        body = new ContentTypeOverridingRequestBody(body, contentType);</span>
+      } else {
+<span class="fc" id="L222">        requestBuilder.addHeader(&quot;Content-Type&quot;, contentType.toString());</span>
+      }
+    }
+
+<span class="fc" id="L226">    return requestBuilder</span>
+<span class="fc" id="L227">        .url(url)</span>
+<span class="fc" id="L228">        .method(method, body)</span>
+<span class="fc" id="L229">        .build();</span>
+  }
+
+  private static class ContentTypeOverridingRequestBody extends RequestBody {
+    private final RequestBody delegate;
+    private final MediaType contentType;
+
+<span class="fc" id="L236">    ContentTypeOverridingRequestBody(RequestBody delegate, MediaType contentType) {</span>
+<span class="fc" id="L237">      this.delegate = delegate;</span>
+<span class="fc" id="L238">      this.contentType = contentType;</span>
+<span class="fc" id="L239">    }</span>
+
+    @Override public MediaType contentType() {
+<span class="fc" id="L242">      return contentType;</span>
+    }
+
+    @Override public long contentLength() throws IOException {
+<span class="nc" id="L246">      return delegate.contentLength();</span>
+    }
+
+    @Override public void writeTo(BufferedSink sink) throws IOException {
+<span class="nc" id="L250">      delegate.writeTo(sink);</span>
+<span class="nc" id="L251">    }</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

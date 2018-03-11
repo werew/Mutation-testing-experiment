@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>KotlinJsonAdapter.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">moshi-kotlin</a> &gt; <a href="index.source.html" class="el_package">com.squareup.moshi.kotlin</a> &gt; <span class="el_source">KotlinJsonAdapter.kt</span></div><h1>KotlinJsonAdapter.kt</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2017 Square, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.squareup.moshi.kotlin
+
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonAdapter
+import com.squareup.moshi.JsonDataException
+import com.squareup.moshi.JsonReader
+import com.squareup.moshi.JsonWriter
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.Types
+import com.squareup.moshi.internal.Util
+import java.lang.reflect.Modifier
+import java.lang.reflect.Type
+import java.util.AbstractMap.SimpleEntry
+import kotlin.collections.Map.Entry
+import kotlin.reflect.KFunction
+import kotlin.reflect.KMutableProperty1
+import kotlin.reflect.KParameter
+import kotlin.reflect.KProperty1
+import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.full.memberProperties
+import kotlin.reflect.full.primaryConstructor
+import kotlin.reflect.jvm.isAccessible
+import kotlin.reflect.jvm.javaField
+import kotlin.reflect.jvm.javaType
+
+/** Classes annotated with this are eligible for this adapter. */
+<span class="pc bpc" id="L42" title="1 of 2 branches missed.">private val KOTLIN_METADATA = Class.forName(&quot;kotlin.Metadata&quot;) as Class&lt;out Annotation&gt;</span>
+
+/**
+ * Placeholder value used when a field is absent from the JSON. Note that this code
+ * distinguishes between absent values and present-but-null values.
+ */
+<span class="fc" id="L48">private object ABSENT_VALUE</span>
+
+/**
+ * This class encodes Kotlin classes using their properties. It decodes them by first invoking the
+ * constructor, and then by setting any additional properties that exist, if any.
+ */
+<span class="fc" id="L54">internal class KotlinJsonAdapter&lt;T&gt;(</span>
+<span class="nc" id="L55">    val constructor: KFunction&lt;T&gt;,</span>
+<span class="nc" id="L56">    val bindings: List&lt;Binding&lt;T, Any?&gt;?&gt;,</span>
+<span class="pc" id="L57">    val options: JsonReader.Options) : JsonAdapter&lt;T&gt;() {</span>
+
+  override fun fromJson(reader: JsonReader): T {
+<span class="fc" id="L60">    val constructorSize = constructor.parameters.size</span>
+
+    // Read each value into its slot in the array.
+<span class="fc" id="L63">    val values = Array&lt;Any?&gt;(bindings.size) { ABSENT_VALUE }</span>
+<span class="fc" id="L64">    reader.beginObject()</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">    while (reader.hasNext()) {</span>
+<span class="fc" id="L66">      val index = reader.selectName(options)</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">      val binding = if (index != -1) bindings[index] else null</span>
+
+<span class="fc bfc" id="L69" title="All 2 branches covered.">      if (binding == null) {</span>
+<span class="fc" id="L70">        reader.nextName()</span>
+<span class="fc" id="L71">        reader.skipValue()</span>
+<span class="fc" id="L72">        continue</span>
+      }
+
+<span class="fc bfc" id="L75" title="All 2 branches covered.">      if (values[index] !== ABSENT_VALUE) {</span>
+<span class="fc" id="L76">        throw JsonDataException(</span>
+<span class="fc" id="L77">            &quot;Multiple values for '${constructor.parameters[index].name}' at ${reader.path}&quot;)</span>
+      }
+
+<span class="fc" id="L80">      values[index] = binding.adapter.fromJson(reader)</span>
+    }
+<span class="fc" id="L82">    reader.endObject()</span>
+
+    // Confirm all parameters are present, optional, or nullable.
+<span class="fc bfc" id="L85" title="All 2 branches covered.">    for (i in 0 until constructorSize) {</span>
+<span class="fc bfc" id="L86" title="All 4 branches covered.">      if (values[i] === ABSENT_VALUE &amp;&amp; !constructor.parameters[i].isOptional) {</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">        if (!constructor.parameters[i].type.isMarkedNullable) {</span>
+<span class="fc" id="L88">          throw JsonDataException(</span>
+<span class="fc" id="L89">              &quot;Required value '${constructor.parameters[i].name}' missing at ${reader.path}&quot;)</span>
+        }
+<span class="fc" id="L91">        values[i] = null // Replace absent with null.</span>
+<span class="fc bfc" id="L92" title="All 4 branches covered.">      } else if (values[i] == null &amp;&amp; !constructor.parameters[i].type.isMarkedNullable) {</span>
+<span class="fc" id="L93">        throw JsonDataException(&quot;Non-null value '${constructor.parameters[i].name}' &quot; +</span>
+<span class="fc" id="L94">            &quot;was null at ${reader.path}&quot;)</span>
+      }
+    }
+
+    // Call the constructor using a Map so that absent optionals get defaults.
+<span class="fc" id="L99">    val result = constructor.callBy(IndexedParameterMap(constructor.parameters, values))</span>
+
+    // Set remaining properties.
+<span class="fc bfc" id="L102" title="All 2 branches covered.">    for (i in constructorSize until bindings.size) {</span>
+<span class="pc bpc" id="L103" title="1 of 2 branches missed.">      val binding = bindings[i]!!</span>
+<span class="fc" id="L104">      val value = values[i]</span>
+<span class="pc bpc" id="L105" title="1 of 4 branches missed.">      if (value == null &amp;&amp; !binding.property.returnType.isMarkedNullable) {</span>
+<span class="fc" id="L106">        throw JsonDataException(&quot;Non-null value '${binding.property.name}' &quot; +</span>
+<span class="fc" id="L107">            &quot;was null at ${reader.path}&quot;)</span>
+      }
+<span class="fc" id="L109">      binding.set(result, value)</span>
+    }
+
+<span class="fc" id="L112">    return result</span>
+  }
+
+  override fun toJson(writer: JsonWriter, value: T?) {
+<span class="pc bpc" id="L116" title="1 of 2 branches missed.">    if (value == null) throw NullPointerException(&quot;value == null&quot;)</span>
+
+<span class="fc" id="L118">    writer.beginObject()</span>
+<span class="fc bfc" id="L119" title="All 2 branches covered.">    for (binding in bindings) {</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">      if (binding == null) continue // Skip constructor parameters that aren't properties.</span>
+
+<span class="fc" id="L122">      writer.name(binding.name)</span>
+<span class="fc" id="L123">      binding.adapter.toJson(writer, binding.get(value))</span>
+    }
+<span class="fc" id="L125">    writer.endObject()</span>
+<span class="fc" id="L126">  }</span>
+
+<span class="nc" id="L128">  override fun toString() = &quot;KotlinJsonAdapter(${constructor.returnType})&quot;</span>
+
+<span class="fc" id="L130">  data class Binding&lt;K, P&gt;(</span>
+<span class="fc" id="L131">      val name: String,</span>
+<span class="fc" id="L132">      val adapter: JsonAdapter&lt;P&gt;,</span>
+<span class="fc" id="L133">      val property: KProperty1&lt;K, P&gt;,</span>
+<span class="nc" id="L134">      val parameter: KParameter?) {</span>
+<span class="fc" id="L135">    fun get(value: K) = property.get(value)</span>
+
+    fun set(result: K, value: P) {
+<span class="fc bfc" id="L138" title="All 2 branches covered.">      if (value !== ABSENT_VALUE) {</span>
+<span class="pc bpc" id="L139" title="1 of 2 branches missed.">        (property as KMutableProperty1&lt;K, P&gt;).set(result, value)</span>
+      }
+<span class="fc" id="L141">    }</span>
+  }
+
+  /** A simple [Map] that uses parameter indexes instead of sorting or hashing. */
+<span class="pc bpc" id="L145" title="4 of 6 branches missed.">  class IndexedParameterMap(val parameterKeys: List&lt;KParameter&gt;, val parameterValues: Array&lt;Any?&gt;)</span>
+<span class="fc" id="L146">    : AbstractMap&lt;KParameter, Any?&gt;() {</span>
+
+    override val entries: Set&lt;Entry&lt;KParameter, Any?&gt;&gt;
+      get() {
+<span class="nc" id="L150">        val allPossibleEntries = parameterKeys.mapIndexed { index, value -&gt;</span>
+<span class="nc" id="L151">          SimpleEntry&lt;KParameter, Any?&gt;(value, parameterValues[index])</span>
+        }
+<span class="nc" id="L153">        return allPossibleEntries.filterTo(LinkedHashSet&lt;Entry&lt;KParameter, Any?&gt;&gt;()) {</span>
+<span class="nc bnc" id="L154" title="All 4 branches missed.">          it.value !== ABSENT_VALUE</span>
+        }
+      }
+
+<span class="fc bfc" id="L158" title="All 2 branches covered.">    override fun containsKey(key: KParameter) = parameterValues[key.index] !== ABSENT_VALUE</span>
+
+    override fun get(key: KParameter): Any? {
+<span class="fc" id="L161">      val value = parameterValues[key.index]</span>
+<span class="pc bpc" id="L162" title="1 of 2 branches missed.">      return if (value !== ABSENT_VALUE) value else null</span>
+    }
+  }
+}
+
+<span class="fc" id="L167">class KotlinJsonAdapterFactory : JsonAdapter.Factory {</span>
+  override fun create(type: Type, annotations: MutableSet&lt;out Annotation&gt;, moshi: Moshi)
+      : JsonAdapter&lt;*&gt;? {
+<span class="fc bfc" id="L170" title="All 2 branches covered.">    if (!annotations.isEmpty()) return null</span>
+
+<span class="fc" id="L172">    val rawType = Types.getRawType(type)</span>
+<span class="fc bfc" id="L173" title="All 2 branches covered.">    if (rawType.isInterface) return null</span>
+<span class="fc bfc" id="L174" title="All 2 branches covered.">    if (rawType.isEnum) return null</span>
+<span class="fc bfc" id="L175" title="All 2 branches covered.">    if (!rawType.isAnnotationPresent(KOTLIN_METADATA)) return null</span>
+<span class="fc bfc" id="L176" title="All 2 branches covered.">    if (Util.isPlatformType(rawType)) return null</span>
+
+<span class="fc bfc" id="L178" title="All 2 branches covered.">    if (rawType.isLocalClass) {</span>
+<span class="fc" id="L179">      throw IllegalArgumentException(&quot;Cannot serialize local class or object expression ${rawType.name}&quot;)</span>
+    }
+<span class="fc" id="L181">    val rawTypeKotlin = rawType.kotlin</span>
+<span class="fc bfc" id="L182" title="All 2 branches covered.">    if (rawTypeKotlin.isAbstract) {</span>
+<span class="fc" id="L183">      throw IllegalArgumentException(&quot;Cannot serialize abstract class ${rawType.name}&quot;)</span>
+    }
+<span class="fc bfc" id="L185" title="All 2 branches covered.">    if (rawTypeKotlin.isInner) {</span>
+<span class="fc" id="L186">      throw IllegalArgumentException(&quot;Cannot serialize inner class ${rawType.name}&quot;)</span>
+    }
+<span class="fc bfc" id="L188" title="All 2 branches covered.">    if (rawTypeKotlin.objectInstance != null) {</span>
+<span class="fc" id="L189">      throw IllegalArgumentException(&quot;Cannot serialize object declaration ${rawType.name}&quot;)</span>
+    }
+
+<span class="pc bpc" id="L192" title="1 of 2 branches missed.">    val constructor = rawTypeKotlin.primaryConstructor ?: return null</span>
+<span class="fc" id="L193">    val parametersByName = constructor.parameters.associateBy { it.name }</span>
+<span class="fc" id="L194">    constructor.isAccessible = true</span>
+
+<span class="fc" id="L196">    val bindingsByName = LinkedHashMap&lt;String, KotlinJsonAdapter.Binding&lt;Any, Any?&gt;&gt;()</span>
+
+<span class="fc bfc" id="L198" title="All 2 branches covered.">    for (property in rawTypeKotlin.memberProperties) {</span>
+<span class="fc" id="L199">      val parameter = parametersByName[property.name]</span>
+
+<span class="fc bfc" id="L201" title="All 4 branches covered.">      if (Modifier.isTransient(property.javaField?.modifiers ?: 0)) {</span>
+<span class="fc bfc" id="L202" title="All 4 branches covered.">        if (parameter != null &amp;&amp; !parameter.isOptional) {</span>
+<span class="fc" id="L203">          throw IllegalArgumentException(</span>
+<span class="fc" id="L204">              &quot;No default value for transient constructor $parameter&quot;)</span>
+        }
+<span class="fc" id="L206">        continue</span>
+      }
+
+<span class="fc bfc" id="L209" title="All 4 branches covered.">      if (parameter != null &amp;&amp; parameter.type != property.returnType) {</span>
+<span class="fc" id="L210">        throw IllegalArgumentException(&quot;'${property.name}' has a constructor parameter of type &quot; +</span>
+<span class="fc" id="L211">            &quot;${parameter.type} but a property of type ${property.returnType}.&quot;)</span>
+      }
+
+<span class="fc bfc" id="L214" title="All 4 branches covered.">      if (property !is KMutableProperty1 &amp;&amp; parameter == null) continue</span>
+
+<span class="fc" id="L216">      property.isAccessible = true</span>
+<span class="fc" id="L217">      var allAnnotations = property.annotations</span>
+<span class="fc" id="L218">      var jsonAnnotation = property.findAnnotation&lt;Json&gt;()</span>
+
+<span class="fc bfc" id="L220" title="All 2 branches covered.">      if (parameter != null) {</span>
+<span class="fc" id="L221">        allAnnotations += parameter.annotations</span>
+<span class="pc bpc" id="L222" title="1 of 2 branches missed.">        if (jsonAnnotation == null) {</span>
+<span class="fc" id="L223">          jsonAnnotation = parameter.findAnnotation&lt;Json&gt;()</span>
+        }
+      }
+
+<span class="pc bpc" id="L227" title="1 of 4 branches missed.">      val name = jsonAnnotation?.name ?: property.name</span>
+<span class="fc" id="L228">      val adapter = moshi.adapter&lt;Any&gt;(</span>
+<span class="fc" id="L229">          property.returnType.javaType, Util.jsonAnnotations(allAnnotations.toTypedArray()))</span>
+
+<span class="fc" id="L231">      bindingsByName[property.name] =</span>
+<span class="pc bpc" id="L232" title="1 of 2 branches missed.">          KotlinJsonAdapter.Binding(name, adapter, property as KProperty1&lt;Any, Any?&gt;, parameter)</span>
+    }
+
+<span class="fc" id="L235">    val bindings = ArrayList&lt;KotlinJsonAdapter.Binding&lt;Any, Any?&gt;?&gt;()</span>
+
+<span class="fc bfc" id="L237" title="All 2 branches covered.">    for (parameter in constructor.parameters) {</span>
+<span class="fc" id="L238">      val binding = bindingsByName.remove(parameter.name)</span>
+<span class="fc bfc" id="L239" title="All 4 branches covered.">      if (binding == null &amp;&amp; !parameter.isOptional) {</span>
+<span class="fc" id="L240">        throw IllegalArgumentException(&quot;No property for required constructor ${parameter}&quot;)</span>
+      }
+<span class="fc" id="L242">      bindings += binding</span>
+    }
+
+<span class="fc" id="L245">    bindings += bindingsByName.values</span>
+
+<span class="pc bpc" id="L247" title="1 of 4 branches missed.">    val options = JsonReader.Options.of(*bindings.map { it?.name ?: &quot;\u0000&quot; }.toTypedArray())</span>
+<span class="fc" id="L248">    return KotlinJsonAdapter(constructor, bindings, options).nullSafe()</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

@@ -1,0 +1,55 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+Retrofit,retrofit2,OkHttpCall.new Callback() {...},6,44,0,0,4,16,0,5,0,5
+Retrofit,retrofit2,ParameterHandler.FieldMap,0,98,0,10,0,20,0,7,0,2
+Retrofit,retrofit2,ExecutorCallAdapterFactory,2,19,1,1,1,6,1,2,0,2
+Retrofit,retrofit2,Response,4,160,0,6,1,42,1,16,1,13
+Retrofit,retrofit2,BuiltInConverters.ToStringConverter,0,11,0,0,0,3,0,3,0,3
+Retrofit,retrofit2,ParameterHandler.Body,16,24,0,2,2,9,0,3,0,2
+Retrofit,retrofit2,ParameterHandler.Query,0,35,0,4,0,10,0,4,0,2
+Retrofit,retrofit2,ParameterHandler.new ParameterHandler() {...},1,24,1,3,0,6,1,3,0,2
+Retrofit,retrofit2,ParameterHandler.PartMap,0,97,0,8,0,17,0,6,0,2
+Retrofit,retrofit2,ParameterHandler.new ParameterHandler() {...},1,26,1,3,0,5,1,3,0,2
+Retrofit,retrofit2,Platform.Java8,38,6,0,0,6,2,1,2,1,2
+Retrofit,retrofit2,BuiltInConverters.StreamingResponseBodyConverter,0,10,0,0,0,3,0,3,0,3
+Retrofit,retrofit2,BuiltInConverters.BufferingResponseBodyConverter,0,15,0,0,0,4,0,3,0,3
+Retrofit,retrofit2,ParameterHandler.QueryMap,0,98,0,10,0,20,0,7,0,2
+Retrofit,retrofit2,Utils,383,455,83,83,70,109,57,47,4,17
+Retrofit,retrofit2,Converter.Factory,11,5,0,0,4,2,4,2,4,2
+Retrofit,retrofit2,OkHttpCall,26,312,5,43,5,92,5,29,0,10
+Retrofit,retrofit2,OkHttpCall.ExceptionCatchingRequestBody,0,34,0,2,0,11,0,7,0,6
+Retrofit,retrofit2,ServiceMethod.Builder,211,1764,22,224,22,369,22,115,0,14
+Retrofit,retrofit2,ParameterHandler.Header,1,29,1,3,0,9,1,3,0,2
+Retrofit,retrofit2,ParameterHandler.Path,0,44,0,2,0,9,0,3,0,2
+Retrofit,retrofit2,HttpException,0,44,0,0,0,10,0,5,0,5
+Retrofit,retrofit2,Retrofit.Builder,0,263,0,10,0,58,0,19,0,14
+Retrofit,retrofit2,OkHttpCall.NoContentResponseBody,0,20,0,0,0,7,0,4,0,4
+Retrofit,retrofit2,DefaultCallAdapterFactory,0,23,0,2,0,6,0,4,0,3
+Retrofit,retrofit2,RequestBuilder.ContentTypeOverridingRequestBody,9,12,0,0,3,5,2,2,2,2
+Retrofit,retrofit2,Utils.ParameterizedTypeImpl,95,55,12,6,12,11,13,3,5,2
+Retrofit,retrofit2,Platform.Android.MainThreadExecutor,15,0,0,0,4,0,2,0,2,0
+Retrofit,retrofit2,ParameterHandler.Part,16,25,0,2,2,9,0,3,0,2
+Retrofit,retrofit2,CallAdapter.Factory,0,10,0,0,0,3,0,3,0,3
+Retrofit,retrofit2,ExecutorCallAdapterFactory.ExecutorCallbackCall,12,39,0,0,3,11,3,5,3,5
+Retrofit,retrofit2,ExecutorCallAdapterFactory.new CallAdapter() {...},0,20,0,0,0,3,0,3,0,3
+Retrofit,retrofit2,ParameterHandler,0,13,0,0,0,3,0,3,0,3
+Retrofit,retrofit2,ExecutorCallAdapterFactory.ExecutorCallbackCall.new Callback() {...},0,29,0,0,0,5,0,3,0,3
+Retrofit,retrofit2,RequestBuilder,22,492,8,70,2,96,8,44,0,13
+Retrofit,retrofit2,Retrofit.new InvocationHandler() {...},9,41,1,3,1,9,1,3,0,2
+Retrofit,retrofit2,ServiceMethod,33,173,8,16,1,39,8,11,0,7
+Retrofit,retrofit2,Platform.Android,18,0,2,0,4,0,4,0,3,0
+Retrofit,retrofit2,BuiltInConverters.RequestBodyConverter,0,10,0,0,0,3,0,3,0,3
+Retrofit,retrofit2,ParameterHandler.Field,0,35,0,4,0,10,0,4,0,2
+Retrofit,retrofit2,ParameterHandler.RelativeUrl,0,11,0,0,0,4,0,2,0,2
+Retrofit,retrofit2,ParameterHandler.QueryName,0,23,0,2,0,7,0,3,0,2
+Retrofit,retrofit2,BuiltInConverters,0,30,0,8,0,11,0,7,0,3
+Retrofit,retrofit2,OkHttpCall.ExceptionCatchingRequestBody.new ForwardingSource() {...},0,19,0,0,0,5,0,2,0,2
+Retrofit,retrofit2,Platform,16,32,1,3,6,12,3,7,2,6
+Retrofit,retrofit2,DefaultCallAdapterFactory.new CallAdapter() {...},0,14,0,0,0,3,0,3,0,3
+Retrofit,retrofit2,BuiltInConverters.VoidResponseBodyConverter,0,12,0,0,0,4,0,3,0,3
+Retrofit,retrofit2,ParameterHandler.RawPart,0,11,1,1,0,4,1,2,0,2
+Retrofit,retrofit2,ExecutorCallAdapterFactory.ExecutorCallbackCall.1.new Runnable() {...},0,19,0,0,0,3,0,2,0,2
+Retrofit,retrofit2,Utils.WildcardTypeImpl,154,0,24,0,21,0,18,0,6,0
+Retrofit,retrofit2,ExecutorCallAdapterFactory.ExecutorCallbackCall.1.new Runnable() {...},12,25,1,1,1,4,1,2,0,2
+Retrofit,retrofit2,Retrofit,10,522,3,41,3,102,3,36,0,17
+Retrofit,retrofit2,Utils.GenericArrayTypeImpl,36,0,4,0,8,0,7,0,5,0
+Retrofit,retrofit2,ParameterHandler.HeaderMap,0,64,0,8,0,15,0,6,0,2

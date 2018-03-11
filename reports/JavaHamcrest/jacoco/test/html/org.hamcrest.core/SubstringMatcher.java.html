@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SubstringMatcher.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JavaHamcrest</a> &gt; <a href="index.source.html" class="el_package">org.hamcrest.core</a> &gt; <span class="el_source">SubstringMatcher.java</span></div><h1>SubstringMatcher.java</h1><pre class="source lang-java linenums">package org.hamcrest.core;
+
+import org.hamcrest.Description;
+import org.hamcrest.TypeSafeMatcher;
+
+public abstract class SubstringMatcher extends TypeSafeMatcher&lt;String&gt; {
+
+    // TODO: Replace String with CharSequence to allow for easy interoperability between
+    //       String, StringBuffer, StringBuilder, CharBuffer, etc (joe).
+
+    private final String relationship;
+    private final boolean ignoringCase;
+    protected final String substring;
+
+<span class="fc" id="L15">    protected SubstringMatcher(String relationship, boolean ignoringCase, String substring) {</span>
+<span class="fc" id="L16">        this.relationship = relationship;</span>
+<span class="fc" id="L17">        this.ignoringCase = ignoringCase;</span>
+<span class="fc" id="L18">        this.substring = substring;</span>
+<span class="fc bfc" id="L19" title="All 2 branches covered.">        if (null == substring) {</span>
+<span class="fc" id="L20">            throw new IllegalArgumentException(&quot;missing substring&quot;);</span>
+        }
+<span class="fc" id="L22">    }</span>
+
+    @Override
+    public boolean matchesSafely(String item) {
+<span class="fc bfc" id="L26" title="All 2 branches covered.">        return evalSubstringOf(ignoringCase ? item.toLowerCase() :item);</span>
+    }
+    @Override
+    public void describeMismatchSafely(String item, Description mismatchDescription) {
+<span class="fc" id="L30">      mismatchDescription.appendText(&quot;was \&quot;&quot;).appendText(item).appendText(&quot;\&quot;&quot;);</span>
+<span class="fc" id="L31">    }</span>
+    
+    @Override
+    public void describeTo(Description description) {
+<span class="fc" id="L35">        description.appendText(&quot;a string &quot;)</span>
+<span class="fc" id="L36">                .appendText(relationship)</span>
+<span class="fc" id="L37">                .appendText(&quot; &quot;)</span>
+<span class="fc" id="L38">                .appendValue(substring);</span>
+<span class="fc bfc" id="L39" title="All 2 branches covered.">        if (ignoringCase) {</span>
+<span class="fc" id="L40">            description.appendText(&quot; ignoring case&quot;);</span>
+        }
+<span class="fc" id="L42">    }</span>
+
+<span class="fc bfc" id="L44" title="All 2 branches covered.">    protected String converted(String arg) { return ignoringCase ? arg.toLowerCase() : arg; }</span>
+    protected abstract boolean evalSubstringOf(String string);
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

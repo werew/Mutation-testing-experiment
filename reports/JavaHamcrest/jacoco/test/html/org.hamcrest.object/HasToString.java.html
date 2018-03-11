@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HasToString.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JavaHamcrest</a> &gt; <a href="index.source.html" class="el_package">org.hamcrest.object</a> &gt; <span class="el_source">HasToString.java</span></div><h1>HasToString.java</h1><pre class="source lang-java linenums">package org.hamcrest.object;
+
+import org.hamcrest.FeatureMatcher;
+import org.hamcrest.Matcher;
+
+import static org.hamcrest.core.IsEqual.equalTo;
+
+public class HasToString&lt;T&gt; extends FeatureMatcher&lt;T, String&gt; {
+    public HasToString(Matcher&lt;? super String&gt; toStringMatcher) {
+<span class="fc" id="L10">      super(toStringMatcher, &quot;with toString()&quot;, &quot;toString()&quot;);</span>
+<span class="fc" id="L11">    }</span>
+    
+    @Override
+    protected String featureValueOf(T actual) {
+<span class="fc" id="L15">      return String.valueOf(actual);</span>
+    }
+
+    /**
+     * Creates a matcher that matches any examined object whose &lt;code&gt;toString&lt;/code&gt; method
+     * returns a value that satisfies the specified matcher.
+     * For example:
+     * &lt;pre&gt;assertThat(true, hasToString(equalTo(&quot;TRUE&quot;)))&lt;/pre&gt;
+     * 
+     * @param toStringMatcher
+     *     the matcher used to verify the toString result
+     */
+    public static &lt;T&gt; Matcher&lt;T&gt; hasToString(Matcher&lt;? super String&gt; toStringMatcher) {
+<span class="fc" id="L28">        return new HasToString&lt;T&gt;(toStringMatcher);</span>
+    }
+
+    /**
+     * Creates a matcher that matches any examined object whose &lt;code&gt;toString&lt;/code&gt; method
+     * returns a value equalTo the specified string.
+     * For example:
+     * &lt;pre&gt;assertThat(true, hasToString(&quot;TRUE&quot;))&lt;/pre&gt;
+     * 
+     * @param expectedToString
+     *     the expected toString result
+     */
+    public static &lt;T&gt; Matcher&lt;T&gt; hasToString(String expectedToString) {
+<span class="fc" id="L41">        return new HasToString&lt;T&gt;(equalTo(expectedToString));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

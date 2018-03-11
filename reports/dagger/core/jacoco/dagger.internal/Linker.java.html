@@ -1,0 +1,473 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Linker.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Dagger</a> &gt; <a href="index.source.html" class="el_package">dagger.internal</a> &gt; <span class="el_source">Linker.java</span></div><h1>Linker.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2012 Square, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package dagger.internal;
+
+import dagger.internal.Binding.InvalidBindingException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
+
+/**
+ * Links bindings to their dependencies.
+ */
+public final class Linker {
+<span class="fc" id="L31">  static final Object UNINITIALIZED = new Object();</span>
+
+  /**
+   * The base {@code Linker} which will be consulted to satisfy bindings not
+   * otherwise satisfiable from this {@code Linker}. The top-most {@code Linker}
+   * in a chain will have a null base linker.
+   */
+  private final Linker base;
+
+  /** Bindings requiring a call to attach(). May contain deferred bindings. */
+<span class="fc" id="L41">  private final Queue&lt;Binding&lt;?&gt;&gt; toLink = new ArrayQueue&lt;Binding&lt;?&gt;&gt;();</span>
+
+  /** True unless calls to requestBinding() were unable to satisfy the binding. */
+<span class="fc" id="L44">  private boolean attachSuccess = true;</span>
+
+  /** All errors encountered during injection. */
+<span class="fc" id="L47">  private final List&lt;String&gt; errors = new ArrayList&lt;String&gt;();</span>
+
+  /** All of the object graph's bindings. This may contain unlinked bindings. */
+<span class="fc" id="L50">  private final Map&lt;String, Binding&lt;?&gt;&gt; bindings = new HashMap&lt;String, Binding&lt;?&gt;&gt;();</span>
+
+  /**
+   * An unmodifiable map containing all of the bindings available in this linker, fully linked.
+   * This will be null if the bindings are not yet fully linked. It provides both a signal
+   * of completion of the {@link #linkAll()} method, as well as a place to reference the final,
+   * fully linked map of bindings.
+   */
+<span class="fc" id="L58">  private volatile Map&lt;String, Binding&lt;?&gt;&gt; linkedBindings = null;</span>
+
+  private final Loader plugin;
+
+  private final ErrorHandler errorHandler;
+
+<span class="fc" id="L64">  public Linker(Linker base, Loader plugin, ErrorHandler errorHandler) {</span>
+<span class="pc bpc" id="L65" title="1 of 2 branches missed.">    if (plugin == null) throw new NullPointerException(&quot;plugin&quot;);</span>
+<span class="pc bpc" id="L66" title="1 of 2 branches missed.">    if (errorHandler == null) throw new NullPointerException(&quot;errorHandler&quot;);</span>
+
+<span class="fc" id="L68">    this.base = base;</span>
+<span class="fc" id="L69">    this.plugin = plugin;</span>
+<span class="fc" id="L70">    this.errorHandler = errorHandler;</span>
+<span class="fc" id="L71">  }</span>
+
+  /**
+   * Adds all bindings in {@code toInstall}. The caller must call either {@link
+   * #linkAll} or {@link #requestBinding} and {@link #linkRequested} before the
+   * bindings can be used.
+   *
+   * This method may only be called before {@link #linkAll()}. Subsequent calls to
+   * {@link #installBindings(BindingsGroup)} will throw an {@link IllegalStateException}.
+   */
+  public void installBindings(BindingsGroup toInstall) {
+<span class="pc bpc" id="L82" title="1 of 2 branches missed.">    if (linkedBindings != null) {</span>
+<span class="nc" id="L83">      throw new IllegalStateException(&quot;Cannot install further bindings after calling linkAll().&quot;);</span>
+    }
+<span class="fc bfc" id="L85" title="All 2 branches covered.">    for (Map.Entry&lt;String, ? extends Binding&lt;?&gt;&gt; entry : toInstall.entrySet()) {</span>
+<span class="fc" id="L86">      bindings.put(entry.getKey(), scope(entry.getValue()));</span>
+<span class="fc" id="L87">    }</span>
+<span class="fc" id="L88">  }</span>
+
+  /**
+   * Links all known bindings (whether requested or installed), plus all of their
+   * transitive dependencies. This loads injectable types' bindings as necessary to fill in
+   * the gaps.  If this method has returned successfully at least once, all further
+   * work is short-circuited.
+   *
+   * @throws AssertionError if this method is not called within a synchronized block which
+   *     holds this {@link Linker} as the lock object.
+   */
+  public Map&lt;String, Binding&lt;?&gt;&gt; linkAll() {
+<span class="fc" id="L100">    assertLockHeld();</span>
+<span class="pc bpc" id="L101" title="1 of 2 branches missed.">    if (linkedBindings != null) {</span>
+<span class="nc" id="L102">      return linkedBindings;</span>
+    }
+<span class="fc bfc" id="L104" title="All 2 branches covered.">    for (Binding&lt;?&gt; binding : bindings.values()) {</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">      if (!binding.isLinked()) {</span>
+<span class="fc" id="L106">        toLink.add(binding);</span>
+      }
+<span class="fc" id="L108">    }</span>
+<span class="fc" id="L109">    linkRequested(); // This method throws if bindings are not resolvable/linkable.</span>
+<span class="fc" id="L110">    linkedBindings = Collections.unmodifiableMap(bindings);</span>
+<span class="fc" id="L111">    return linkedBindings;</span>
+  }
+
+  /**
+   * Returns the map of all bindings available to this {@link Linker}, if and only if
+   * {@link #linkAll()} has successfully returned at least once, otherwise it returns null;
+   */
+  public Map&lt;String, Binding&lt;?&gt;&gt; fullyLinkedBindings() {
+<span class="fc" id="L119">    return linkedBindings;</span>
+  }
+
+  /**
+   * Links all requested bindings plus their transitive dependencies. This
+   * creates JIT bindings as necessary to fill in the gaps.
+   *
+   * @throws AssertionError if this method is not called within a synchronized block which
+   *     holds this {@link Linker} as the lock object.
+   */
+  public void linkRequested() {
+<span class="fc" id="L130">    assertLockHeld();</span>
+    Binding&lt;?&gt; binding;
+<span class="fc bfc" id="L132" title="All 2 branches covered.">    while ((binding = toLink.poll()) != null) {</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">      if (binding instanceof DeferredBinding) {</span>
+<span class="fc" id="L134">        DeferredBinding deferred = (DeferredBinding) binding;</span>
+<span class="fc" id="L135">        String key = deferred.deferredKey;</span>
+<span class="fc" id="L136">        boolean mustHaveInjections = deferred.mustHaveInjections;</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">        if (bindings.containsKey(key)) {</span>
+<span class="fc" id="L138">          continue; // A binding for this key has since been linked.</span>
+        }
+        try {
+<span class="fc" id="L141">          Binding&lt;?&gt; resolvedBinding =</span>
+<span class="fc" id="L142">              createBinding(key, binding.requiredBy, deferred.classLoader, mustHaveInjections);</span>
+<span class="fc" id="L143">          resolvedBinding.setLibrary(binding.library());</span>
+<span class="fc" id="L144">          resolvedBinding.setDependedOn(binding.dependedOn());</span>
+          // Fail if the type of binding we got wasn't capable of what was requested.
+<span class="fc bfc" id="L146" title="All 4 branches covered.">          if (!key.equals(resolvedBinding.provideKey) &amp;&amp; !key.equals(resolvedBinding.membersKey)) {</span>
+<span class="fc" id="L147">            throw new IllegalStateException(&quot;Unable to create binding for &quot; + key);</span>
+          }
+          // Enqueue the JIT binding so its own dependencies can be linked.
+<span class="fc" id="L150">          Binding&lt;?&gt; scopedBinding = scope(resolvedBinding);</span>
+<span class="fc" id="L151">          toLink.add(scopedBinding);</span>
+<span class="fc" id="L152">          putBinding(scopedBinding);</span>
+<span class="fc" id="L153">        } catch (InvalidBindingException e) {</span>
+<span class="fc" id="L154">          addError(e.type + &quot; &quot; + e.getMessage() + &quot; required by &quot; + binding.requiredBy);</span>
+<span class="fc" id="L155">          bindings.put(key, Binding.UNRESOLVED);</span>
+<span class="nc" id="L156">        } catch (UnsupportedOperationException e) {</span>
+<span class="nc" id="L157">          addError(&quot;Unsupported: &quot; + e.getMessage() + &quot; required by &quot; + binding.requiredBy);</span>
+<span class="nc" id="L158">          bindings.put(key, Binding.UNRESOLVED);</span>
+<span class="nc" id="L159">        } catch (IllegalArgumentException e) {</span>
+<span class="nc" id="L160">          addError(e.getMessage() + &quot; required by &quot; + binding.requiredBy);</span>
+<span class="nc" id="L161">          bindings.put(key, Binding.UNRESOLVED);</span>
+<span class="fc" id="L162">        } catch (RuntimeException e) {</span>
+<span class="fc" id="L163">          throw e;</span>
+<span class="nc" id="L164">        } catch (Exception e) {</span>
+<span class="nc" id="L165">          throw new RuntimeException(e);</span>
+<span class="pc" id="L166">        }</span>
+<span class="fc" id="L167">      } else {</span>
+        // Attempt to attach the binding to its dependencies. If any dependency
+        // is not available, the attach will fail. We'll enqueue creation of
+        // that dependency and retry the attachment later.
+<span class="fc" id="L171">        attachSuccess = true;</span>
+<span class="fc" id="L172">        binding.attach(this);</span>
+<span class="fc bfc" id="L173" title="All 2 branches covered.">        if (attachSuccess) {</span>
+<span class="fc" id="L174">          binding.setLinked();</span>
+        } else {
+<span class="fc" id="L176">          toLink.add(binding);</span>
+        }
+      }
+    }
+
+    try {
+<span class="fc" id="L182">      errorHandler.handleErrors(errors);</span>
+    } finally {
+<span class="fc" id="L184">      errors.clear();</span>
+    }
+<span class="fc" id="L186">  }</span>
+
+  /**
+   * Don't permit bindings to be linked without a lock. Callers should lock
+   * before requesting any bindings, link the requested bindings, retrieve
+   * the linked bindings, and then release the lock.
+   */
+  private void assertLockHeld() {
+<span class="pc bpc" id="L194" title="1 of 2 branches missed.">    if (!Thread.holdsLock(this)) throw new AssertionError();</span>
+<span class="fc" id="L195">  }</span>
+
+  /**
+   * Returns a binding for the key in {@code deferred}. The type of binding
+   * to be created depends on the key's type:
+   * &lt;ul&gt;
+   *   &lt;li&gt;Injections of {@code Provider&lt;Foo&gt;}, {@code MembersInjector&lt;Bar&gt;}, and
+   *       {@code Lazy&lt;Blah&gt;} will delegate to the bindings of {@code Foo}, {@code Bar}, and
+   *       {@code Blah} respectively.
+   *   &lt;li&gt;Injections of raw types will use the injectable constructors of those classes.
+   *   &lt;li&gt;Any other injection types require @Provides bindings and will error out.
+   * &lt;/ul&gt;
+   */
+  private Binding&lt;?&gt; createBinding(String key, Object requiredBy, ClassLoader classLoader,
+      boolean mustHaveInjections) {
+<span class="fc" id="L210">    String builtInBindingsKey = Keys.getBuiltInBindingsKey(key);</span>
+<span class="fc bfc" id="L211" title="All 2 branches covered.">    if (builtInBindingsKey != null) {</span>
+<span class="fc" id="L212">      return new BuiltInBinding&lt;Object&gt;(key, requiredBy, classLoader, builtInBindingsKey);</span>
+    }
+<span class="fc" id="L214">    String lazyKey = Keys.getLazyKey(key);</span>
+<span class="fc bfc" id="L215" title="All 2 branches covered.">    if (lazyKey != null) {</span>
+<span class="fc" id="L216">      return new LazyBinding&lt;Object&gt;(key, requiredBy, classLoader, lazyKey);</span>
+    }
+
+<span class="fc" id="L219">    String className = Keys.getClassName(key);</span>
+<span class="fc bfc" id="L220" title="All 2 branches covered.">    if (className == null) {</span>
+<span class="fc" id="L221">      throw new InvalidBindingException(key,</span>
+          &quot;is a generic class or an array and can only be bound with concrete type parameter(s) &quot;
+          + &quot;in a @Provides method.&quot;);
+    }
+<span class="fc bfc" id="L225" title="All 2 branches covered.">    if (Keys.isAnnotated(key)) {</span>
+<span class="fc" id="L226">      throw new InvalidBindingException(key,</span>
+          &quot;is a @Qualifier-annotated type and must be bound by a @Provides method.&quot;);
+    }
+<span class="fc" id="L229">    Binding&lt;?&gt; binding =</span>
+<span class="fc" id="L230">        plugin.getAtInjectBinding(key, className, classLoader, mustHaveInjections);</span>
+<span class="fc bfc" id="L231" title="All 2 branches covered.">    if (binding != null) {</span>
+<span class="fc" id="L232">      return binding;</span>
+    }
+<span class="fc" id="L234">    throw new InvalidBindingException(className, &quot;could not be bound with key &quot; + key);</span>
+  }
+
+  /** @deprecated Older, generated code still using this should be re-generated. */
+  @Deprecated
+  public Binding&lt;?&gt; requestBinding(String key, Object requiredBy) {
+<span class="nc" id="L240">    return requestBinding(</span>
+<span class="nc" id="L241">        key, requiredBy, getClass().getClassLoader(), true, true);</span>
+  }
+
+  /**
+   * Returns the binding if it exists immediately. Otherwise this returns
+   * null. If the returned binding didn't exist or was unlinked, it will be
+   * enqueued to be linked.
+   */
+  public Binding&lt;?&gt; requestBinding(String key, Object requiredBy, ClassLoader classLoader) {
+<span class="fc" id="L250">    return requestBinding(key, requiredBy, classLoader, true, true);</span>
+  }
+
+  /** @deprecated Older, generated code still using this should be re-generated. */
+  @Deprecated
+  public Binding&lt;?&gt; requestBinding(String key, Object requiredBy,
+      boolean mustHaveInjections, boolean library) {
+<span class="nc" id="L257">    return requestBinding(key, requiredBy, getClass().getClassLoader(),</span>
+        mustHaveInjections, library);
+  }
+
+  /**
+   * Returns the binding if it exists immediately. Otherwise this returns
+   * null. If the returned binding didn't exist or was unlinked, it will be
+   * enqueued to be linked.
+   *
+   * @param mustHaveInjections true if the the referenced key requires either an
+   *     {@code @Inject} annotation is produced by a {@code @Provides} method.
+   *     This isn't necessary for Module.injects types because frameworks need
+   *     to inject arbitrary classes like JUnit test cases and Android
+   *     activities. It also isn't necessary for supertypes.
+   */
+  public Binding&lt;?&gt; requestBinding(String key, Object requiredBy, ClassLoader classLoader,
+      boolean mustHaveInjections, boolean library) {
+<span class="fc" id="L274">    assertLockHeld();</span>
+
+<span class="fc" id="L276">    Binding&lt;?&gt; binding = null;</span>
+<span class="fc bfc" id="L277" title="All 2 branches covered.">    for (Linker linker = this; linker != null; linker = linker.base) {</span>
+<span class="fc" id="L278">      binding = linker.bindings.get(key);</span>
+<span class="fc bfc" id="L279" title="All 2 branches covered.">      if (binding != null) {</span>
+<span class="pc bpc" id="L280" title="1 of 4 branches missed.">        if (linker != this &amp;&amp; !binding.isLinked()) throw new AssertionError();</span>
+        break;
+      }
+    }
+
+<span class="fc bfc" id="L285" title="All 2 branches covered.">    if (binding == null) {</span>
+      // We can't satisfy this binding. Make sure it'll work next time!
+<span class="fc" id="L287">      Binding&lt;?&gt; deferredBinding =</span>
+          new DeferredBinding(key, classLoader, requiredBy, mustHaveInjections);
+<span class="fc" id="L289">      deferredBinding.setLibrary(library);</span>
+<span class="fc" id="L290">      deferredBinding.setDependedOn(true);</span>
+<span class="fc" id="L291">      toLink.add(deferredBinding);</span>
+<span class="fc" id="L292">      attachSuccess = false;</span>
+<span class="fc" id="L293">      return null;</span>
+    }
+
+<span class="fc bfc" id="L296" title="All 2 branches covered.">    if (!binding.isLinked()) {</span>
+<span class="fc" id="L297">      toLink.add(binding); // This binding was never linked; link it now!</span>
+    }
+
+<span class="fc" id="L300">    binding.setLibrary(library);</span>
+<span class="fc" id="L301">    binding.setDependedOn(true);</span>
+<span class="fc" id="L302">    return binding;</span>
+  }
+
+  private &lt;T&gt; void putBinding(final Binding&lt;T&gt; binding) {
+
+    // At binding insertion time it's possible that another binding for the same
+    // key to already exist. This occurs when an @Provides method returns a type T
+    // and we also inject the members of that type.
+<span class="fc bfc" id="L310" title="All 2 branches covered.">    if (binding.provideKey != null) {</span>
+<span class="fc" id="L311">      putIfAbsent(bindings, binding.provideKey, binding);</span>
+    }
+<span class="fc bfc" id="L313" title="All 2 branches covered.">    if (binding.membersKey != null) {</span>
+<span class="fc" id="L314">      putIfAbsent(bindings, binding.membersKey, binding);</span>
+    }
+<span class="fc" id="L316">  }</span>
+
+  /**
+   * Returns a scoped binding for {@code binding}.
+   */
+  static &lt;T&gt; Binding&lt;T&gt; scope(final Binding&lt;T&gt; binding) {
+<span class="pc bpc" id="L322" title="1 of 4 branches missed.">    if (!binding.isSingleton() || binding instanceof SingletonBinding) {</span>
+<span class="fc" id="L323">      return binding; // Default scoped binding or already a scoped binding.</span>
+    }
+<span class="fc" id="L325">    return new SingletonBinding&lt;T&gt;(binding);</span>
+  }
+
+  /**
+   * Puts the mapping {@code key, value} in {@code map} if no mapping for {@code
+   * key} already exists.
+   */
+  private &lt;K, V&gt; void putIfAbsent(Map&lt;K, V&gt; map, K key, V value) {
+<span class="fc" id="L333">    V replaced = map.put(key, value); // Optimistic: prefer only one hash operation lookup.</span>
+<span class="pc bpc" id="L334" title="1 of 2 branches missed.">    if (replaced != null) {</span>
+<span class="nc" id="L335">      map.put(key, replaced);</span>
+    }
+<span class="fc" id="L337">  }</span>
+
+  /** Enqueue {@code message} as a fatal error to be reported to the user. */
+  private void addError(String message) {
+<span class="fc" id="L341">    errors.add(message);</span>
+<span class="fc" id="L342">  }</span>
+
+  /**
+   * A Binding that implements singleton behaviour around an existing binding.
+   */
+  private static class SingletonBinding&lt;T&gt; extends Binding&lt;T&gt; {
+    private final Binding&lt;T&gt; binding;
+<span class="fc" id="L349">    private volatile Object onlyInstance = UNINITIALIZED;</span>
+
+    SingletonBinding(Binding&lt;T&gt; binding) {
+<span class="fc" id="L352">      super(binding.provideKey, binding.membersKey, true, binding.requiredBy);</span>
+<span class="fc" id="L353">      this.binding = binding;</span>
+<span class="fc" id="L354">    }</span>
+
+    @Override public void attach(Linker linker) {
+<span class="fc" id="L357">      binding.attach(linker);</span>
+<span class="fc" id="L358">    }</span>
+
+    @Override public void injectMembers(T t) {
+<span class="nc" id="L361">      binding.injectMembers(t);</span>
+<span class="nc" id="L362">    }</span>
+
+    @SuppressWarnings(&quot;unchecked&quot;) // onlyInstance is either 'UNINITIALIZED' or a 'T'.
+    @Override public T get() {
+<span class="fc bfc" id="L366" title="All 2 branches covered.">      if (onlyInstance == UNINITIALIZED) {</span>
+<span class="fc" id="L367">        synchronized (this) {</span>
+<span class="fc bfc" id="L368" title="All 2 branches covered.">          if (onlyInstance == UNINITIALIZED) {</span>
+<span class="fc" id="L369">            onlyInstance = binding.get();</span>
+          }
+<span class="fc" id="L371">        }</span>
+      }
+<span class="fc" id="L373">      return (T) onlyInstance;</span>
+    }
+
+    @Override public void getDependencies(Set&lt;Binding&lt;?&gt;&gt; get, Set&lt;Binding&lt;?&gt;&gt; injectMembers) {
+<span class="nc" id="L377">      binding.getDependencies(get, injectMembers);</span>
+<span class="nc" id="L378">    }</span>
+
+    @Override public boolean isCycleFree() {
+<span class="fc" id="L381">      return binding.isCycleFree();</span>
+    }
+
+    @Override public boolean isLinked() {
+<span class="fc" id="L385">      return binding.isLinked();</span>
+    }
+
+    @Override public boolean isVisiting() {
+<span class="fc" id="L389">      return binding.isVisiting();</span>
+    }
+
+    @Override public boolean library() {
+<span class="nc" id="L393">      return binding.library();</span>
+    }
+
+    @Override public boolean dependedOn() {
+<span class="nc" id="L397">      return binding.dependedOn();</span>
+    }
+
+    @Override public void setCycleFree(final boolean cycleFree) {
+<span class="fc" id="L401">      binding.setCycleFree(cycleFree);</span>
+<span class="fc" id="L402">    }</span>
+
+    @Override public void setVisiting(final boolean visiting) {
+<span class="fc" id="L405">      binding.setVisiting(visiting);</span>
+<span class="fc" id="L406">    }</span>
+
+    @Override public void setLibrary(boolean library) {
+<span class="fc" id="L409">      binding.setLibrary(true);</span>
+<span class="fc" id="L410">    }</span>
+
+    @Override public void setDependedOn(boolean dependedOn) {
+<span class="fc" id="L413">      binding.setDependedOn(dependedOn);</span>
+<span class="fc" id="L414">    }</span>
+
+    @Override protected boolean isSingleton() {
+<span class="fc" id="L417">      return true;</span>
+    }
+
+    @Override protected void setLinked() {
+<span class="fc" id="L421">      binding.setLinked();</span>
+<span class="fc" id="L422">    }</span>
+
+    @Override public String toString() {
+<span class="nc" id="L425">      return &quot;@Singleton/&quot; + binding.toString();</span>
+    }
+  }
+
+  /** Handles linker errors appropriately. */
+  public interface ErrorHandler {
+<span class="nc" id="L431">    ErrorHandler NULL = new ErrorHandler() {</span>
+      @Override public void handleErrors(List&lt;String&gt; errors) {
+<span class="nc" id="L433">      }</span>
+    };
+
+    /**
+     * Fail if any errors have been enqueued.
+     * Implementations may throw exceptions or report the errors through another
+     * channel.  Callers are responsible for clearing enqueued errors.
+     *
+     * @param errors a potentially empty list of error messages.
+     */
+    void handleErrors(List&lt;String&gt; errors);
+  }
+
+  private static class DeferredBinding extends Binding&lt;Object&gt; {
+    /** Loader originally intended to load this binding, to be used in loading the actual one */
+    final ClassLoader classLoader;
+    final String deferredKey;
+    final boolean mustHaveInjections;
+
+    DeferredBinding(String deferredKey, ClassLoader classLoader, Object requiredBy,
+        boolean mustHaveInjections) {
+<span class="fc" id="L454">      super(null, null, false, requiredBy);</span>
+<span class="fc" id="L455">      this.deferredKey = deferredKey;</span>
+<span class="fc" id="L456">      this.classLoader = classLoader;</span>
+<span class="fc" id="L457">      this.mustHaveInjections = mustHaveInjections;</span>
+<span class="fc" id="L458">    }</span>
+
+    @Override public void injectMembers(Object t) {
+<span class="nc" id="L461">      throw new UnsupportedOperationException(&quot;Deferred bindings must resolve first.&quot;);</span>
+    }
+
+    @Override public void getDependencies(Set&lt;Binding&lt;?&gt;&gt; get, Set&lt;Binding&lt;?&gt;&gt; injectMembers) {
+<span class="nc" id="L465">      throw new UnsupportedOperationException(&quot;Deferred bindings must resolve first.&quot;);</span>
+    }
+
+    @Override public String toString() {
+<span class="nc" id="L469">      return &quot;DeferredBinding[deferredKey=&quot; + deferredKey + &quot;]&quot;;</span>
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

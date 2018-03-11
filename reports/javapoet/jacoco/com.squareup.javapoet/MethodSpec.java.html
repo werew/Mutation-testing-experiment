@@ -1,0 +1,494 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MethodSpec.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JavaPoet</a> &gt; <a href="index.source.html" class="el_package">com.squareup.javapoet</a> &gt; <span class="el_source">MethodSpec.java</span></div><h1>MethodSpec.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2015 Square, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.squareup.javapoet;
+
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import javax.lang.model.SourceVersion;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
+import javax.lang.model.element.TypeParameterElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.ExecutableType;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.type.TypeVariable;
+import javax.lang.model.util.Types;
+
+import static com.squareup.javapoet.Util.checkArgument;
+import static com.squareup.javapoet.Util.checkNotNull;
+import static com.squareup.javapoet.Util.checkState;
+
+/** A generated constructor or method declaration. */
+public final class MethodSpec {
+  static final String CONSTRUCTOR = &quot;&lt;init&gt;&quot;;
+
+  public final String name;
+  public final CodeBlock javadoc;
+  public final List&lt;AnnotationSpec&gt; annotations;
+  public final Set&lt;Modifier&gt; modifiers;
+  public final List&lt;TypeVariableName&gt; typeVariables;
+  public final TypeName returnType;
+  public final List&lt;ParameterSpec&gt; parameters;
+  public final boolean varargs;
+  public final List&lt;TypeName&gt; exceptions;
+  public final CodeBlock code;
+  public final CodeBlock defaultValue;
+
+<span class="fc" id="L58">  private MethodSpec(Builder builder) {</span>
+<span class="fc" id="L59">    CodeBlock code = builder.code.build();</span>
+<span class="pc bpc" id="L60" title="1 of 4 branches missed.">    checkArgument(code.isEmpty() || !builder.modifiers.contains(Modifier.ABSTRACT),</span>
+<span class="fc" id="L61">        &quot;abstract method %s cannot have code&quot;, builder.name);</span>
+<span class="pc bpc" id="L62" title="1 of 4 branches missed.">    checkArgument(!builder.varargs || lastParameterIsArray(builder.parameters),</span>
+<span class="fc" id="L63">        &quot;last parameter of varargs method %s must be an array&quot;, builder.name);</span>
+
+<span class="fc" id="L65">    this.name = checkNotNull(builder.name, &quot;name == null&quot;);</span>
+<span class="fc" id="L66">    this.javadoc = builder.javadoc.build();</span>
+<span class="fc" id="L67">    this.annotations = Util.immutableList(builder.annotations);</span>
+<span class="fc" id="L68">    this.modifiers = Util.immutableSet(builder.modifiers);</span>
+<span class="fc" id="L69">    this.typeVariables = Util.immutableList(builder.typeVariables);</span>
+<span class="fc" id="L70">    this.returnType = builder.returnType;</span>
+<span class="fc" id="L71">    this.parameters = Util.immutableList(builder.parameters);</span>
+<span class="fc" id="L72">    this.varargs = builder.varargs;</span>
+<span class="fc" id="L73">    this.exceptions = Util.immutableList(builder.exceptions);</span>
+<span class="fc" id="L74">    this.defaultValue = builder.defaultValue;</span>
+<span class="fc" id="L75">    this.code = code;</span>
+<span class="fc" id="L76">  }</span>
+
+  private boolean lastParameterIsArray(List&lt;ParameterSpec&gt; parameters) {
+<span class="pc bpc" id="L79" title="1 of 2 branches missed.">    return !parameters.isEmpty()</span>
+<span class="pc bpc" id="L80" title="1 of 2 branches missed.">        &amp;&amp; TypeName.arrayComponent(parameters.get(parameters.size() - 1).type) != null;</span>
+  }
+
+  void emit(CodeWriter codeWriter, String enclosingName, Set&lt;Modifier&gt; implicitModifiers)
+      throws IOException {
+<span class="fc" id="L85">    codeWriter.emitJavadoc(javadoc);</span>
+<span class="fc" id="L86">    codeWriter.emitAnnotations(annotations, false);</span>
+<span class="fc" id="L87">    codeWriter.emitModifiers(modifiers, implicitModifiers);</span>
+
+<span class="fc bfc" id="L89" title="All 2 branches covered.">    if (!typeVariables.isEmpty()) {</span>
+<span class="fc" id="L90">      codeWriter.emitTypeVariables(typeVariables);</span>
+<span class="fc" id="L91">      codeWriter.emit(&quot; &quot;);</span>
+    }
+
+<span class="fc bfc" id="L94" title="All 2 branches covered.">    if (isConstructor()) {</span>
+<span class="fc" id="L95">      codeWriter.emit(&quot;$L($Z&quot;, enclosingName);</span>
+    } else {
+<span class="fc" id="L97">      codeWriter.emit(&quot;$T $L($Z&quot;, returnType, name);</span>
+    }
+
+<span class="fc" id="L100">    boolean firstParameter = true;</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">    for (Iterator&lt;ParameterSpec&gt; i = parameters.iterator(); i.hasNext(); ) {</span>
+<span class="fc" id="L102">      ParameterSpec parameter = i.next();</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">      if (!firstParameter) codeWriter.emit(&quot;,&quot;).emitWrappingSpace();</span>
+<span class="fc bfc" id="L104" title="All 4 branches covered.">      parameter.emit(codeWriter, !i.hasNext() &amp;&amp; varargs);</span>
+<span class="fc" id="L105">      firstParameter = false;</span>
+<span class="fc" id="L106">    }</span>
+
+<span class="fc" id="L108">    codeWriter.emit(&quot;)&quot;);</span>
+
+<span class="pc bpc" id="L110" title="1 of 4 branches missed.">    if (defaultValue != null &amp;&amp; !defaultValue.isEmpty()) {</span>
+<span class="fc" id="L111">      codeWriter.emit(&quot; default &quot;);</span>
+<span class="fc" id="L112">      codeWriter.emit(defaultValue);</span>
+    }
+
+<span class="fc bfc" id="L115" title="All 2 branches covered.">    if (!exceptions.isEmpty()) {</span>
+<span class="fc" id="L116">      codeWriter.emitWrappingSpace().emit(&quot;throws&quot;);</span>
+<span class="fc" id="L117">      boolean firstException = true;</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">      for (TypeName exception : exceptions) {</span>
+<span class="fc bfc" id="L119" title="All 2 branches covered.">        if (!firstException) codeWriter.emit(&quot;,&quot;);</span>
+<span class="fc" id="L120">        codeWriter.emitWrappingSpace().emit(&quot;$T&quot;, exception);</span>
+<span class="fc" id="L121">        firstException = false;</span>
+<span class="fc" id="L122">      }</span>
+    }
+
+<span class="fc bfc" id="L125" title="All 2 branches covered.">    if (hasModifier(Modifier.ABSTRACT)) {</span>
+<span class="fc" id="L126">      codeWriter.emit(&quot;;\n&quot;);</span>
+<span class="fc bfc" id="L127" title="All 2 branches covered.">    } else if (hasModifier(Modifier.NATIVE)) {</span>
+      // Code is allowed to support stuff like GWT JSNI.
+<span class="fc" id="L129">      codeWriter.emit(code);</span>
+<span class="fc" id="L130">      codeWriter.emit(&quot;;\n&quot;);</span>
+    } else {
+<span class="fc" id="L132">      codeWriter.emit(&quot; {\n&quot;);</span>
+
+<span class="fc" id="L134">      codeWriter.indent();</span>
+<span class="fc" id="L135">      codeWriter.emit(code);</span>
+<span class="fc" id="L136">      codeWriter.unindent();</span>
+
+<span class="fc" id="L138">      codeWriter.emit(&quot;}\n&quot;);</span>
+    }
+<span class="fc" id="L140">  }</span>
+
+  public boolean hasModifier(Modifier modifier) {
+<span class="fc" id="L143">    return modifiers.contains(modifier);</span>
+  }
+
+  public boolean isConstructor() {
+<span class="fc" id="L147">    return name.equals(CONSTRUCTOR);</span>
+  }
+
+  @Override public boolean equals(Object o) {
+<span class="pc bpc" id="L151" title="1 of 2 branches missed.">    if (this == o) return true;</span>
+<span class="pc bpc" id="L152" title="1 of 2 branches missed.">    if (o == null) return false;</span>
+<span class="pc bpc" id="L153" title="1 of 2 branches missed.">    if (getClass() != o.getClass()) return false;</span>
+<span class="fc" id="L154">    return toString().equals(o.toString());</span>
+  }
+
+  @Override public int hashCode() {
+<span class="fc" id="L158">    return toString().hashCode();</span>
+  }
+
+  @Override public String toString() {
+<span class="fc" id="L162">    StringBuilder out = new StringBuilder();</span>
+    try {
+<span class="fc" id="L164">      CodeWriter codeWriter = new CodeWriter(out);</span>
+<span class="fc" id="L165">      emit(codeWriter, &quot;Constructor&quot;, Collections.emptySet());</span>
+<span class="fc" id="L166">      return out.toString();</span>
+<span class="nc" id="L167">    } catch (IOException e) {</span>
+<span class="nc" id="L168">      throw new AssertionError();</span>
+    }
+  }
+
+  public static Builder methodBuilder(String name) {
+<span class="fc" id="L173">    return new Builder(name);</span>
+  }
+
+  public static Builder constructorBuilder() {
+<span class="fc" id="L177">    return new Builder(CONSTRUCTOR);</span>
+  }
+
+  /**
+   * Returns a new method spec builder that overrides {@code method}.
+   *
+   * &lt;p&gt;This will copy its visibility modifiers, type parameters, return type, name, parameters, and
+   * throws declarations. An {@link Override} annotation will be added.
+   *
+   * &lt;p&gt;Note that in JavaPoet 1.2 through 1.7 this method retained annotations from the method and
+   * parameters of the overridden method. Since JavaPoet 1.8 annotations must be added separately.
+   */
+  public static Builder overriding(ExecutableElement method) {
+<span class="fc" id="L190">    checkNotNull(method, &quot;method == null&quot;);</span>
+
+<span class="fc" id="L192">    Element enclosingClass = method.getEnclosingElement();</span>
+<span class="fc bfc" id="L193" title="All 2 branches covered.">    if (enclosingClass.getModifiers().contains(Modifier.FINAL)) {</span>
+<span class="fc" id="L194">      throw new IllegalArgumentException(&quot;Cannot override method on final class &quot; + enclosingClass);</span>
+    }
+
+<span class="fc" id="L197">    Set&lt;Modifier&gt; modifiers = method.getModifiers();</span>
+<span class="fc bfc" id="L198" title="All 2 branches covered.">    if (modifiers.contains(Modifier.PRIVATE)</span>
+<span class="fc bfc" id="L199" title="All 2 branches covered.">        || modifiers.contains(Modifier.FINAL)</span>
+<span class="fc bfc" id="L200" title="All 2 branches covered.">        || modifiers.contains(Modifier.STATIC)) {</span>
+<span class="fc" id="L201">      throw new IllegalArgumentException(&quot;cannot override method with modifiers: &quot; + modifiers);</span>
+    }
+
+<span class="fc" id="L204">    String methodName = method.getSimpleName().toString();</span>
+<span class="fc" id="L205">    MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(methodName);</span>
+
+<span class="fc" id="L207">    methodBuilder.addAnnotation(Override.class);</span>
+
+<span class="fc" id="L209">    modifiers = new LinkedHashSet&lt;&gt;(modifiers);</span>
+<span class="fc" id="L210">    modifiers.remove(Modifier.ABSTRACT);</span>
+<span class="fc" id="L211">    modifiers.remove(Modifier.DEFAULT);</span>
+<span class="fc" id="L212">    methodBuilder.addModifiers(modifiers);</span>
+
+<span class="fc bfc" id="L214" title="All 2 branches covered.">    for (TypeParameterElement typeParameterElement : method.getTypeParameters()) {</span>
+<span class="fc" id="L215">      TypeVariable var = (TypeVariable) typeParameterElement.asType();</span>
+<span class="fc" id="L216">      methodBuilder.addTypeVariable(TypeVariableName.get(var));</span>
+<span class="fc" id="L217">    }</span>
+
+<span class="fc" id="L219">    methodBuilder.returns(TypeName.get(method.getReturnType()));</span>
+<span class="fc" id="L220">    methodBuilder.addParameters(ParameterSpec.parametersOf(method));</span>
+<span class="fc" id="L221">    methodBuilder.varargs(method.isVarArgs());</span>
+
+<span class="fc bfc" id="L223" title="All 2 branches covered.">    for (TypeMirror thrownType : method.getThrownTypes()) {</span>
+<span class="fc" id="L224">      methodBuilder.addException(TypeName.get(thrownType));</span>
+<span class="fc" id="L225">    }</span>
+
+<span class="fc" id="L227">    return methodBuilder;</span>
+  }
+
+  /**
+   * Returns a new method spec builder that overrides {@code method} as a member of {@code
+   * enclosing}. This will resolve type parameters: for example overriding {@link
+   * Comparable#compareTo} in a type that implements {@code Comparable&lt;Movie&gt;}, the {@code T}
+   * parameter will be resolved to {@code Movie}.
+   *
+   * &lt;p&gt;This will copy its visibility modifiers, type parameters, return type, name, parameters, and
+   * throws declarations. An {@link Override} annotation will be added.
+   *
+   * &lt;p&gt;Note that in JavaPoet 1.2 through 1.7 this method retained annotations from the method and
+   * parameters of the overridden method. Since JavaPoet 1.8 annotations must be added separately.
+   */
+  public static Builder overriding(
+      ExecutableElement method, DeclaredType enclosing, Types types) {
+<span class="fc" id="L244">    ExecutableType executableType = (ExecutableType) types.asMemberOf(enclosing, method);</span>
+<span class="fc" id="L245">    List&lt;? extends TypeMirror&gt; resolvedParameterTypes = executableType.getParameterTypes();</span>
+<span class="fc" id="L246">    List&lt;? extends TypeMirror&gt; resolvedThrownTypes = executableType.getThrownTypes();</span>
+<span class="fc" id="L247">    TypeMirror resolvedReturnType = executableType.getReturnType();</span>
+
+<span class="fc" id="L249">    Builder builder = overriding(method);</span>
+<span class="fc" id="L250">    builder.returns(TypeName.get(resolvedReturnType));</span>
+<span class="fc bfc" id="L251" title="All 2 branches covered.">    for (int i = 0, size = builder.parameters.size(); i &lt; size; i++) {</span>
+<span class="fc" id="L252">      ParameterSpec parameter = builder.parameters.get(i);</span>
+<span class="fc" id="L253">      TypeName type = TypeName.get(resolvedParameterTypes.get(i));</span>
+<span class="fc" id="L254">      builder.parameters.set(i, parameter.toBuilder(type, parameter.name).build());</span>
+    }
+<span class="fc" id="L256">    builder.exceptions.clear();</span>
+<span class="fc bfc" id="L257" title="All 2 branches covered.">    for (int i = 0, size = resolvedThrownTypes.size(); i &lt; size; i++) {</span>
+<span class="fc" id="L258">      builder.addException(TypeName.get(resolvedThrownTypes.get(i)));</span>
+    }
+
+<span class="fc" id="L261">    return builder;</span>
+  }
+
+  public Builder toBuilder() {
+<span class="fc" id="L265">    Builder builder = new Builder(name);</span>
+<span class="fc" id="L266">    builder.javadoc.add(javadoc);</span>
+<span class="fc" id="L267">    builder.annotations.addAll(annotations);</span>
+<span class="fc" id="L268">    builder.modifiers.addAll(modifiers);</span>
+<span class="fc" id="L269">    builder.typeVariables.addAll(typeVariables);</span>
+<span class="fc" id="L270">    builder.returnType = returnType;</span>
+<span class="fc" id="L271">    builder.parameters.addAll(parameters);</span>
+<span class="fc" id="L272">    builder.exceptions.addAll(exceptions);</span>
+<span class="fc" id="L273">    builder.code.add(code);</span>
+<span class="fc" id="L274">    builder.varargs = varargs;</span>
+<span class="fc" id="L275">    builder.defaultValue = defaultValue;</span>
+<span class="fc" id="L276">    return builder;</span>
+  }
+
+  public static final class Builder {
+    private final String name;
+
+<span class="fc" id="L282">    private final CodeBlock.Builder javadoc = CodeBlock.builder();</span>
+<span class="fc" id="L283">    private final List&lt;AnnotationSpec&gt; annotations = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L284">    private final List&lt;Modifier&gt; modifiers = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L285">    private List&lt;TypeVariableName&gt; typeVariables = new ArrayList&lt;&gt;();</span>
+    private TypeName returnType;
+<span class="fc" id="L287">    private final List&lt;ParameterSpec&gt; parameters = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L288">    private final Set&lt;TypeName&gt; exceptions = new LinkedHashSet&lt;&gt;();</span>
+<span class="fc" id="L289">    private final CodeBlock.Builder code = CodeBlock.builder();</span>
+    private boolean varargs;
+    private CodeBlock defaultValue;
+
+<span class="fc" id="L293">    private Builder(String name) {</span>
+<span class="fc" id="L294">      checkNotNull(name, &quot;name == null&quot;);</span>
+<span class="pc bpc" id="L295" title="1 of 4 branches missed.">      checkArgument(name.equals(CONSTRUCTOR) || SourceVersion.isName(name),</span>
+          &quot;not a valid name: %s&quot;, name);
+<span class="fc" id="L297">      this.name = name;</span>
+<span class="fc bfc" id="L298" title="All 2 branches covered.">      this.returnType = name.equals(CONSTRUCTOR) ? null : TypeName.VOID;</span>
+<span class="fc" id="L299">    }</span>
+
+    public Builder addJavadoc(String format, Object... args) {
+<span class="fc" id="L302">      javadoc.add(format, args);</span>
+<span class="fc" id="L303">      return this;</span>
+    }
+
+    public Builder addJavadoc(CodeBlock block) {
+<span class="nc" id="L307">      javadoc.add(block);</span>
+<span class="nc" id="L308">      return this;</span>
+    }
+
+    public Builder addAnnotations(Iterable&lt;AnnotationSpec&gt; annotationSpecs) {
+<span class="pc bpc" id="L312" title="1 of 2 branches missed.">      checkArgument(annotationSpecs != null, &quot;annotationSpecs == null&quot;);</span>
+<span class="nc bnc" id="L313" title="All 2 branches missed.">      for (AnnotationSpec annotationSpec : annotationSpecs) {</span>
+<span class="nc" id="L314">        this.annotations.add(annotationSpec);</span>
+<span class="nc" id="L315">      }</span>
+<span class="nc" id="L316">      return this;</span>
+    }
+
+    public Builder addAnnotation(AnnotationSpec annotationSpec) {
+<span class="fc" id="L320">      this.annotations.add(annotationSpec);</span>
+<span class="fc" id="L321">      return this;</span>
+    }
+
+    public Builder addAnnotation(ClassName annotation) {
+<span class="fc" id="L325">      this.annotations.add(AnnotationSpec.builder(annotation).build());</span>
+<span class="fc" id="L326">      return this;</span>
+    }
+
+    public Builder addAnnotation(Class&lt;?&gt; annotation) {
+<span class="fc" id="L330">      return addAnnotation(ClassName.get(annotation));</span>
+    }
+
+    public Builder addModifiers(Modifier... modifiers) {
+<span class="fc" id="L334">      checkNotNull(modifiers, &quot;modifiers == null&quot;);</span>
+<span class="fc" id="L335">      Collections.addAll(this.modifiers, modifiers);</span>
+<span class="fc" id="L336">      return this;</span>
+    }
+
+    public Builder addModifiers(Iterable&lt;Modifier&gt; modifiers) {
+<span class="fc" id="L340">      checkNotNull(modifiers, &quot;modifiers == null&quot;);</span>
+<span class="fc bfc" id="L341" title="All 2 branches covered.">      for (Modifier modifier : modifiers) {</span>
+<span class="fc" id="L342">        this.modifiers.add(modifier);</span>
+<span class="fc" id="L343">      }</span>
+<span class="fc" id="L344">      return this;</span>
+    }
+
+    public Builder addTypeVariables(Iterable&lt;TypeVariableName&gt; typeVariables) {
+<span class="pc bpc" id="L348" title="1 of 2 branches missed.">      checkArgument(typeVariables != null, &quot;typeVariables == null&quot;);</span>
+<span class="nc bnc" id="L349" title="All 2 branches missed.">      for (TypeVariableName typeVariable : typeVariables) {</span>
+<span class="nc" id="L350">        this.typeVariables.add(typeVariable);</span>
+<span class="nc" id="L351">      }</span>
+<span class="nc" id="L352">      return this;</span>
+    }
+
+    public Builder addTypeVariable(TypeVariableName typeVariable) {
+<span class="fc" id="L356">      typeVariables.add(typeVariable);</span>
+<span class="fc" id="L357">      return this;</span>
+    }
+
+    public Builder returns(TypeName returnType) {
+<span class="pc bpc" id="L361" title="1 of 2 branches missed.">      checkState(!name.equals(CONSTRUCTOR), &quot;constructor cannot have return type.&quot;);</span>
+<span class="fc" id="L362">      this.returnType = returnType;</span>
+<span class="fc" id="L363">      return this;</span>
+    }
+
+    public Builder returns(Type returnType) {
+<span class="fc" id="L367">      return returns(TypeName.get(returnType));</span>
+    }
+
+    public Builder addParameters(Iterable&lt;ParameterSpec&gt; parameterSpecs) {
+<span class="fc bfc" id="L371" title="All 2 branches covered.">      checkArgument(parameterSpecs != null, &quot;parameterSpecs == null&quot;);</span>
+<span class="fc bfc" id="L372" title="All 2 branches covered.">      for (ParameterSpec parameterSpec : parameterSpecs) {</span>
+<span class="fc" id="L373">        this.parameters.add(parameterSpec);</span>
+<span class="fc" id="L374">      }</span>
+<span class="fc" id="L375">      return this;</span>
+    }
+
+    public Builder addParameter(ParameterSpec parameterSpec) {
+<span class="fc" id="L379">      this.parameters.add(parameterSpec);</span>
+<span class="fc" id="L380">      return this;</span>
+    }
+
+    public Builder addParameter(TypeName type, String name, Modifier... modifiers) {
+<span class="fc" id="L384">      return addParameter(ParameterSpec.builder(type, name, modifiers).build());</span>
+    }
+
+    public Builder addParameter(Type type, String name, Modifier... modifiers) {
+<span class="fc" id="L388">      return addParameter(TypeName.get(type), name, modifiers);</span>
+    }
+
+    public Builder varargs() {
+<span class="fc" id="L392">      return varargs(true);</span>
+    }
+
+    public Builder varargs(boolean varargs) {
+<span class="fc" id="L396">      this.varargs = varargs;</span>
+<span class="fc" id="L397">      return this;</span>
+    }
+
+    public Builder addExceptions(Iterable&lt;? extends TypeName&gt; exceptions) {
+<span class="pc bpc" id="L401" title="1 of 2 branches missed.">      checkArgument(exceptions != null, &quot;exceptions == null&quot;);</span>
+<span class="nc bnc" id="L402" title="All 2 branches missed.">      for (TypeName exception : exceptions) {</span>
+<span class="nc" id="L403">        this.exceptions.add(exception);</span>
+<span class="nc" id="L404">      }</span>
+<span class="nc" id="L405">      return this;</span>
+    }
+
+    public Builder addException(TypeName exception) {
+<span class="fc" id="L409">      this.exceptions.add(exception);</span>
+<span class="fc" id="L410">      return this;</span>
+    }
+
+    public Builder addException(Type exception) {
+<span class="fc" id="L414">      return addException(TypeName.get(exception));</span>
+    }
+
+    public Builder addCode(String format, Object... args) {
+<span class="fc" id="L418">      code.add(format, args);</span>
+<span class="fc" id="L419">      return this;</span>
+    }
+
+    public Builder addNamedCode(String format, Map&lt;String, ?&gt; args) {
+<span class="nc" id="L423">      code.addNamed(format, args);</span>
+<span class="nc" id="L424">      return this;</span>
+    }
+
+    public Builder addCode(CodeBlock codeBlock) {
+<span class="fc" id="L428">      code.add(codeBlock);</span>
+<span class="fc" id="L429">      return this;</span>
+    }
+
+    public Builder addComment(String format, Object... args) {
+<span class="nc" id="L433">      code.add(&quot;// &quot; + format + &quot;\n&quot;, args);</span>
+<span class="nc" id="L434">      return this;</span>
+    }
+
+    public Builder defaultValue(String format, Object... args) {
+<span class="fc" id="L438">      return defaultValue(CodeBlock.of(format, args));</span>
+    }
+
+    public Builder defaultValue(CodeBlock codeBlock) {
+<span class="pc bpc" id="L442" title="1 of 2 branches missed.">      checkState(this.defaultValue == null, &quot;defaultValue was already set&quot;);</span>
+<span class="fc" id="L443">      this.defaultValue = checkNotNull(codeBlock, &quot;codeBlock == null&quot;);</span>
+<span class="fc" id="L444">      return this;</span>
+    }
+
+    /**
+     * @param controlFlow the control flow construct and its code, such as &quot;if (foo == 5)&quot;.
+     * Shouldn't contain braces or newline characters.
+     */
+    public Builder beginControlFlow(String controlFlow, Object... args) {
+<span class="fc" id="L452">      code.beginControlFlow(controlFlow, args);</span>
+<span class="fc" id="L453">      return this;</span>
+    }
+
+    /**
+     * @param controlFlow the control flow construct and its code, such as &quot;else if (foo == 10)&quot;.
+     *     Shouldn't contain braces or newline characters.
+     */
+    public Builder nextControlFlow(String controlFlow, Object... args) {
+<span class="fc" id="L461">      code.nextControlFlow(controlFlow, args);</span>
+<span class="fc" id="L462">      return this;</span>
+    }
+
+    public Builder endControlFlow() {
+<span class="fc" id="L466">      code.endControlFlow();</span>
+<span class="fc" id="L467">      return this;</span>
+    }
+
+    /**
+     * @param controlFlow the optional control flow construct and its code, such as
+     *     &quot;while(foo == 20)&quot;. Only used for &quot;do/while&quot; control flows.
+     */
+    public Builder endControlFlow(String controlFlow, Object... args) {
+<span class="fc" id="L475">      code.endControlFlow(controlFlow, args);</span>
+<span class="fc" id="L476">      return this;</span>
+    }
+
+    public Builder addStatement(String format, Object... args) {
+<span class="fc" id="L480">      code.addStatement(format, args);</span>
+<span class="fc" id="L481">      return this;</span>
+    }
+
+    public Builder addStatement(CodeBlock codeBlock) {
+<span class="nc" id="L485">      code.addStatement(codeBlock);</span>
+<span class="nc" id="L486">      return this;</span>
+    }
+
+    public MethodSpec build() {
+<span class="fc" id="L490">      return new MethodSpec(this);</span>
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

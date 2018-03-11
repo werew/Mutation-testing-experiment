@@ -1,0 +1,4 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+Converter: Protocol Buffers,retrofit2.converter.protobuf,ProtoRequestBodyConverter,0,14,0,0,0,4,0,3,0,3
+Converter: Protocol Buffers,retrofit2.converter.protobuf,ProtoResponseBodyConverter,0,28,0,0,0,8,0,2,0,2
+Converter: Protocol Buffers,retrofit2.converter.protobuf,ProtoConverterFactory,27,74,2,6,7,21,2,7,0,5

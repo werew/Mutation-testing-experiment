@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ArrayTypeName.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JavaPoet</a> &gt; <a href="index.source.html" class="el_package">com.squareup.javapoet</a> &gt; <span class="el_source">ArrayTypeName.java</span></div><h1>ArrayTypeName.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2015 Square, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.squareup.javapoet;
+
+import java.io.IOException;
+import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import javax.lang.model.element.TypeParameterElement;
+import javax.lang.model.type.ArrayType;
+
+import static com.squareup.javapoet.Util.checkNotNull;
+
+public final class ArrayTypeName extends TypeName {
+  public final TypeName componentType;
+
+  private ArrayTypeName(TypeName componentType) {
+<span class="fc" id="L34">    this(componentType, new ArrayList&lt;&gt;());</span>
+<span class="fc" id="L35">  }</span>
+
+  private ArrayTypeName(TypeName componentType, List&lt;AnnotationSpec&gt; annotations) {
+<span class="fc" id="L38">    super(annotations);</span>
+<span class="fc" id="L39">    this.componentType = checkNotNull(componentType, &quot;rawType == null&quot;);</span>
+<span class="fc" id="L40">  }</span>
+
+  @Override public ArrayTypeName annotated(List&lt;AnnotationSpec&gt; annotations) {
+<span class="fc" id="L43">    return new ArrayTypeName(componentType, concatAnnotations(annotations));</span>
+  }
+
+  @Override public TypeName withoutAnnotations() {
+<span class="nc" id="L47">    return new ArrayTypeName(componentType);</span>
+  }
+
+  @Override CodeWriter emit(CodeWriter out) throws IOException {
+<span class="fc" id="L51">    return out.emit(&quot;$T[]&quot;, componentType);</span>
+  }
+
+  /** Returns an array type whose elements are all instances of {@code componentType}. */
+  public static ArrayTypeName of(TypeName componentType) {
+<span class="fc" id="L56">    return new ArrayTypeName(componentType);</span>
+  }
+
+  /** Returns an array type whose elements are all instances of {@code componentType}. */
+  public static ArrayTypeName of(Type componentType) {
+<span class="fc" id="L61">    return of(TypeName.get(componentType));</span>
+  }
+
+  /** Returns an array type equivalent to {@code mirror}. */
+  public static ArrayTypeName get(ArrayType mirror) {
+<span class="nc" id="L66">    return get(mirror, new LinkedHashMap&lt;&gt;());</span>
+  }
+
+  static ArrayTypeName get(
+      ArrayType mirror, Map&lt;TypeParameterElement, TypeVariableName&gt; typeVariables) {
+<span class="fc" id="L71">    return new ArrayTypeName(get(mirror.getComponentType(), typeVariables));</span>
+  }
+
+  /** Returns an array type equivalent to {@code type}. */
+  public static ArrayTypeName get(GenericArrayType type) {
+<span class="nc" id="L76">    return get(type, new LinkedHashMap&lt;&gt;());</span>
+  }
+
+  static ArrayTypeName get(GenericArrayType type, Map&lt;Type, TypeVariableName&gt; map) {
+<span class="fc" id="L80">    return ArrayTypeName.of(get(type.getGenericComponentType(), map));</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Binding.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Dagger</a> &gt; <a href="index.source.html" class="el_package">dagger.internal</a> &gt; <span class="el_source">Binding.java</span></div><h1>Binding.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2012 Square, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package dagger.internal;
+
+import dagger.MembersInjector;
+import java.util.Set;
+import javax.inject.Provider;
+
+/**
+ * Injects a value of a specific type.
+ */
+public abstract class Binding&lt;T&gt; implements Provider&lt;T&gt;, MembersInjector&lt;T&gt; {
+<span class="fc" id="L26">  public static final Binding&lt;Object&gt; UNRESOLVED = new Binding&lt;Object&gt;(null, null, false, null) {</span>
+    @Override public Object get() {
+<span class="nc" id="L28">      throw new AssertionError(&quot;Unresolved binding should never be called to inject.&quot;);</span>
+    }
+    @Override public void injectMembers(Object t) {
+<span class="nc" id="L31">      throw new AssertionError(&quot;Unresolved binding should never be called to inject.&quot;);</span>
+    }
+  };
+  protected static final boolean IS_SINGLETON = true;
+  protected static final boolean NOT_SINGLETON = false;
+
+  /** Set if the provided instance is always the same object. */
+  private static final int SINGLETON = 1 &lt;&lt; 0;
+
+  /** Set if this binding's {@link #attach} completed without any missing dependencies. */
+  private static final int LINKED = 1 &lt;&lt; 1;
+
+  /** Set if {@link ProblemDetector} is actively visiting this binding. */
+  private static final int VISITING = 1 &lt;&lt; 2;
+
+  /** Set if {@link ProblemDetector} has confirmed this binding has no circular dependencies. */
+  private static final int CYCLE_FREE = 1 &lt;&lt; 3;
+
+  private static final int DEPENDED_ON = 1 &lt;&lt; 4;
+
+  private static final int LIBRARY = 1 &lt;&lt; 5;
+
+  /** The key used to provide instances of 'T', or null if this binding cannot provide instances. */
+  public final String provideKey;
+
+  /** The key used to inject members of 'T', or null if this binding cannot inject members. */
+  public final String membersKey;
+
+  /** Bitfield of states like SINGLETON and LINKED. */
+  private int bits;
+
+  public final Object requiredBy;
+
+<span class="fc" id="L64">  protected Binding(String provideKey, String membersKey, boolean singleton, Object requiredBy) {</span>
+<span class="pc bpc" id="L65" title="1 of 4 branches missed.">    if (singleton &amp;&amp; provideKey == null) {</span>
+<span class="nc" id="L66">      throw new InvalidBindingException(Keys.getClassName(membersKey),</span>
+          &quot;is exclusively members injected and therefore cannot be scoped&quot;);
+    }
+<span class="fc" id="L69">    this.provideKey = provideKey;</span>
+<span class="fc" id="L70">    this.membersKey = membersKey;</span>
+<span class="fc" id="L71">    this.requiredBy = requiredBy;</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">    this.bits = (singleton ? SINGLETON : 0);</span>
+<span class="fc" id="L73">  }</span>
+
+  /**
+   * Links this binding to its dependencies.
+   */
+  public void attach(Linker linker) {
+<span class="fc" id="L79">  }</span>
+
+  @Override public void injectMembers(T t) {
+    // If no members to inject, no-op.  Some classes will have no injectable members even
+    // if their supertypes do.
+<span class="nc" id="L84">  }</span>
+
+  @Override public T get() {
+<span class="nc" id="L87">    throw new UnsupportedOperationException(&quot;No injectable constructor on &quot; + getClass().getName());</span>
+  }
+
+  /**
+   * Populates {@code getBindings} and {@code injectMembersBindings} with the
+   * bindings used by this binding to satisfy {@link #get} and {@link
+   * #injectMembers} calls, respectively.
+   *
+   * @param getBindings the bindings required by this binding's {@code get}
+   *     method. Although {@code get} usually calls into {@code injectMembers},
+   *     this &lt;i&gt;does not&lt;/i&gt; contain the injectMembers bindings.
+   * @param injectMembersBindings the bindings required by this binding's {@code
+   *     injectMembers} method.
+   */
+  public void getDependencies(Set&lt;Binding&lt;?&gt;&gt; getBindings, Set&lt;Binding&lt;?&gt;&gt; injectMembersBindings) {
+    // Do nothing.  No override == no dependencies to contribute.
+<span class="fc" id="L103">  }</span>
+
+  void setLinked() {
+<span class="fc" id="L106">    bits |= LINKED;</span>
+<span class="fc" id="L107">  }</span>
+
+  public boolean isLinked() {
+<span class="fc bfc" id="L110" title="All 2 branches covered.">    return (bits &amp; LINKED) != 0;</span>
+  }
+
+  boolean isSingleton() {
+<span class="fc bfc" id="L114" title="All 2 branches covered.">    return (bits &amp; SINGLETON) != 0;</span>
+  }
+
+  public boolean isVisiting() {
+<span class="fc bfc" id="L118" title="All 2 branches covered.">    return (bits &amp; VISITING) != 0;</span>
+  }
+
+  public void setVisiting(boolean visiting) {
+<span class="fc bfc" id="L122" title="All 2 branches covered.">    this.bits = visiting ? (bits | VISITING) : (bits &amp; ~VISITING);</span>
+<span class="fc" id="L123">  }</span>
+
+  public boolean isCycleFree() {
+<span class="fc bfc" id="L126" title="All 2 branches covered.">    return (bits &amp; CYCLE_FREE) != 0;</span>
+  }
+
+  public void setCycleFree(boolean cycleFree) {
+<span class="pc bpc" id="L130" title="1 of 2 branches missed.">    this.bits = cycleFree ? (bits | CYCLE_FREE) : (bits &amp; ~CYCLE_FREE);</span>
+<span class="fc" id="L131">  }</span>
+
+  public void setLibrary(boolean library) {
+<span class="fc bfc" id="L134" title="All 2 branches covered.">    this.bits = library ? (bits | LIBRARY) : (bits &amp; ~LIBRARY);</span>
+<span class="fc" id="L135">  }</span>
+
+  public boolean library() {
+<span class="fc bfc" id="L138" title="All 2 branches covered.">    return (bits &amp; LIBRARY) != 0;</span>
+  }
+
+  public void setDependedOn(boolean dependedOn) {
+<span class="pc bpc" id="L142" title="1 of 2 branches missed.">    this.bits = dependedOn ? (bits | DEPENDED_ON) : (bits &amp; ~DEPENDED_ON);</span>
+<span class="fc" id="L143">  }</span>
+
+  public boolean dependedOn() {
+<span class="fc bfc" id="L146" title="All 2 branches covered.">    return (bits &amp; DEPENDED_ON) != 0;</span>
+  }
+
+  @Override public String toString() {
+<span class="nc" id="L150">    return getClass().getSimpleName()</span>
+            + &quot;[provideKey=\&quot;&quot; + provideKey + &quot;\&quot;, memberskey=\&quot;&quot; + membersKey + &quot;\&quot;]&quot;;
+  }
+
+  /** An exception thrown by anything attempting to construct a binding which is invalid. */
+  public static class InvalidBindingException extends RuntimeException {
+    public final String type;
+
+    public InvalidBindingException(String type, String error) {
+<span class="fc" id="L159">      super(error);</span>
+<span class="fc" id="L160">      this.type = type;</span>
+<span class="fc" id="L161">    }</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

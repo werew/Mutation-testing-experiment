@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ParameterizedTypeName.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JavaPoet</a> &gt; <a href="index.source.html" class="el_package">com.squareup.javapoet</a> &gt; <span class="el_source">ParameterizedTypeName.java</span></div><h1>ParameterizedTypeName.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2015 Square, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.squareup.javapoet;
+
+import java.io.IOException;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import static com.squareup.javapoet.Util.checkArgument;
+import static com.squareup.javapoet.Util.checkNotNull;
+
+public final class ParameterizedTypeName extends TypeName {
+  private final ParameterizedTypeName enclosingType;
+  public final ClassName rawType;
+  public final List&lt;TypeName&gt; typeArguments;
+
+  ParameterizedTypeName(ParameterizedTypeName enclosingType, ClassName rawType,
+      List&lt;TypeName&gt; typeArguments) {
+<span class="fc" id="L38">    this(enclosingType, rawType, typeArguments, new ArrayList&lt;&gt;());</span>
+<span class="fc" id="L39">  }</span>
+
+  private ParameterizedTypeName(ParameterizedTypeName enclosingType, ClassName rawType,
+      List&lt;TypeName&gt; typeArguments, List&lt;AnnotationSpec&gt; annotations) {
+<span class="fc" id="L43">    super(annotations);</span>
+<span class="fc" id="L44">    this.rawType = checkNotNull(rawType, &quot;rawType == null&quot;);</span>
+<span class="fc" id="L45">    this.enclosingType = enclosingType;</span>
+<span class="fc" id="L46">    this.typeArguments = Util.immutableList(typeArguments);</span>
+
+<span class="pc bpc" id="L48" title="1 of 4 branches missed.">    checkArgument(!this.typeArguments.isEmpty() || enclosingType != null,</span>
+        &quot;no type arguments: %s&quot;, rawType);
+<span class="fc bfc" id="L50" title="All 2 branches covered.">    for (TypeName typeArgument : this.typeArguments) {</span>
+<span class="pc bpc" id="L51" title="2 of 4 branches missed.">      checkArgument(!typeArgument.isPrimitive() &amp;&amp; typeArgument != VOID,</span>
+          &quot;invalid type parameter: %s&quot;, typeArgument);
+<span class="fc" id="L53">    }</span>
+<span class="fc" id="L54">  }</span>
+
+  @Override public ParameterizedTypeName annotated(List&lt;AnnotationSpec&gt; annotations) {
+<span class="fc" id="L57">    return new ParameterizedTypeName(</span>
+<span class="fc" id="L58">        enclosingType, rawType, typeArguments, concatAnnotations(annotations));</span>
+  }
+
+  @Override public TypeName withoutAnnotations() {
+<span class="nc" id="L62">    return new ParameterizedTypeName(enclosingType, rawType, typeArguments, new ArrayList&lt;&gt;());</span>
+  }
+
+  @Override CodeWriter emit(CodeWriter out) throws IOException {
+<span class="fc bfc" id="L66" title="All 2 branches covered.">    if (enclosingType != null) {</span>
+<span class="fc" id="L67">      enclosingType.emitAnnotations(out);</span>
+<span class="fc" id="L68">      enclosingType.emit(out);</span>
+<span class="fc" id="L69">      out.emit(&quot;.&quot; + rawType.simpleName());</span>
+    } else {
+<span class="fc" id="L71">      rawType.emitAnnotations(out);</span>
+<span class="fc" id="L72">      rawType.emit(out);</span>
+    }
+<span class="fc bfc" id="L74" title="All 2 branches covered.">    if (!typeArguments.isEmpty()) {</span>
+<span class="fc" id="L75">      out.emitAndIndent(&quot;&lt;&quot;);</span>
+<span class="fc" id="L76">      boolean firstParameter = true;</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">      for (TypeName parameter : typeArguments) {</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">        if (!firstParameter) out.emitAndIndent(&quot;, &quot;);</span>
+<span class="fc" id="L79">        parameter.emitAnnotations(out);</span>
+<span class="fc" id="L80">        parameter.emit(out);</span>
+<span class="fc" id="L81">        firstParameter = false;</span>
+<span class="fc" id="L82">      }</span>
+<span class="fc" id="L83">      out.emitAndIndent(&quot;&gt;&quot;);</span>
+    }
+<span class="fc" id="L85">    return out;</span>
+  }
+
+  /**
+   * Returns a new {@link ParameterizedTypeName} instance for the specified {@code name} as nested
+   * inside this class.
+   */
+  public ParameterizedTypeName nestedClass(String name) {
+<span class="nc" id="L93">    checkNotNull(name, &quot;name == null&quot;);</span>
+<span class="nc" id="L94">    return new ParameterizedTypeName(this, rawType.nestedClass(name), new ArrayList&lt;&gt;(),</span>
+        new ArrayList&lt;&gt;());
+  }
+
+  /**
+   * Returns a new {@link ParameterizedTypeName} instance for the specified {@code name} as nested
+   * inside this class, with the specified {@code typeArguments}.
+   */
+  public ParameterizedTypeName nestedClass(String name, List&lt;TypeName&gt; typeArguments) {
+<span class="fc" id="L103">    checkNotNull(name, &quot;name == null&quot;);</span>
+<span class="fc" id="L104">    return new ParameterizedTypeName(this, rawType.nestedClass(name), typeArguments,</span>
+        new ArrayList&lt;&gt;());
+  }
+
+  /** Returns a parameterized type, applying {@code typeArguments} to {@code rawType}. */
+  public static ParameterizedTypeName get(ClassName rawType, TypeName... typeArguments) {
+<span class="fc" id="L110">    return new ParameterizedTypeName(null, rawType, Arrays.asList(typeArguments));</span>
+  }
+
+  /** Returns a parameterized type, applying {@code typeArguments} to {@code rawType}. */
+  public static ParameterizedTypeName get(Class&lt;?&gt; rawType, Type... typeArguments) {
+<span class="fc" id="L115">    return new ParameterizedTypeName(null, ClassName.get(rawType), list(typeArguments));</span>
+  }
+
+  /** Returns a parameterized type equivalent to {@code type}. */
+  public static ParameterizedTypeName get(ParameterizedType type) {
+<span class="nc" id="L120">    return get(type, new LinkedHashMap&lt;&gt;());</span>
+  }
+
+  /** Returns a parameterized type equivalent to {@code type}. */
+  static ParameterizedTypeName get(ParameterizedType type, Map&lt;Type, TypeVariableName&gt; map) {
+<span class="fc" id="L125">    ClassName rawType = ClassName.get((Class&lt;?&gt;) type.getRawType());</span>
+<span class="fc bfc" id="L126" title="All 2 branches covered.">    ParameterizedType ownerType = (type.getOwnerType() instanceof ParameterizedType)</span>
+<span class="pc bpc" id="L127" title="1 of 2 branches missed.">        &amp;&amp; !Modifier.isStatic(((Class&lt;?&gt;) type.getRawType()).getModifiers())</span>
+<span class="fc" id="L128">        ? (ParameterizedType) type.getOwnerType() : null;</span>
+<span class="fc" id="L129">    List&lt;TypeName&gt; typeArguments = TypeName.list(type.getActualTypeArguments(), map);</span>
+<span class="fc bfc" id="L130" title="All 2 branches covered.">    return (ownerType != null)</span>
+<span class="fc" id="L131">        ? get(ownerType, map).nestedClass(rawType.simpleName(), typeArguments)</span>
+<span class="fc" id="L132">        : new ParameterizedTypeName(null, rawType, typeArguments);</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

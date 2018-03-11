@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>IsIterableWithSize.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JavaHamcrest</a> &gt; <a href="index.source.html" class="el_package">org.hamcrest.collection</a> &gt; <span class="el_source">IsIterableWithSize.java</span></div><h1>IsIterableWithSize.java</h1><pre class="source lang-java linenums">package org.hamcrest.collection;
+
+import org.hamcrest.FeatureMatcher;
+import org.hamcrest.Matcher;
+
+import java.util.Iterator;
+
+import static org.hamcrest.core.IsEqual.equalTo;
+
+public class IsIterableWithSize&lt;E&gt; extends FeatureMatcher&lt;Iterable&lt;E&gt;, Integer&gt; {
+
+    public IsIterableWithSize(Matcher&lt;? super Integer&gt; sizeMatcher) {
+<span class="fc" id="L13">        super(sizeMatcher, &quot;an iterable with size&quot;, &quot;iterable size&quot;);</span>
+<span class="fc" id="L14">    }</span>
+    
+
+    @Override
+    protected Integer featureValueOf(Iterable&lt;E&gt; actual) {
+<span class="fc" id="L19">      int size = 0;</span>
+<span class="fc bfc" id="L20" title="All 2 branches covered.">      for (Iterator&lt;E&gt; iterator = actual.iterator(); iterator.hasNext(); iterator.next()) {</span>
+<span class="fc" id="L21">        size++;</span>
+      }
+<span class="fc" id="L23">      return size;</span>
+    }
+
+    /**
+     * Creates a matcher for {@link Iterable}s that matches when a single pass over the
+     * examined {@link Iterable} yields an item count that satisfies the specified
+     * matcher.
+     * For example:
+     * &lt;pre&gt;assertThat(Arrays.asList(&quot;foo&quot;, &quot;bar&quot;), iterableWithSize(equalTo(2)))&lt;/pre&gt;
+     * 
+     * @param sizeMatcher
+     *     a matcher for the number of items that should be yielded by an examined {@link Iterable}
+     */
+    public static &lt;E&gt; Matcher&lt;Iterable&lt;E&gt;&gt; iterableWithSize(Matcher&lt;? super Integer&gt; sizeMatcher) {
+<span class="fc" id="L37">        return new IsIterableWithSize&lt;E&gt;(sizeMatcher);</span>
+    }
+
+    /**
+     * Creates a matcher for {@link Iterable}s that matches when a single pass over the
+     * examined {@link Iterable} yields an item count that is equal to the specified
+     * &lt;code&gt;size&lt;/code&gt; argument.
+     * For example:
+     * &lt;pre&gt;assertThat(Arrays.asList(&quot;foo&quot;, &quot;bar&quot;), iterableWithSize(2))&lt;/pre&gt;
+     * 
+     * @param size
+     *     the number of items that should be yielded by an examined {@link Iterable}
+     */
+    public static &lt;E&gt; Matcher&lt;Iterable&lt;E&gt;&gt; iterableWithSize(int size) {
+<span class="fc" id="L51">        return iterableWithSize(equalTo(size));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ClassName.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JavaPoet</a> &gt; <a href="index.source.html" class="el_package">com.squareup.javapoet</a> &gt; <span class="el_source">ClassName.java</span></div><h1>ClassName.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2014 Google, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.squareup.javapoet;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import javax.lang.model.SourceVersion;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.PackageElement;
+import javax.lang.model.element.TypeElement;
+
+import static com.squareup.javapoet.Util.checkArgument;
+import static com.squareup.javapoet.Util.checkNotNull;
+import static javax.lang.model.element.NestingKind.MEMBER;
+import static javax.lang.model.element.NestingKind.TOP_LEVEL;
+
+/** A fully-qualified class name for top-level and member classes. */
+public final class ClassName extends TypeName implements Comparable&lt;ClassName&gt; {
+<span class="fc" id="L36">  public static final ClassName OBJECT = ClassName.get(Object.class);</span>
+
+  /** From top to bottom. This will be [&quot;java.util&quot;, &quot;Map&quot;, &quot;Entry&quot;] for {@link Map.Entry}. */
+  final List&lt;String&gt; names;
+  final String canonicalName;
+
+  private ClassName(List&lt;String&gt; names) {
+<span class="fc" id="L43">    this(names, new ArrayList&lt;&gt;());</span>
+<span class="fc" id="L44">  }</span>
+
+  private ClassName(List&lt;String&gt; names, List&lt;AnnotationSpec&gt; annotations) {
+<span class="fc" id="L47">    super(annotations);</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">    for (int i = 1; i &lt; names.size(); i++) {</span>
+<span class="fc" id="L49">      checkArgument(SourceVersion.isName(names.get(i)), &quot;part '%s' is keyword&quot;, names.get(i));</span>
+    }
+<span class="fc" id="L51">    this.names = Util.immutableList(names);</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">    this.canonicalName = (names.get(0).isEmpty()</span>
+<span class="fc" id="L53">        ? String.join(&quot;.&quot;, names.subList(1, names.size()))</span>
+<span class="fc" id="L54">        : String.join(&quot;.&quot;, names));</span>
+<span class="fc" id="L55">  }</span>
+
+  @Override public ClassName annotated(List&lt;AnnotationSpec&gt; annotations) {
+<span class="fc" id="L58">    return new ClassName(names, concatAnnotations(annotations));</span>
+  }
+
+  @Override public ClassName withoutAnnotations() {
+<span class="fc" id="L62">    return new ClassName(names);</span>
+  }
+
+  /** Returns the package name, like {@code &quot;java.util&quot;} for {@code Map.Entry}. */
+  public String packageName() {
+<span class="fc" id="L67">    return names.get(0);</span>
+  }
+
+  /**
+   * Returns the enclosing class, like {@link Map} for {@code Map.Entry}. Returns null if this class
+   * is not nested in another class.
+   */
+  public ClassName enclosingClassName() {
+<span class="fc bfc" id="L75" title="All 2 branches covered.">    if (names.size() == 2) return null;</span>
+<span class="fc" id="L76">    return new ClassName(names.subList(0, names.size() - 1));</span>
+  }
+
+  /**
+   * Returns the top class in this nesting group. Equivalent to chained calls to {@link
+   * #enclosingClassName()} until the result's enclosing class is null.
+   */
+  public ClassName topLevelClassName() {
+<span class="fc" id="L84">    return new ClassName(names.subList(0, 2));</span>
+  }
+
+  public String reflectionName() {
+    // trivial case: no nested names
+<span class="fc bfc" id="L89" title="All 2 branches covered.">    if (names.size() == 2) {</span>
+<span class="fc" id="L90">      String packageName = packageName();</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">      if (packageName.isEmpty()) {</span>
+<span class="fc" id="L92">        return names.get(1);</span>
+      }
+<span class="fc" id="L94">      return packageName + &quot;.&quot; + names.get(1);</span>
+    }
+    // concat top level class name and nested names
+<span class="fc" id="L97">    StringBuilder builder = new StringBuilder();</span>
+<span class="fc" id="L98">    builder.append(topLevelClassName());</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">    for (String name : simpleNames().subList(1, simpleNames().size())) {</span>
+<span class="fc" id="L100">      builder.append('$').append(name);</span>
+<span class="fc" id="L101">    }</span>
+<span class="fc" id="L102">    return builder.toString();</span>
+  }
+
+  /**
+   * Returns a new {@link ClassName} instance for the specified {@code name} as nested inside this
+   * class.
+   */
+  public ClassName nestedClass(String name) {
+<span class="fc" id="L110">    checkNotNull(name, &quot;name == null&quot;);</span>
+<span class="fc" id="L111">    List&lt;String&gt; result = new ArrayList&lt;&gt;(names.size() + 1);</span>
+<span class="fc" id="L112">    result.addAll(names);</span>
+<span class="fc" id="L113">    result.add(name);</span>
+<span class="fc" id="L114">    return new ClassName(result);</span>
+  }
+
+  public List&lt;String&gt; simpleNames() {
+<span class="fc" id="L118">    return names.subList(1, names.size());</span>
+  }
+
+  /**
+   * Returns a class that shares the same enclosing package or class. If this class is enclosed by
+   * another class, this is equivalent to {@code enclosingClassName().nestedClass(name)}. Otherwise
+   * it is equivalent to {@code get(packageName(), name)}.
+   */
+  public ClassName peerClass(String name) {
+<span class="fc" id="L127">    List&lt;String&gt; result = new ArrayList&lt;&gt;(names);</span>
+<span class="fc" id="L128">    result.set(result.size() - 1, name);</span>
+<span class="fc" id="L129">    return new ClassName(result);</span>
+  }
+
+  /** Returns the simple name of this class, like {@code &quot;Entry&quot;} for {@link Map.Entry}. */
+  public String simpleName() {
+<span class="fc" id="L134">    return names.get(names.size() - 1);</span>
+  }
+
+  public static ClassName get(Class&lt;?&gt; clazz) {
+<span class="fc" id="L138">    checkNotNull(clazz, &quot;clazz == null&quot;);</span>
+<span class="fc bfc" id="L139" title="All 2 branches covered.">    checkArgument(!clazz.isPrimitive(), &quot;primitive types cannot be represented as a ClassName&quot;);</span>
+<span class="pc bpc" id="L140" title="1 of 2 branches missed.">    checkArgument(!void.class.equals(clazz), &quot;'void' type cannot be represented as a ClassName&quot;);</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">    checkArgument(!clazz.isArray(), &quot;array types cannot be represented as a ClassName&quot;);</span>
+<span class="fc" id="L142">    List&lt;String&gt; names = new ArrayList&lt;&gt;();</span>
+    while (true) {
+<span class="fc" id="L144">      String anonymousSuffix = &quot;&quot;;</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">      while (clazz.isAnonymousClass()) {</span>
+<span class="fc" id="L146">        int lastDollar = clazz.getName().lastIndexOf('$');</span>
+<span class="fc" id="L147">        anonymousSuffix = clazz.getName().substring(lastDollar) + anonymousSuffix;</span>
+<span class="fc" id="L148">        clazz = clazz.getEnclosingClass();</span>
+<span class="fc" id="L149">      }</span>
+<span class="fc" id="L150">      names.add(clazz.getSimpleName() + anonymousSuffix);</span>
+<span class="fc" id="L151">      Class&lt;?&gt; enclosing = clazz.getEnclosingClass();</span>
+<span class="fc bfc" id="L152" title="All 2 branches covered.">      if (enclosing == null) break;</span>
+<span class="fc" id="L153">      clazz = enclosing;</span>
+<span class="fc" id="L154">    }</span>
+    // Avoid unreliable Class.getPackage(). https://github.com/square/javapoet/issues/295
+<span class="fc" id="L156">    int lastDot = clazz.getName().lastIndexOf('.');</span>
+<span class="pc bpc" id="L157" title="1 of 2 branches missed.">    if (lastDot != -1) names.add(clazz.getName().substring(0, lastDot));</span>
+<span class="fc" id="L158">    Collections.reverse(names);</span>
+<span class="fc" id="L159">    return new ClassName(names);</span>
+  }
+
+  /**
+   * Returns a new {@link ClassName} instance for the given fully-qualified class name string. This
+   * method assumes that the input is ASCII and follows typical Java style (lowercase package
+   * names, UpperCamelCase class names) and may produce incorrect results or throw
+   * {@link IllegalArgumentException} otherwise. For that reason, {@link #get(Class)} and
+   * {@link #get(Class)} should be preferred as they can correctly create {@link ClassName}
+   * instances without such restrictions.
+   */
+  public static ClassName bestGuess(String classNameString) {
+<span class="fc" id="L171">    List&lt;String&gt; names = new ArrayList&lt;&gt;();</span>
+
+    // Add the package name, like &quot;java.util.concurrent&quot;, or &quot;&quot; for no package.
+<span class="fc" id="L174">    int p = 0;</span>
+<span class="fc bfc" id="L175" title="All 4 branches covered.">    while (p &lt; classNameString.length() &amp;&amp; Character.isLowerCase(classNameString.codePointAt(p))) {</span>
+<span class="fc" id="L176">      p = classNameString.indexOf('.', p) + 1;</span>
+<span class="fc bfc" id="L177" title="All 2 branches covered.">      checkArgument(p != 0, &quot;couldn't make a guess for %s&quot;, classNameString);</span>
+    }
+<span class="fc bfc" id="L179" title="All 2 branches covered.">    names.add(p != 0 ? classNameString.substring(0, p - 1) : &quot;&quot;);</span>
+
+    // Add the class names, like &quot;Map&quot; and &quot;Entry&quot;.
+<span class="fc bfc" id="L182" title="All 2 branches covered.">    for (String part : classNameString.substring(p).split(&quot;\\.&quot;, -1)) {</span>
+<span class="fc bfc" id="L183" title="All 4 branches covered.">      checkArgument(!part.isEmpty() &amp;&amp; Character.isUpperCase(part.codePointAt(0)),</span>
+          &quot;couldn't make a guess for %s&quot;, classNameString);
+<span class="fc" id="L185">      names.add(part);</span>
+    }
+
+<span class="pc bpc" id="L188" title="1 of 2 branches missed.">    checkArgument(names.size() &gt;= 2, &quot;couldn't make a guess for %s&quot;, classNameString);</span>
+<span class="fc" id="L189">    return new ClassName(names);</span>
+  }
+
+  /**
+   * Returns a class name created from the given parts. For example, calling this with package name
+   * {@code &quot;java.util&quot;} and simple names {@code &quot;Map&quot;}, {@code &quot;Entry&quot;} yields {@link Map.Entry}.
+   */
+  public static ClassName get(String packageName, String simpleName, String... simpleNames) {
+<span class="fc" id="L197">    List&lt;String&gt; result = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L198">    result.add(packageName);</span>
+<span class="fc" id="L199">    result.add(simpleName);</span>
+<span class="fc" id="L200">    Collections.addAll(result, simpleNames);</span>
+<span class="fc" id="L201">    return new ClassName(result);</span>
+  }
+
+  /** Returns the class name for {@code element}. */
+  public static ClassName get(TypeElement element) {
+<span class="fc" id="L206">    checkNotNull(element, &quot;element == null&quot;);</span>
+<span class="fc" id="L207">    List&lt;String&gt; names = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L208" title="All 2 branches covered.">    for (Element e = element; isClassOrInterface(e); e = e.getEnclosingElement()) {</span>
+<span class="pc bpc" id="L209" title="1 of 4 branches missed.">      checkArgument(element.getNestingKind() == TOP_LEVEL || element.getNestingKind() == MEMBER,</span>
+          &quot;unexpected type testing&quot;);
+<span class="fc" id="L211">      names.add(e.getSimpleName().toString());</span>
+    }
+<span class="fc" id="L213">    names.add(getPackage(element).getQualifiedName().toString());</span>
+<span class="fc" id="L214">    Collections.reverse(names);</span>
+<span class="fc" id="L215">    return new ClassName(names);</span>
+  }
+
+  private static boolean isClassOrInterface(Element e) {
+<span class="fc bfc" id="L219" title="All 4 branches covered.">    return e.getKind().isClass() || e.getKind().isInterface();</span>
+  }
+
+  private static PackageElement getPackage(Element type) {
+<span class="fc bfc" id="L223" title="All 2 branches covered.">    while (type.getKind() != ElementKind.PACKAGE) {</span>
+<span class="fc" id="L224">      type = type.getEnclosingElement();</span>
+    }
+<span class="fc" id="L226">    return (PackageElement) type;</span>
+  }
+
+  @Override public int compareTo(ClassName o) {
+<span class="fc" id="L230">    return canonicalName.compareTo(o.canonicalName);</span>
+  }
+
+  @Override CodeWriter emit(CodeWriter out) throws IOException {
+<span class="fc" id="L234">    return out.emitAndIndent(out.lookupName(this));</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

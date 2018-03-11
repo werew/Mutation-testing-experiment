@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OrderingComparison.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JavaHamcrest</a> &gt; <a href="index.source.html" class="el_package">org.hamcrest.number</a> &gt; <span class="el_source">OrderingComparison.java</span></div><h1>OrderingComparison.java</h1><pre class="source lang-java linenums">package org.hamcrest.number;
+
+import org.hamcrest.Matcher;
+import org.hamcrest.comparator.ComparatorMatcherBuilder;
+
+public class OrderingComparison {
+
+<span class="nc" id="L8">    private OrderingComparison() {</span>
+<span class="nc" id="L9">    }</span>
+
+    /**
+     * Creates a matcher of {@link Comparable} object that matches when the examined object is
+     * equal to the specified value, as reported by the &lt;code&gt;compareTo&lt;/code&gt; method of the
+     * &lt;b&gt;examined&lt;/b&gt; object.
+     * For example:
+     * &lt;pre&gt;assertThat(1, comparesEqualTo(1))&lt;/pre&gt;
+     *
+     * @param value the value which, when passed to the compareTo method of the examined object, should return zero
+     */
+    public static &lt;T extends Comparable&lt;T&gt;&gt; Matcher&lt;T&gt; comparesEqualTo(T value) {
+<span class="fc" id="L21">        return ComparatorMatcherBuilder.&lt;T&gt;usingNaturalOrdering().comparesEqualTo(value);</span>
+    }
+
+    /**
+     * Creates a matcher of {@link Comparable} object that matches when the examined object is
+     * greater than the specified value, as reported by the &lt;code&gt;compareTo&lt;/code&gt; method of the
+     * &lt;b&gt;examined&lt;/b&gt; object.
+     * For example:
+     * &lt;pre&gt;assertThat(2, greaterThan(1))&lt;/pre&gt;
+     *
+     * @param value the value which, when passed to the compareTo method of the examined object, should return greater
+     *              than zero
+     */
+    public static &lt;T extends Comparable&lt;T&gt;&gt; Matcher&lt;T&gt; greaterThan(T value) {
+<span class="fc" id="L35">        return ComparatorMatcherBuilder.&lt;T&gt;usingNaturalOrdering().greaterThan(value);</span>
+    }
+
+    /**
+     * Creates a matcher of {@link Comparable} object that matches when the examined object is
+     * greater than or equal to the specified value, as reported by the &lt;code&gt;compareTo&lt;/code&gt; method
+     * of the &lt;b&gt;examined&lt;/b&gt; object.
+     * For example:
+     * &lt;pre&gt;assertThat(1, greaterThanOrEqualTo(1))&lt;/pre&gt;
+     *
+     * @param value the value which, when passed to the compareTo method of the examined object, should return greater
+     *              than or equal to zero
+     */
+    public static &lt;T extends Comparable&lt;T&gt;&gt; Matcher&lt;T&gt; greaterThanOrEqualTo(T value) {
+<span class="fc" id="L49">        return ComparatorMatcherBuilder.&lt;T&gt;usingNaturalOrdering().greaterThanOrEqualTo(value);</span>
+    }
+
+    /**
+     * Creates a matcher of {@link Comparable} object that matches when the examined object is
+     * less than the specified value, as reported by the &lt;code&gt;compareTo&lt;/code&gt; method of the
+     * &lt;b&gt;examined&lt;/b&gt; object.
+     * For example:
+     * &lt;pre&gt;assertThat(1, lessThan(2))&lt;/pre&gt;
+     *
+     * @param value the value which, when passed to the compareTo method of the examined object, should return less
+     *              than zero
+     */
+    public static &lt;T extends Comparable&lt;T&gt;&gt; Matcher&lt;T&gt; lessThan(T value) {
+<span class="fc" id="L63">        return ComparatorMatcherBuilder.&lt;T&gt;usingNaturalOrdering().lessThan(value);</span>
+    }
+
+    /**
+     * Creates a matcher of {@link Comparable} object that matches when the examined object is
+     * less than or equal to the specified value, as reported by the &lt;code&gt;compareTo&lt;/code&gt; method
+     * of the &lt;b&gt;examined&lt;/b&gt; object.
+     * For example:
+     * &lt;pre&gt;assertThat(1, lessThanOrEqualTo(1))&lt;/pre&gt;
+     *
+     * @param value the value which, when passed to the compareTo method of the examined object, should return less
+     *              than or equal to zero
+     */
+    public static &lt;T extends Comparable&lt;T&gt;&gt; Matcher&lt;T&gt; lessThanOrEqualTo(T value) {
+<span class="fc" id="L77">        return ComparatorMatcherBuilder.&lt;T&gt;usingNaturalOrdering().lessThanOrEqualTo(value);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

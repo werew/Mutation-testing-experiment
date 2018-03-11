@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.squareup.moshi.JsonReaderTest
+-------------------------------------------------------------------------------
+Tests run: 132, Failures: 0, Errors: 0, Skipped: 4, Time elapsed: 0.104 sec - in com.squareup.moshi.JsonReaderTest

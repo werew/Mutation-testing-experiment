@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.squareup.moshi.JsonWriterTest
+-------------------------------------------------------------------------------
+Tests run: 84, Failures: 0, Errors: 0, Skipped: 2, Time elapsed: 0.484 sec - in com.squareup.moshi.JsonWriterTest

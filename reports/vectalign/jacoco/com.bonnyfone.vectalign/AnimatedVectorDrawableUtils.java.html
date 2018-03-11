@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AnimatedVectorDrawableUtils.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">vectalign</a> &gt; <a href="index.source.html" class="el_package">com.bonnyfone.vectalign</a> &gt; <span class="el_source">AnimatedVectorDrawableUtils.java</span></div><h1>AnimatedVectorDrawableUtils.java</h1><pre class="source lang-java linenums">package com.bonnyfone.vectalign;
+
+import java.io.File;
+
+/**
+ * Created by ziby on 20/03/16.
+ */
+<span class="nc" id="L8">public class AnimatedVectorDrawableUtils {</span>
+
+<span class="nc" id="L10">    private static String RESULT_DIR = &quot;exported&quot;;</span>
+<span class="nc" id="L11">    private static String VECTOR_DRAWABLE_NAME = &quot;vector_drawable&quot;;</span>
+<span class="nc" id="L12">    private static String ANIMATED_VECTOR_DRAWABLE_NAME = &quot;animated_vector_drawable&quot;;</span>
+<span class="nc" id="L13">    private static String MORPH_ANIMATOR_NAME = &quot;morph_animator&quot;;</span>
+
+<span class="nc" id="L15">    private static String TEMPLATE_VECTOR_DRAWABLE =</span>
+            &quot;&lt;vector xmlns:android=\&quot;http://schemas.android.com/apk/res/android\&quot;\n&quot; +
+                    &quot;     android:height=\&quot;%ddp\&quot;\n&quot; +
+                    &quot;     android:width=\&quot;%ddp\&quot;\n&quot; +
+                    &quot;     android:viewportHeight=\&quot;%d\&quot;\n&quot; +
+                    &quot;     android:viewportWidth=\&quot;%d\&quot; &gt;\n&quot; +
+                    &quot;     &lt;path\n&quot; +
+                    &quot;         android:name=\&quot;v\&quot;\n&quot; +
+                    &quot;         android:strokeColor=\&quot;%s\&quot;\n&quot; +
+                    &quot;         android:strokeWidth=\&quot;%d\&quot;\n&quot; +
+                    &quot;         android:fillColor=\&quot;%s\&quot;\n&quot; +
+                    &quot;         android:pathData=\&quot;%s\&quot; /&gt;\n&quot; +
+                    &quot; &lt;/vector&gt;&quot;;
+
+<span class="nc" id="L29">    private static String TEMPLATE_VECTOR_DRAWABLE_COMPAT =</span>
+            &quot;&lt;vector xmlns:android=\&quot;http://schemas.android.com/apk/res/android\&quot;\n&quot; +
+                    &quot;     xmlns:app=\&quot;http://schemas.android.com/apk/res-auto\&quot;\n&quot; +
+                    &quot;     android:height=\&quot;%ddp\&quot;\n&quot; +
+                    &quot;     android:width=\&quot;%ddp\&quot;\n&quot; +
+                    &quot;     app:vc_viewportHeight=\&quot;%d\&quot;\n&quot; +
+                    &quot;     app:vc_viewportWidth=\&quot;%d\&quot;\n&quot; +
+                    &quot;     android:viewportHeight=\&quot;%d\&quot;\n&quot; +
+                    &quot;     android:viewportWidth=\&quot;%d\&quot; &gt;\n&quot; +
+                    &quot;     &lt;path\n&quot; +
+                    &quot;         android:name=\&quot;v\&quot;\n&quot; +
+                    &quot;         app:vc_strokeColor=\&quot;%s\&quot;\n&quot; +
+                    &quot;         app:vc_strokeWidth=\&quot;%d\&quot;\n&quot; +
+                    &quot;         app:vc_fillColor=\&quot;%s\&quot;\n&quot; +
+                    &quot;         app:vc_pathData=\&quot;%s\&quot;\n&quot; +
+                    &quot;         android:strokeColor=\&quot;%s\&quot;\n&quot; +
+                    &quot;         android:strokeWidth=\&quot;%d\&quot;\n&quot; +
+                    &quot;         android:fillColor=\&quot;%s\&quot;\n&quot; +
+                    &quot;         android:pathData=\&quot;%s\&quot; /&gt;\n&quot; +
+                    &quot; &lt;/vector&gt;&quot;;
+
+<span class="nc" id="L50">    private static String TEMPLATE_ANIMATED_VECTOR_DRAWABLE =</span>
+            &quot; &lt;animated-vector xmlns:android=\&quot;http://schemas.android.com/apk/res/android\&quot;\n&quot; +
+                    &quot;   android:drawable=\&quot;@drawable/%s\&quot; &gt;\n&quot; +
+                    &quot;     &lt;target\n&quot; +
+                    &quot;         android:name=\&quot;v\&quot;\n&quot; +
+                    &quot;         android:animation=\&quot;@anim/%s\&quot; /&gt;\n&quot; +
+                    &quot; &lt;/animated-vector&gt;&quot;;
+
+<span class="nc" id="L58">    private static String TEMPLATE_MORPH_ANIMATOR =</span>
+            &quot; &lt;set xmlns:android=\&quot;http://schemas.android.com/apk/res/android\&quot;&gt;\n&quot; +
+                    &quot;     &lt;objectAnimator\n&quot; +
+                    &quot;         android:duration=\&quot;%s\&quot;\n&quot; +
+                    &quot;         android:propertyName=\&quot;pathData\&quot;\n&quot; +
+                    &quot;         android:valueFrom=\&quot;%s\&quot;\n&quot; +
+                    &quot;         android:valueTo=\&quot;%s\&quot;\n&quot; +
+                    &quot;         android:valueType=\&quot;pathType\&quot;/&gt;\n&quot; +
+                    &quot; &lt;/set&gt;&quot;;
+
+<span class="nc" id="L68">    private static String TEMPLATE_MORPH_ANIMATOR_COMPAT =</span>
+            &quot; &lt;set xmlns:android=\&quot;http://schemas.android.com/apk/res/android\&quot;\n&quot; +
+                    &quot;     xmlns:app=\&quot;http://schemas.android.com/apk/res-auto\&quot;&gt;\n&quot; +
+                    &quot;     &lt;objectAnimator\n&quot; +
+                    &quot;         android:duration=\&quot;%s\&quot;\n&quot; +
+                    &quot;         android:propertyName=\&quot;pathData\&quot;\n&quot; +
+                    &quot;         android:valueFrom=\&quot;%s\&quot;\n&quot; +
+                    &quot;         android:valueTo=\&quot;%s\&quot;\n&quot; +
+                    &quot;         app:vc_valueType=\&quot;pathType\&quot;\n&quot; +
+                    &quot;         android:valueType=\&quot;pathType\&quot;/&gt;\n&quot; +
+                    &quot; &lt;/set&gt;&quot;;
+
+    public static boolean export(File destinationDir, String duration, boolean supportVectorCompat, String prefix, String[] solution, boolean stroke, boolean fill, String strokeColor, int strokeWidth, String fillColor, int width, int height, int viewportWidth, int viewportHeight){
+        try{
+<span class="nc bnc" id="L82" title="All 6 branches missed.">            if(prefix != null &amp;&amp; !&quot;&quot;.equals(prefix) &amp;&amp; !prefix.endsWith(&quot;_&quot;)){</span>
+<span class="nc" id="L83">                prefix = prefix + &quot;_&quot;;</span>
+            }
+<span class="nc" id="L85">            String basePath = destinationDir.getAbsolutePath()+&quot;/&quot; + prefix + RESULT_DIR;</span>
+<span class="nc" id="L86">            File baseDir = new File(basePath);</span>
+<span class="nc bnc" id="L87" title="All 2 branches missed.">            if(baseDir.exists()){</span>
+<span class="nc" id="L88">                int i=1;</span>
+<span class="nc bnc" id="L89" title="All 2 branches missed.">                while((baseDir = new File(basePath +&quot;_&quot;+i)).exists()){</span>
+<span class="nc" id="L90">                    i++;</span>
+                }
+            }
+<span class="nc" id="L93">            baseDir.mkdirs();</span>
+<span class="nc" id="L94">            File drawableDir = new File(baseDir.getAbsolutePath() + &quot;/drawable&quot;);</span>
+<span class="nc" id="L95">            File animDir = new File(baseDir.getAbsolutePath() + &quot;/anim&quot;);</span>
+<span class="nc" id="L96">            drawableDir.mkdirs();</span>
+<span class="nc" id="L97">            animDir.mkdirs();</span>
+
+<span class="nc bnc" id="L99" title="All 2 branches missed.">            for(int j=0; j&lt;solution.length; j++){</span>
+<span class="nc" id="L100">                int fromIndex = j;</span>
+<span class="nc" id="L101">                int toIndex  = (j+1)%2;</span>
+<span class="nc bnc" id="L102" title="All 2 branches missed.">                String fromString = fromIndex == 0 ? &quot;start&quot; : &quot;end&quot;;</span>
+<span class="nc bnc" id="L103" title="All 2 branches missed.">                String toString = toIndex == 1 ? &quot;end&quot; : &quot;start&quot;;</span>
+<span class="nc" id="L104">                String genVDName = prefix + VECTOR_DRAWABLE_NAME + &quot;_&quot; + fromString;</span>
+<span class="nc" id="L105">                String genMAName = prefix + MORPH_ANIMATOR_NAME + &quot;_&quot; + fromString + &quot;_to_&quot; + toString;</span>
+<span class="nc" id="L106">                String getAVDName = prefix + ANIMATED_VECTOR_DRAWABLE_NAME + &quot;_&quot; + fromString + &quot;_to_&quot; + toString;</span>
+
+                String vectorDrawable, animatedVectorDrawable, morphAnimator;
+<span class="nc" id="L109">                animatedVectorDrawable = String.format(TEMPLATE_ANIMATED_VECTOR_DRAWABLE, genVDName, genMAName);</span>
+<span class="nc bnc" id="L110" title="All 2 branches missed.">                if(supportVectorCompat){</span>
+<span class="nc bnc" id="L111" title="All 2 branches missed.">                    vectorDrawable = String.format(TEMPLATE_VECTOR_DRAWABLE_COMPAT, height, width, viewportHeight, viewportWidth,viewportHeight, viewportWidth,</span>
+<span class="nc bnc" id="L112" title="All 4 branches missed.">                            strokeColor, stroke ? strokeWidth : 0, fill ? fillColor : &quot;#00000000&quot;, solution[fromIndex],</span>
+<span class="nc bnc" id="L113" title="All 2 branches missed.">                            strokeColor, stroke ? strokeWidth : 0, fill ? fillColor : &quot;#00000000&quot;, solution[fromIndex]);</span>
+
+<span class="nc" id="L115">                    morphAnimator = String.format(TEMPLATE_MORPH_ANIMATOR_COMPAT, duration, solution[fromIndex], solution[toIndex]);</span>
+                }
+                else{
+<span class="nc bnc" id="L118" title="All 4 branches missed.">                    vectorDrawable = String.format(TEMPLATE_VECTOR_DRAWABLE, height, width, viewportHeight, viewportWidth, strokeColor, stroke ? strokeWidth : 0, fill ? fillColor : &quot;#00000000&quot;, solution[fromIndex]);</span>
+<span class="nc" id="L119">                    morphAnimator = String.format(TEMPLATE_MORPH_ANIMATOR, duration, solution[fromIndex], solution[toIndex]);</span>
+                }
+
+<span class="nc" id="L122">                Utils.writeToFile(drawableDir.getAbsolutePath() + &quot;/&quot; + genVDName + &quot;.xml&quot;, vectorDrawable);</span>
+<span class="nc" id="L123">                Utils.writeToFile(drawableDir.getAbsolutePath()+&quot;/&quot;+ getAVDName + &quot;.xml&quot;, animatedVectorDrawable);</span>
+<span class="nc" id="L124">                Utils.writeToFile(animDir.getAbsolutePath()+&quot;/&quot;+ genMAName + &quot;.xml&quot;, morphAnimator);</span>
+            }
+
+<span class="nc" id="L127">            return true;</span>
+        }
+<span class="nc" id="L129">        catch(Exception e){</span>
+<span class="nc" id="L130">            e.printStackTrace();</span>
+        }
+<span class="nc" id="L132">        return false;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

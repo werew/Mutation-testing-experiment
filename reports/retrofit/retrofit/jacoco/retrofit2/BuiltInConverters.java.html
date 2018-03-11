@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BuiltInConverters.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Retrofit</a> &gt; <a href="index.source.html" class="el_package">retrofit2</a> &gt; <span class="el_source">BuiltInConverters.java</span></div><h1>BuiltInConverters.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2015 Square, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package retrofit2;
+
+import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
+import retrofit2.http.Streaming;
+
+<span class="fc" id="L25">final class BuiltInConverters extends Converter.Factory {</span>
+  @Override
+  public Converter&lt;ResponseBody, ?&gt; responseBodyConverter(Type type, Annotation[] annotations,
+      Retrofit retrofit) {
+<span class="fc bfc" id="L29" title="All 2 branches covered.">    if (type == ResponseBody.class) {</span>
+<span class="fc bfc" id="L30" title="All 2 branches covered.">      return Utils.isAnnotationPresent(annotations, Streaming.class)</span>
+<span class="fc" id="L31">          ? StreamingResponseBodyConverter.INSTANCE</span>
+<span class="fc" id="L32">          : BufferingResponseBodyConverter.INSTANCE;</span>
+    }
+<span class="fc bfc" id="L34" title="All 2 branches covered.">    if (type == Void.class) {</span>
+<span class="fc" id="L35">      return VoidResponseBodyConverter.INSTANCE;</span>
+    }
+<span class="fc" id="L37">    return null;</span>
+  }
+
+  @Override
+  public Converter&lt;?, RequestBody&gt; requestBodyConverter(Type type,
+      Annotation[] parameterAnnotations, Annotation[] methodAnnotations, Retrofit retrofit) {
+<span class="fc bfc" id="L43" title="All 2 branches covered.">    if (RequestBody.class.isAssignableFrom(Utils.getRawType(type))) {</span>
+<span class="fc" id="L44">      return RequestBodyConverter.INSTANCE;</span>
+    }
+<span class="fc" id="L46">    return null;</span>
+  }
+
+<span class="fc" id="L49">  static final class VoidResponseBodyConverter implements Converter&lt;ResponseBody, Void&gt; {</span>
+<span class="fc" id="L50">    static final VoidResponseBodyConverter INSTANCE = new VoidResponseBodyConverter();</span>
+
+    @Override public Void convert(ResponseBody value) throws IOException {
+<span class="fc" id="L53">      value.close();</span>
+<span class="fc" id="L54">      return null;</span>
+    }
+  }
+
+<span class="fc" id="L58">  static final class RequestBodyConverter implements Converter&lt;RequestBody, RequestBody&gt; {</span>
+<span class="fc" id="L59">    static final RequestBodyConverter INSTANCE = new RequestBodyConverter();</span>
+
+    @Override public RequestBody convert(RequestBody value) throws IOException {
+<span class="fc" id="L62">      return value;</span>
+    }
+  }
+
+<span class="fc" id="L66">  static final class StreamingResponseBodyConverter</span>
+      implements Converter&lt;ResponseBody, ResponseBody&gt; {
+<span class="fc" id="L68">    static final StreamingResponseBodyConverter INSTANCE = new StreamingResponseBodyConverter();</span>
+
+    @Override public ResponseBody convert(ResponseBody value) throws IOException {
+<span class="fc" id="L71">      return value;</span>
+    }
+  }
+
+<span class="fc" id="L75">  static final class BufferingResponseBodyConverter</span>
+      implements Converter&lt;ResponseBody, ResponseBody&gt; {
+<span class="fc" id="L77">    static final BufferingResponseBodyConverter INSTANCE = new BufferingResponseBodyConverter();</span>
+
+    @Override public ResponseBody convert(ResponseBody value) throws IOException {
+      try {
+        // Buffer the entire body to avoid future I/O.
+<span class="fc" id="L82">        return Utils.buffer(value);</span>
+      } finally {
+<span class="fc" id="L84">        value.close();</span>
+      }
+    }
+  }
+
+<span class="fc" id="L89">  static final class ToStringConverter implements Converter&lt;Object, String&gt; {</span>
+<span class="fc" id="L90">    static final ToStringConverter INSTANCE = new ToStringConverter();</span>
+
+    @Override public String convert(Object value) {
+<span class="fc" id="L93">      return value.toString();</span>
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

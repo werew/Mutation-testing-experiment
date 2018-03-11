@@ -1,0 +1,608 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ArrayQueue.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Dagger</a> &gt; <a href="index.source.html" class="el_package">dagger.internal</a> &gt; <span class="el_source">ArrayQueue.java</span></div><h1>ArrayQueue.java</h1><pre class="source lang-java linenums">/*
+ * Written by Josh Bloch of Google Inc. and released to the public domain,
+ * as explained at http://creativecommons.org/publicdomain/zero/1.0/.
+ *
+ * Adapted from https://android.googlesource.com/platform/libcore/+
+ *     android-4.2.2_r1/luni/src/main/java/java/util/ArrayDeque.java
+ */
+package dagger.internal;
+
+import java.lang.reflect.Array;
+import java.util.AbstractCollection;
+import java.util.Collection;
+import java.util.ConcurrentModificationException;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Queue;
+
+/**
+ * Resizable-array implementation of the {@link Queue} interface.  Array
+ * queues have no capacity restrictions; they grow as necessary to support
+ * usage.  They are not thread-safe; in the absence of external
+ * synchronization, they do not support concurrent access by multiple threads.
+ * Null elements are prohibited.  This class is likely to be faster than
+ * {@link LinkedList} when used as a queue.
+ *
+ * &lt;p&gt;Most &lt;tt&gt;ArrayBackedQueue&lt;/tt&gt; operations run in amortized constant time.
+ * Exceptions include {@link #remove(Object) remove}, {@link
+ * #removeFirstOccurrence removeFirstOccurrence}, {@link #contains contains},
+ * {@link #iterator iterator.remove()}, and the bulk operations, all of which
+ * run in linear time.
+ *
+ * &lt;p&gt;The iterators returned by this class's &lt;tt&gt;iterator&lt;/tt&gt; method are
+ * &lt;i&gt;fail-fast&lt;/i&gt;: If the queue is modified at any time after the iterator
+ * is created, in any way except through the iterator's own &lt;tt&gt;remove&lt;/tt&gt;
+ * method, the iterator will generally throw a {@link
+ * ConcurrentModificationException}.  Thus, in the face of concurrent
+ * modification, the iterator fails quickly and cleanly, rather than risking
+ * arbitrary, non-deterministic behavior at an undetermined time in the
+ * future.
+ *
+ * &lt;p&gt;Note that the fail-fast behavior of an iterator cannot be guaranteed
+ * as it is, generally speaking, impossible to make any hard guarantees in the
+ * presence of unsynchronized concurrent modification.  Fail-fast iterators
+ * throw &lt;tt&gt;ConcurrentModificationException&lt;/tt&gt; on a best-effort basis.
+ * Therefore, it would be wrong to write a program that depended on this
+ * exception for its correctness: &lt;i&gt;the fail-fast behavior of iterators
+ * should be used only to detect bugs.&lt;/i&gt;
+ *
+ * &lt;p&gt;This class and its iterator implement all of the
+ * &lt;em&gt;optional&lt;/em&gt; methods of the {@link Collection} and {@link
+ * Iterator} interfaces.
+ *
+ * @author  Josh Bloch and Doug Lea
+ * @param &lt;E&gt; the type of elements held in this collection
+ */
+public class ArrayQueue&lt;E&gt; extends AbstractCollection&lt;E&gt;
+                           implements Queue&lt;E&gt;, Cloneable, java.io.Serializable {
+    /**
+     * The array in which the elements of the queue are stored.
+     * The capacity of the queue is the length of this array, which is
+     * always a power of two. The array is never allowed to become
+     * full, except transiently within an addX method where it is
+     * resized (see doubleCapacity) immediately upon becoming full,
+     * thus avoiding head and tail wrapping around to equal each
+     * other.  We also guarantee that all array cells not holding
+     * queue elements are always null.
+     */
+    private transient Object[] elements;
+
+    /**
+     * The index of the element at the head of the queue (which is the
+     * element that would be removed by remove() or pop()); or an
+     * arbitrary number equal to tail if the queue is empty.
+     */
+    private transient int head;
+
+    /**
+     * The index at which the next element would be added to the tail
+     * of the queue (via addLast(E), add(E), or push(E)).
+     */
+    private transient int tail;
+
+    /**
+     * The minimum capacity that we'll use for a newly created queue.
+     * Must be a power of 2.
+     */
+    private static final int MIN_INITIAL_CAPACITY = 8;
+
+    // ******  Array allocation and resizing utilities ******
+
+    /**
+     * Allocate empty array to hold the given number of elements.
+     *
+     * @param numElements  the number of elements to hold
+     */
+    private void allocateElements(int numElements) {
+<span class="nc" id="L99">        int initialCapacity = MIN_INITIAL_CAPACITY;</span>
+        // Find the best power of two to hold elements.
+        // Tests &quot;&lt;=&quot; because arrays aren't kept full.
+<span class="nc bnc" id="L102" title="All 2 branches missed.">        if (numElements &gt;= initialCapacity) {</span>
+<span class="nc" id="L103">            initialCapacity = numElements;</span>
+<span class="nc" id="L104">            initialCapacity |= (initialCapacity &gt;&gt;&gt;  1);</span>
+<span class="nc" id="L105">            initialCapacity |= (initialCapacity &gt;&gt;&gt;  2);</span>
+<span class="nc" id="L106">            initialCapacity |= (initialCapacity &gt;&gt;&gt;  4);</span>
+<span class="nc" id="L107">            initialCapacity |= (initialCapacity &gt;&gt;&gt;  8);</span>
+<span class="nc" id="L108">            initialCapacity |= (initialCapacity &gt;&gt;&gt; 16);</span>
+<span class="nc" id="L109">            initialCapacity++;</span>
+
+<span class="nc bnc" id="L111" title="All 2 branches missed.">            if (initialCapacity &lt; 0)   // Too many elements, must back off</span>
+<span class="nc" id="L112">                initialCapacity &gt;&gt;&gt;= 1; // Good luck allocating 2 ^ 30 elements</span>
+        }
+<span class="nc" id="L114">        elements = new Object[initialCapacity];</span>
+<span class="nc" id="L115">    }</span>
+
+    /**
+     * Double the capacity of this queue.  Call only when full, i.e.,
+     * when head and tail have wrapped around to become equal.
+     */
+    private void doubleCapacity() {
+        // assert head == tail;
+<span class="fc" id="L123">        int p = head;</span>
+<span class="fc" id="L124">        int n = elements.length;</span>
+<span class="fc" id="L125">        int r = n - p; // number of elements to the right of p</span>
+<span class="fc" id="L126">        int newCapacity = n &lt;&lt; 1;</span>
+<span class="pc bpc" id="L127" title="1 of 2 branches missed.">        if (newCapacity &lt; 0)</span>
+<span class="nc" id="L128">            throw new IllegalStateException(&quot;Sorry, queue too big&quot;);</span>
+<span class="fc" id="L129">        Object[] a = new Object[newCapacity];</span>
+<span class="fc" id="L130">        System.arraycopy(elements, p, a, 0, r);</span>
+<span class="fc" id="L131">        System.arraycopy(elements, 0, a, r, p);</span>
+<span class="fc" id="L132">        elements = a;</span>
+<span class="fc" id="L133">        head = 0;</span>
+<span class="fc" id="L134">        tail = n;</span>
+<span class="fc" id="L135">    }</span>
+
+    /**
+     * Constructs an empty array queue with an initial capacity
+     * sufficient to hold 16 elements.
+     */
+<span class="fc" id="L141">    public ArrayQueue() {</span>
+<span class="fc" id="L142">        elements = new Object[16];</span>
+<span class="fc" id="L143">    }</span>
+
+    /**
+     * Constructs an empty array queue with an initial capacity
+     * sufficient to hold the specified number of elements.
+     *
+     * @param numElements  lower bound on initial capacity of the queue
+     */
+<span class="nc" id="L151">    public ArrayQueue(int numElements) {</span>
+<span class="nc" id="L152">        allocateElements(numElements);</span>
+<span class="nc" id="L153">    }</span>
+
+    /**
+     * Constructs a queue containing the elements of the specified
+     * collection, in the order they are returned by the collection's
+     * iterator.  (The first element returned by the collection's
+     * iterator becomes the first element, or &lt;i&gt;front&lt;/i&gt; of the
+     * queue.)
+     *
+     * @param c the collection whose elements are to be placed into the queue
+     * @throws NullPointerException if the specified collection is null
+     */
+<span class="nc" id="L165">    public ArrayQueue(Collection&lt;? extends E&gt; c) {</span>
+<span class="nc" id="L166">        allocateElements(c.size());</span>
+<span class="nc" id="L167">        addAll(c);</span>
+<span class="nc" id="L168">    }</span>
+
+    /**
+     * Inserts the specified element at the end of this queue.
+     *
+     * &lt;p&gt;This method is equivalent to {@link #offer}.
+     *
+     * @param e the element to add
+     * @return &lt;tt&gt;true&lt;/tt&gt; (as specified by {@link Collection#add})
+     * @throws NullPointerException if the specified element is null
+     */
+    @Override
+    public boolean add(E e) {
+<span class="pc bpc" id="L181" title="1 of 2 branches missed.">        if (e == null)</span>
+<span class="nc" id="L182">            throw new NullPointerException(&quot;e == null&quot;);</span>
+<span class="fc" id="L183">        elements[tail] = e;</span>
+<span class="fc bfc" id="L184" title="All 2 branches covered.">        if ((tail = (tail + 1) &amp; (elements.length - 1)) == head)</span>
+<span class="fc" id="L185">            doubleCapacity();</span>
+<span class="fc" id="L186">        return true;</span>
+    }
+
+    /**
+     * Inserts the specified element at the end of this queue.
+     *
+     * @param e the element to add
+     * @return &lt;tt&gt;true&lt;/tt&gt; (as specified by {@link Queue#offer})
+     * @throws NullPointerException if the specified element is null
+     */
+    @Override
+    public boolean offer(E e) {
+<span class="nc" id="L198">        return add(e);</span>
+    }
+
+    /**
+     * Retrieves and removes the head of the queue represented by this queue.
+     *
+     * This method differs from {@link #poll poll} only in that it throws an
+     * exception if this queue is empty.
+     *
+     * @return the head of the queue represented by this queue
+     * @throws NoSuchElementException {@inheritDoc}
+     */
+    @Override
+    public E remove() {
+<span class="nc" id="L212">        E x = poll();</span>
+<span class="nc bnc" id="L213" title="All 2 branches missed.">        if (x == null)</span>
+<span class="nc" id="L214">            throw new NoSuchElementException();</span>
+<span class="nc" id="L215">        return x;</span>
+    }
+
+    /**
+     * Retrieves and removes the head of the queue represented by this queue
+     * (in other words, the first element of this queue), or returns
+     * &lt;tt&gt;null&lt;/tt&gt; if this queue is empty.
+     *
+     * @return the head of the queue represented by this queue, or
+     *         &lt;tt&gt;null&lt;/tt&gt; if this queue is empty
+     */
+    @Override
+    public E poll() {
+<span class="fc" id="L228">        int h = head;</span>
+<span class="fc" id="L229">        @SuppressWarnings(&quot;unchecked&quot;) E result = (E) elements[h];</span>
+        // Element is null if queue empty
+<span class="fc bfc" id="L231" title="All 2 branches covered.">        if (result == null)</span>
+<span class="fc" id="L232">            return null;</span>
+<span class="fc" id="L233">        elements[h] = null;     // Must null out slot</span>
+<span class="fc" id="L234">        head = (h + 1) &amp; (elements.length - 1);</span>
+<span class="fc" id="L235">        return result;</span>
+    }
+
+    /**
+     * Retrieves, but does not remove, the head of the queue represented by
+     * this queue.  This method differs from {@link #peek peek} only in
+     * that it throws an exception if this queue is empty.
+     *
+     * @return the head of the queue represented by this queue
+     * @throws NoSuchElementException {@inheritDoc}
+     */
+    @Override
+    public E element() {
+<span class="nc" id="L248">        @SuppressWarnings(&quot;unchecked&quot;) E result = (E) elements[head];</span>
+<span class="nc bnc" id="L249" title="All 2 branches missed.">        if (result == null)</span>
+<span class="nc" id="L250">            throw new NoSuchElementException();</span>
+<span class="nc" id="L251">        return result;</span>
+    }
+
+    /**
+     * Retrieves, but does not remove, the head of the queue represented by
+     * this queue, or returns &lt;tt&gt;null&lt;/tt&gt; if this queue is empty.
+     *
+     * @return the head of the queue represented by this queue, or
+     *         &lt;tt&gt;null&lt;/tt&gt; if this queue is empty
+     */
+    @Override
+    public E peek() {
+<span class="nc" id="L263">        @SuppressWarnings(&quot;unchecked&quot;) E result = (E) elements[head];</span>
+        // elements[head] is null if queue empty
+<span class="nc" id="L265">        return result;</span>
+    }
+
+    /**
+     * Removes the element at the specified position in the elements array,
+     * adjusting head and tail as necessary.  This can result in motion of
+     * elements backwards or forwards in the array.
+     *
+     * &lt;p&gt;This method is called delete rather than remove to emphasize
+     * that its semantics differ from those of {@link List#remove(int)}.
+     *
+     * @return true if elements moved backwards
+     */
+    private boolean delete(int i) {
+        //checkInvariants();
+<span class="nc" id="L280">        final Object[] elements = this.elements;</span>
+<span class="nc" id="L281">        final int mask = elements.length - 1;</span>
+<span class="nc" id="L282">        final int h = head;</span>
+<span class="nc" id="L283">        final int t = tail;</span>
+<span class="nc" id="L284">        final int front = (i - h) &amp; mask;</span>
+<span class="nc" id="L285">        final int back  = (t - i) &amp; mask;</span>
+
+        // Invariant: head &lt;= i &lt; tail mod circularity
+<span class="nc bnc" id="L288" title="All 2 branches missed.">        if (front &gt;= ((t - h) &amp; mask))</span>
+<span class="nc" id="L289">            throw new ConcurrentModificationException();</span>
+
+        // Optimize for least element motion
+<span class="nc bnc" id="L292" title="All 2 branches missed.">        if (front &lt; back) {</span>
+<span class="nc bnc" id="L293" title="All 2 branches missed.">            if (h &lt;= i) {</span>
+<span class="nc" id="L294">                System.arraycopy(elements, h, elements, h + 1, front);</span>
+            } else { // Wrap around
+<span class="nc" id="L296">                System.arraycopy(elements, 0, elements, 1, i);</span>
+<span class="nc" id="L297">                elements[0] = elements[mask];</span>
+<span class="nc" id="L298">                System.arraycopy(elements, h, elements, h + 1, mask - h);</span>
+            }
+<span class="nc" id="L300">            elements[h] = null;</span>
+<span class="nc" id="L301">            head = (h + 1) &amp; mask;</span>
+<span class="nc" id="L302">            return false;</span>
+        } else {
+<span class="nc bnc" id="L304" title="All 2 branches missed.">            if (i &lt; t) { // Copy the null tail as well</span>
+<span class="nc" id="L305">                System.arraycopy(elements, i + 1, elements, i, back);</span>
+<span class="nc" id="L306">                tail = t - 1;</span>
+            } else { // Wrap around
+<span class="nc" id="L308">                System.arraycopy(elements, i + 1, elements, i, mask - i);</span>
+<span class="nc" id="L309">                elements[mask] = elements[0];</span>
+<span class="nc" id="L310">                System.arraycopy(elements, 1, elements, 0, t);</span>
+<span class="nc" id="L311">                tail = (t - 1) &amp; mask;</span>
+            }
+<span class="nc" id="L313">            return true;</span>
+        }
+    }
+
+    // *** Collection Methods ***
+
+    /**
+     * Returns the number of elements in this queue.
+     *
+     * @return the number of elements in this queue
+     */
+    @Override
+    public int size() {
+<span class="nc" id="L326">        return (tail - head) &amp; (elements.length - 1);</span>
+    }
+
+    /**
+     * Returns &lt;tt&gt;true&lt;/tt&gt; if this queue contains no elements.
+     *
+     * @return &lt;tt&gt;true&lt;/tt&gt; if this queue contains no elements
+     */
+    @Override
+    public boolean isEmpty() {
+<span class="nc bnc" id="L336" title="All 2 branches missed.">        return head == tail;</span>
+    }
+
+    /**
+     * Returns an iterator over the elements in this queue.  The elements
+     * will be ordered from first (head) to last (tail).  This is the same
+     * order that elements would be queueued (via successive calls to
+     * {@link #remove} or popped (via successive calls to {@link #pop}).
+     *
+     * @return an iterator over the elements in this queue
+     */
+    @Override
+    public Iterator&lt;E&gt; iterator() {
+<span class="nc" id="L349">        return new QueueIterator();</span>
+    }
+
+
+<span class="nc" id="L353">    private class QueueIterator implements Iterator&lt;E&gt; {</span>
+        /**
+         * Index of element to be returned by subsequent call to next.
+         */
+<span class="nc" id="L357">        private int cursor = head;</span>
+
+        /**
+         * Tail recorded at construction (also in remove), to stop
+         * iterator and also to check for comodification.
+         */
+<span class="nc" id="L363">        private int fence = tail;</span>
+
+        /**
+         * Index of element returned by most recent call to next.
+         * Reset to -1 if element is deleted by a call to remove.
+         */
+<span class="nc" id="L369">        private int lastRet = -1;</span>
+
+        @Override
+        public boolean hasNext() {
+<span class="nc bnc" id="L373" title="All 2 branches missed.">            return cursor != fence;</span>
+        }
+
+        @Override
+        public E next() {
+<span class="nc bnc" id="L378" title="All 2 branches missed.">            if (cursor == fence)</span>
+<span class="nc" id="L379">                throw new NoSuchElementException();</span>
+<span class="nc" id="L380">            @SuppressWarnings(&quot;unchecked&quot;) E result = (E) elements[cursor];</span>
+            // This check doesn't catch all possible comodifications,
+            // but does catch the ones that corrupt traversal
+<span class="nc bnc" id="L383" title="All 4 branches missed.">            if (tail != fence || result == null)</span>
+<span class="nc" id="L384">                throw new ConcurrentModificationException();</span>
+<span class="nc" id="L385">            lastRet = cursor;</span>
+<span class="nc" id="L386">            cursor = (cursor + 1) &amp; (elements.length - 1);</span>
+<span class="nc" id="L387">            return result;</span>
+        }
+
+        @Override
+        public void remove() {
+<span class="nc bnc" id="L392" title="All 2 branches missed.">            if (lastRet &lt; 0)</span>
+<span class="nc" id="L393">                throw new IllegalStateException();</span>
+<span class="nc bnc" id="L394" title="All 2 branches missed.">            if (delete(lastRet)) { // if left-shifted, undo increment in next()</span>
+<span class="nc" id="L395">                cursor = (cursor - 1) &amp; (elements.length - 1);</span>
+<span class="nc" id="L396">                fence = tail;</span>
+            }
+<span class="nc" id="L398">            lastRet = -1;</span>
+<span class="nc" id="L399">        }</span>
+    }
+
+    /**
+     * Returns &lt;tt&gt;true&lt;/tt&gt; if this queue contains the specified element.
+     * More formally, returns &lt;tt&gt;true&lt;/tt&gt; if and only if this queue contains
+     * at least one element &lt;tt&gt;e&lt;/tt&gt; such that &lt;tt&gt;o.equals(e)&lt;/tt&gt;.
+     *
+     * @param o object to be checked for containment in this queue
+     * @return &lt;tt&gt;true&lt;/tt&gt; if this queue contains the specified element
+     */
+    @Override
+    public boolean contains(Object o) {
+<span class="nc bnc" id="L412" title="All 2 branches missed.">        if (o == null)</span>
+<span class="nc" id="L413">            return false;</span>
+<span class="nc" id="L414">        int mask = elements.length - 1;</span>
+<span class="nc" id="L415">        int i = head;</span>
+        Object x;
+<span class="nc bnc" id="L417" title="All 2 branches missed.">        while ((x = elements[i]) != null) {</span>
+<span class="nc bnc" id="L418" title="All 2 branches missed.">            if (o.equals(x))</span>
+<span class="nc" id="L419">                return true;</span>
+<span class="nc" id="L420">            i = (i + 1) &amp; mask;</span>
+        }
+<span class="nc" id="L422">        return false;</span>
+    }
+
+    /**
+     * Removes a single instance of the specified element from this queue.
+     * If the queue does not contain the element, it is unchanged.
+     * More formally, removes the first element &lt;tt&gt;e&lt;/tt&gt; such that
+     * &lt;tt&gt;o.equals(e)&lt;/tt&gt; (if such an element exists).
+     * Returns &lt;tt&gt;true&lt;/tt&gt; if this queue contained the specified element
+     * (or equivalently, if this queue changed as a result of the call).
+     *
+     * @param o element to be removed from this queue, if present
+     * @return &lt;tt&gt;true&lt;/tt&gt; if this queue contained the specified element
+     */
+    @Override
+    public boolean remove(Object o) {
+<span class="nc bnc" id="L438" title="All 2 branches missed.">        if (o == null)</span>
+<span class="nc" id="L439">            return false;</span>
+<span class="nc" id="L440">        int mask = elements.length - 1;</span>
+<span class="nc" id="L441">        int i = head;</span>
+        Object x;
+<span class="nc bnc" id="L443" title="All 2 branches missed.">        while ((x = elements[i]) != null) {</span>
+<span class="nc bnc" id="L444" title="All 2 branches missed.">            if (o.equals(x)) {</span>
+<span class="nc" id="L445">                delete(i);</span>
+<span class="nc" id="L446">                return true;</span>
+            }
+<span class="nc" id="L448">            i = (i + 1) &amp; mask;</span>
+        }
+<span class="nc" id="L450">        return false;</span>
+    }
+
+    /**
+     * Removes all of the elements from this queue.
+     * The queue will be empty after this call returns.
+     */
+    @Override
+    public void clear() {
+<span class="nc" id="L459">        int h = head;</span>
+<span class="nc" id="L460">        int t = tail;</span>
+<span class="nc bnc" id="L461" title="All 2 branches missed.">        if (h != t) { // clear all cells</span>
+<span class="nc" id="L462">            head = tail = 0;</span>
+<span class="nc" id="L463">            int i = h;</span>
+<span class="nc" id="L464">            int mask = elements.length - 1;</span>
+            do {
+<span class="nc" id="L466">                elements[i] = null;</span>
+<span class="nc" id="L467">                i = (i + 1) &amp; mask;</span>
+<span class="nc bnc" id="L468" title="All 2 branches missed.">            } while (i != t);</span>
+        }
+<span class="nc" id="L470">    }</span>
+
+    /**
+     * Returns an array containing all of the elements in this queue
+     * in proper sequence (from first to last element).
+     *
+     * &lt;p&gt;The returned array will be &quot;safe&quot; in that no references to it are
+     * maintained by this queue.  (In other words, this method must allocate
+     * a new array).  The caller is thus free to modify the returned array.
+     *
+     * &lt;p&gt;This method acts as bridge between array-based and collection-based
+     * APIs.
+     *
+     * @return an array containing all of the elements in this queue
+     */
+    @Override
+    public Object[] toArray() {
+<span class="nc" id="L487">        return toArray(new Object[size()]);</span>
+    }
+
+    /**
+     * Returns an array containing all of the elements in this queue in
+     * proper sequence (from first to last element); the runtime type of the
+     * returned array is that of the specified array.  If the queue fits in
+     * the specified array, it is returned therein.  Otherwise, a new array
+     * is allocated with the runtime type of the specified array and the
+     * size of this queue.
+     *
+     * &lt;p&gt;If this queue fits in the specified array with room to spare
+     * (i.e., the array has more elements than this queue), the element in
+     * the array immediately following the end of the queue is set to
+     * &lt;tt&gt;null&lt;/tt&gt;.
+     *
+     * &lt;p&gt;Like the {@link #toArray()} method, this method acts as bridge between
+     * array-based and collection-based APIs.  Further, this method allows
+     * precise control over the runtime type of the output array, and may,
+     * under certain circumstances, be used to save allocation costs.
+     *
+     * &lt;p&gt;Suppose &lt;tt&gt;x&lt;/tt&gt; is a queue known to contain only strings.
+     * The following code can be used to dump the queue into a newly
+     * allocated array of &lt;tt&gt;String&lt;/tt&gt;:
+     *
+     *  &lt;pre&gt; {@code String[] y = x.toArray(new String[0]);}&lt;/pre&gt;
+     *
+     * Note that &lt;tt&gt;toArray(new Object[0])&lt;/tt&gt; is identical in function to
+     * &lt;tt&gt;toArray()&lt;/tt&gt;.
+     *
+     * @param a the array into which the elements of the queue are to
+     *          be stored, if it is big enough; otherwise, a new array of the
+     *          same runtime type is allocated for this purpose
+     * @return an array containing all of the elements in this queue
+     * @throws ArrayStoreException if the runtime type of the specified array
+     *         is not a supertype of the runtime type of every element in
+     *         this queue
+     * @throws NullPointerException if the specified array is null
+     */
+    @Override
+    public &lt;T&gt; T[] toArray(T[] a) {
+<span class="nc" id="L528">        int size = size();</span>
+<span class="nc bnc" id="L529" title="All 2 branches missed.">        if (a.length &lt; size)</span>
+<span class="nc" id="L530">            a = (T[]) java.lang.reflect.Array.newInstance(</span>
+<span class="nc" id="L531">                    a.getClass().getComponentType(), size);</span>
+<span class="nc bnc" id="L532" title="All 2 branches missed.">        if (head &lt; tail) {</span>
+<span class="nc" id="L533">            System.arraycopy(elements, head, a, 0, size());</span>
+<span class="nc bnc" id="L534" title="All 2 branches missed.">        } else if (head &gt; tail) {</span>
+<span class="nc" id="L535">            int headPortionLen = elements.length - head;</span>
+<span class="nc" id="L536">            System.arraycopy(elements, head, a, 0, headPortionLen);</span>
+<span class="nc" id="L537">            System.arraycopy(elements, 0, a, headPortionLen, tail);</span>
+        }
+<span class="nc bnc" id="L539" title="All 2 branches missed.">        if (a.length &gt; size)</span>
+<span class="nc" id="L540">            a[size] = null;</span>
+<span class="nc" id="L541">        return a;</span>
+    }
+
+    // *** Object methods ***
+
+    /**
+     * Returns a copy of this queue.
+     *
+     * @return a copy of this queue
+     */
+    @Override
+    public ArrayQueue&lt;E&gt; clone() {
+        try {
+<span class="nc" id="L554">            ArrayQueue&lt;E&gt; result = (ArrayQueue&lt;E&gt;) super.clone();</span>
+<span class="nc" id="L555">            E[] newElements = (E[]) Array.newInstance(elements.getClass().getComponentType(),</span>
+                elements.length);
+<span class="nc" id="L557">            System.arraycopy(elements, 0, newElements, 0, elements.length);</span>
+<span class="nc" id="L558">            result.elements = newElements;</span>
+<span class="nc" id="L559">            return result;</span>
+<span class="nc" id="L560">        } catch (CloneNotSupportedException e) {</span>
+<span class="nc" id="L561">            throw new AssertionError();</span>
+        }
+    }
+
+    /**
+     * Appease the serialization gods.
+     */
+    private static final long serialVersionUID = 2340985798034038923L;
+
+    /**
+     * Serialize this queue.
+     *
+     * @serialData The current size (&lt;tt&gt;int&lt;/tt&gt;) of the queue,
+     * followed by all of its elements (each an object reference) in
+     * first-to-last order.
+     */
+    private void writeObject(java.io.ObjectOutputStream s)
+            throws java.io.IOException {
+<span class="nc" id="L579">        s.defaultWriteObject();</span>
+
+        // Write out size
+<span class="nc" id="L582">        s.writeInt(size());</span>
+
+        // Write out elements in order.
+<span class="nc" id="L585">        int mask = elements.length - 1;</span>
+<span class="nc bnc" id="L586" title="All 2 branches missed.">        for (int i = head; i != tail; i = (i + 1) &amp; mask)</span>
+<span class="nc" id="L587">            s.writeObject(elements[i]);</span>
+<span class="nc" id="L588">    }</span>
+
+    /**
+     * Deserialize this queue.
+     */
+    private void readObject(java.io.ObjectInputStream s)
+            throws java.io.IOException, ClassNotFoundException {
+<span class="nc" id="L595">        s.defaultReadObject();</span>
+
+        // Read in size and allocate array
+<span class="nc" id="L598">        int size = s.readInt();</span>
+<span class="nc" id="L599">        allocateElements(size);</span>
+<span class="nc" id="L600">        head = 0;</span>
+<span class="nc" id="L601">        tail = size;</span>
+
+        // Read in all elements in the proper order.
+<span class="nc bnc" id="L604" title="All 2 branches missed.">        for (int i = 0; i &lt; size; i++)</span>
+<span class="nc" id="L605">            elements[i] = s.readObject();</span>
+<span class="nc" id="L606">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SimpleXmlResponseBodyConverter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Converter: SimpleXML</a> &gt; <a href="index.source.html" class="el_package">retrofit2.converter.simplexml</a> &gt; <span class="el_source">SimpleXmlResponseBodyConverter.java</span></div><h1>SimpleXmlResponseBodyConverter.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2015 Square, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package retrofit2.converter.simplexml;
+
+import java.io.IOException;
+import okhttp3.ResponseBody;
+import org.simpleframework.xml.Serializer;
+import retrofit2.Converter;
+
+final class SimpleXmlResponseBodyConverter&lt;T&gt; implements Converter&lt;ResponseBody, T&gt; {
+  private final Class&lt;T&gt; cls;
+  private final Serializer serializer;
+  private final boolean strict;
+
+<span class="fc" id="L28">  SimpleXmlResponseBodyConverter(Class&lt;T&gt; cls, Serializer serializer, boolean strict) {</span>
+<span class="fc" id="L29">    this.cls = cls;</span>
+<span class="fc" id="L30">    this.serializer = serializer;</span>
+<span class="fc" id="L31">    this.strict = strict;</span>
+<span class="fc" id="L32">  }</span>
+
+  @Override public T convert(ResponseBody value) throws IOException {
+    try {
+<span class="fc" id="L36">      T read = serializer.read(cls, value.charStream(), strict);</span>
+<span class="fc bfc" id="L37" title="All 2 branches covered.">      if (read == null) {</span>
+<span class="fc" id="L38">        throw new IllegalStateException(&quot;Could not deserialize body as &quot; + cls);</span>
+      }
+<span class="fc" id="L40">      return read;</span>
+<span class="fc" id="L41">    } catch (RuntimeException | IOException e) {</span>
+<span class="fc" id="L42">      throw e;</span>
+<span class="fc" id="L43">    } catch (Exception e) {</span>
+<span class="fc" id="L44">      throw new RuntimeException(e);</span>
+    } finally {
+<span class="fc" id="L46">      value.close();</span>
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>IsIterableContainingInAnyOrder.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JavaHamcrest</a> &gt; <a href="index.source.html" class="el_package">org.hamcrest.collection</a> &gt; <span class="el_source">IsIterableContainingInAnyOrder.java</span></div><h1>IsIterableContainingInAnyOrder.java</h1><pre class="source lang-java linenums">package org.hamcrest.collection;
+
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeDiagnosingMatcher;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
+import static org.hamcrest.core.IsEqual.equalTo;
+
+public class IsIterableContainingInAnyOrder&lt;T&gt; extends TypeSafeDiagnosingMatcher&lt;Iterable&lt;? extends T&gt;&gt; {
+    private final Collection&lt;Matcher&lt;? super T&gt;&gt; matchers;
+
+<span class="fc" id="L17">    public IsIterableContainingInAnyOrder(Collection&lt;Matcher&lt;? super T&gt;&gt; matchers) {</span>
+<span class="fc" id="L18">        this.matchers = matchers;</span>
+<span class="fc" id="L19">    }</span>
+    
+    @Override
+    protected boolean matchesSafely(Iterable&lt;? extends T&gt; items, Description mismatchDescription) {
+<span class="fc" id="L23">      final Matching&lt;T&gt; matching = new Matching&lt;&gt;(matchers, mismatchDescription);</span>
+<span class="fc bfc" id="L24" title="All 2 branches covered.">      for (T item : items) {</span>
+<span class="fc bfc" id="L25" title="All 2 branches covered.">        if (! matching.matches(item)) {</span>
+<span class="fc" id="L26">          return false;</span>
+        }
+<span class="fc" id="L28">      }</span>
+      
+<span class="fc" id="L30">      return matching.isFinished(items);</span>
+    }
+    
+    @Override
+    public void describeTo(Description description) {
+<span class="fc" id="L35">      description.appendText(&quot;iterable with items &quot;)</span>
+<span class="fc" id="L36">          .appendList(&quot;[&quot;, &quot;, &quot;, &quot;]&quot;, matchers)</span>
+<span class="fc" id="L37">          .appendText(&quot; in any order&quot;);</span>
+<span class="fc" id="L38">    }</span>
+
+    private static class Matching&lt;S&gt; {
+      private final Collection&lt;Matcher&lt;? super S&gt;&gt; matchers;
+      private final Description mismatchDescription;
+
+<span class="fc" id="L44">      public Matching(Collection&lt;Matcher&lt;? super S&gt;&gt; matchers, Description mismatchDescription) {</span>
+<span class="fc" id="L45">        this.matchers = new ArrayList&lt;&gt;(matchers);</span>
+<span class="fc" id="L46">        this.mismatchDescription = mismatchDescription;</span>
+<span class="fc" id="L47">      }</span>
+      
+      public boolean matches(S item) {
+<span class="pc bpc" id="L50" title="1 of 2 branches missed.">        if (matchers.isEmpty()) {</span>
+<span class="nc" id="L51">          mismatchDescription.appendText(&quot;no match for: &quot;).appendValue(item);</span>
+<span class="nc" id="L52">          return false;</span>
+        }
+<span class="fc" id="L54">        return isMatched(item);</span>
+      }
+
+      public boolean isFinished(Iterable&lt;? extends S&gt; items) {
+<span class="fc bfc" id="L58" title="All 2 branches covered.">        if (matchers.isEmpty()) {</span>
+<span class="fc" id="L59">          return true;</span>
+        }
+<span class="fc" id="L61">        mismatchDescription</span>
+<span class="fc" id="L62">          .appendText(&quot;no item matches: &quot;).appendList(&quot;&quot;, &quot;, &quot;, &quot;&quot;, matchers)</span>
+<span class="fc" id="L63">          .appendText(&quot; in &quot;).appendValueList(&quot;[&quot;, &quot;, &quot;, &quot;]&quot;, items);</span>
+<span class="fc" id="L64">        return false;</span>
+      }
+
+      private boolean isMatched(S item) {
+<span class="fc bfc" id="L68" title="All 2 branches covered.">        for (Matcher&lt;? super S&gt;  matcher : matchers) {</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">          if (matcher.matches(item)) {</span>
+<span class="fc" id="L70">            matchers.remove(matcher);</span>
+<span class="fc" id="L71">            return true;</span>
+          }
+<span class="fc" id="L73">        }</span>
+<span class="fc" id="L74">        mismatchDescription.appendText(&quot;not matched: &quot;).appendValue(item);</span>
+<span class="fc" id="L75">        return false;</span>
+      }
+    }
+
+    /**
+     * &lt;p&gt;
+     * Creates an order agnostic matcher for {@link Iterable}s that matches when a single pass over
+     * the examined {@link Iterable} yields a series of items, each satisfying one matcher anywhere
+     * in the specified matchers.  For a positive match, the examined iterable must be of the same
+     * length as the number of specified matchers.
+     * &lt;/p&gt;
+     * &lt;p&gt;
+     * N.B. each of the specified matchers will only be used once during a given examination, so be
+     * careful when specifying matchers that may be satisfied by more than one entry in an examined
+     * iterable.
+     * &lt;/p&gt;
+     * &lt;p&gt;
+     * For example:
+     * &lt;/p&gt;
+     * &lt;pre&gt;assertThat(Arrays.asList(&quot;foo&quot;, &quot;bar&quot;), containsInAnyOrder(equalTo(&quot;bar&quot;), equalTo(&quot;foo&quot;)))&lt;/pre&gt;
+     * 
+     * @param itemMatchers
+     *     a list of matchers, each of which must be satisfied by an item provided by an examined {@link Iterable}
+     */
+    @SafeVarargs
+    public static &lt;T&gt; Matcher&lt;Iterable&lt;? extends T&gt;&gt; containsInAnyOrder(Matcher&lt;? super T&gt;... itemMatchers) {
+<span class="fc" id="L101">        return containsInAnyOrder(Arrays.asList(itemMatchers));</span>
+    }
+
+    /**
+     * &lt;p&gt;
+     * Creates an order agnostic matcher for {@link Iterable}s that matches when a single pass over
+     * the examined {@link Iterable} yields a series of items, each logically equal to one item
+     * anywhere in the specified items. For a positive match, the examined iterable
+     * must be of the same length as the number of specified items.
+     * &lt;/p&gt;
+     * &lt;p&gt;
+     * N.B. each of the specified items will only be used once during a given examination, so be
+     * careful when specifying items that may be equal to more than one entry in an examined
+     * iterable.
+     * &lt;/p&gt;
+     * &lt;p&gt;
+     * For example:
+     * &lt;/p&gt;
+     * &lt;pre&gt;assertThat(Arrays.asList(&quot;foo&quot;, &quot;bar&quot;), containsInAnyOrder(&quot;bar&quot;, &quot;foo&quot;))&lt;/pre&gt;
+     * 
+     * @param items
+     *     the items that must equal the items provided by an examined {@link Iterable} in any order
+     */
+    @SafeVarargs
+    public static &lt;T&gt; Matcher&lt;Iterable&lt;? extends T&gt;&gt; containsInAnyOrder(T... items) {
+<span class="fc" id="L126">        List&lt;Matcher&lt;? super T&gt;&gt; matchers = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L127" title="All 2 branches covered.">        for (T item : items) {</span>
+<span class="fc" id="L128">            matchers.add(equalTo(item));</span>
+        }
+        
+<span class="fc" id="L131">        return new IsIterableContainingInAnyOrder&lt;&gt;(matchers);</span>
+    }
+
+    /**
+     * &lt;p&gt;
+     * Creates an order agnostic matcher for {@link Iterable}s that matches when a single pass over
+     * the examined {@link Iterable} yields a series of items, each satisfying one matcher anywhere
+     * in the specified collection of matchers.  For a positive match, the examined iterable
+     * must be of the same length as the specified collection of matchers.
+     * &lt;/p&gt;
+     * &lt;p&gt;
+     * N.B. each matcher in the specified collection will only be used once during a given
+     * examination, so be careful when specifying matchers that may be satisfied by more than
+     * one entry in an examined iterable.
+     * &lt;/p&gt;
+     * &lt;p&gt;For example:&lt;/p&gt;
+     * &lt;pre&gt;assertThat(Arrays.asList(&quot;foo&quot;, &quot;bar&quot;), containsInAnyOrder(Arrays.asList(equalTo(&quot;bar&quot;), equalTo(&quot;foo&quot;))))&lt;/pre&gt;
+     * 
+     * @param itemMatchers
+     *     a list of matchers, each of which must be satisfied by an item provided by an examined {@link Iterable}
+     */
+    public static &lt;T&gt; Matcher&lt;Iterable&lt;? extends T&gt;&gt; containsInAnyOrder(Collection&lt;Matcher&lt;? super T&gt;&gt; itemMatchers) {
+<span class="fc" id="L153">        return new IsIterableContainingInAnyOrder&lt;&gt;(itemMatchers);</span>
+    }
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

@@ -1,0 +1,13 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+Adapter: RxJava 2,retrofit2.adapter.rxjava2,RxJava2CallAdapterFactory,0,191,0,34,0,37,0,22,0,5
+Adapter: RxJava 2,retrofit2.adapter.rxjava2,CallExecuteObservable,0,70,2,6,0,25,2,4,0,2
+Adapter: RxJava 2,retrofit2.adapter.rxjava2,ResultObservable,0,14,0,0,0,5,0,2,0,2
+Adapter: RxJava 2,retrofit2.adapter.rxjava2,ResultObservable.ResultObserver,0,55,0,0,0,20,0,5,0,5
+Adapter: RxJava 2,retrofit2.adapter.rxjava2,Result,0,48,0,6,0,11,0,9,0,6
+Adapter: RxJava 2,retrofit2.adapter.rxjava2,RxJava2CallAdapter,0,101,0,16,0,31,0,11,0,3
+Adapter: RxJava 2,retrofit2.adapter.rxjava2,HttpException,0,4,0,0,0,2,0,1,0,1
+Adapter: RxJava 2,retrofit2.adapter.rxjava2,CallExecuteObservable.CallDisposable,0,16,0,0,0,7,0,3,0,3
+Adapter: RxJava 2,retrofit2.adapter.rxjava2,BodyObservable.BodyObserver,11,67,1,5,3,21,1,7,0,5
+Adapter: RxJava 2,retrofit2.adapter.rxjava2,CallEnqueueObservable,0,23,0,0,0,8,0,2,0,2
+Adapter: RxJava 2,retrofit2.adapter.rxjava2,CallEnqueueObservable.CallCallback,46,54,5,5,10,22,5,5,1,4
+Adapter: RxJava 2,retrofit2.adapter.rxjava2,BodyObservable,0,14,0,0,0,5,0,2,0,2

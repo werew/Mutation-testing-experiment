@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ReflectiveAtInjectBinding.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Dagger</a> &gt; <a href="index.source.html" class="el_package">dagger.internal.loaders</a> &gt; <span class="el_source">ReflectiveAtInjectBinding.java</span></div><h1>ReflectiveAtInjectBinding.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2012 Square, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package dagger.internal.loaders;
+
+import dagger.internal.Binding;
+import dagger.internal.Keys;
+import dagger.internal.Linker;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+/**
+ * Injects the {@code @Inject}-annotated fields and constructors of a class
+ * using reflection.
+ */
+public final class ReflectiveAtInjectBinding&lt;T&gt; extends Binding&lt;T&gt; {
+  private final Field[] fields;
+  private final ClassLoader loader;
+  private final Constructor&lt;T&gt; constructor;
+  private final Class&lt;?&gt; supertype;
+  private final String[] keys;
+  private final Binding&lt;?&gt;[] fieldBindings;
+  private final Binding&lt;?&gt;[] parameterBindings;
+  private Binding&lt;? super T&gt; supertypeBinding;
+
+  /**
+   * @param keys keys for the fields, constructor parameters and supertype in
+   *     that order. These are precomputed to minimize reflection when {@code
+   *     attach} is called multiple times.
+   * @param constructor the injectable constructor, or null if this binding
+   *     supports members injection only.
+   * @param supertype the injectable supertype, or null if the supertype is a
+   */
+  private ReflectiveAtInjectBinding(String provideKey, String membersKey, boolean singleton,
+      Class&lt;?&gt; type, Field[] fields, Constructor&lt;T&gt; constructor, int parameterCount,
+      Class&lt;?&gt; supertype, String[] keys) {
+<span class="fc" id="L59">    super(provideKey, membersKey, singleton, type);</span>
+<span class="fc" id="L60">    this.constructor = constructor;</span>
+<span class="fc" id="L61">    this.fields = fields;</span>
+<span class="fc" id="L62">    this.supertype = supertype;</span>
+<span class="fc" id="L63">    this.keys = keys;</span>
+<span class="fc" id="L64">    this.parameterBindings = new Binding&lt;?&gt;[parameterCount];</span>
+<span class="fc" id="L65">    this.fieldBindings = new Binding&lt;?&gt;[fields.length];</span>
+<span class="fc" id="L66">    this.loader = type.getClassLoader();</span>
+<span class="fc" id="L67">  }</span>
+
+  @SuppressWarnings(&quot;unchecked&quot;) // We're careful to make keys and bindings match up.
+  @Override public void attach(Linker linker) {
+<span class="fc" id="L71">    int k = 0;</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">    for (int i = 0; i &lt; fields.length; i++) {</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">      if (fieldBindings[i] == null) {</span>
+<span class="fc" id="L74">        fieldBindings[i] = linker.requestBinding(keys[k], fields[i], loader);</span>
+      }
+<span class="fc" id="L76">      k++;</span>
+    }
+<span class="fc bfc" id="L78" title="All 2 branches covered.">    if (constructor != null) {</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">      for (int i = 0; i &lt; parameterBindings.length; i++) {</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">        if (parameterBindings[i] == null) {</span>
+<span class="fc" id="L81">          parameterBindings[i] = linker.requestBinding(keys[k], constructor, loader);</span>
+        }
+<span class="fc" id="L83">        k++;</span>
+      }
+    }
+<span class="fc bfc" id="L86" title="All 4 branches covered.">    if (supertype != null &amp;&amp; supertypeBinding == null) {</span>
+<span class="fc" id="L87">      supertypeBinding =</span>
+<span class="fc" id="L88">          (Binding&lt;? super T&gt;) linker.requestBinding(keys[k], membersKey, loader, false, true);</span>
+    }
+<span class="fc" id="L90">  }</span>
+
+  @Override public T get() {
+<span class="pc bpc" id="L93" title="1 of 2 branches missed.">    if (constructor == null) {</span>
+<span class="nc" id="L94">      throw new UnsupportedOperationException();</span>
+    }
+<span class="fc" id="L96">    Object[] args = new Object[parameterBindings.length];</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">    for (int i = 0; i &lt; parameterBindings.length; i++) {</span>
+<span class="fc" id="L98">      args[i] = parameterBindings[i].get();</span>
+    }
+    T result;
+    try {
+<span class="fc" id="L102">      result = constructor.newInstance(args);</span>
+<span class="fc" id="L103">    } catch (InvocationTargetException e) {</span>
+<span class="fc" id="L104">      Throwable cause = e.getCause();</span>
+<span class="pc bpc" id="L105" title="1 of 2 branches missed.">      throw cause instanceof RuntimeException</span>
+          ? (RuntimeException) cause
+          : new RuntimeException(cause);
+<span class="nc" id="L108">    } catch (IllegalAccessException e) {</span>
+<span class="nc" id="L109">      throw new AssertionError(e);</span>
+<span class="nc" id="L110">    } catch (InstantiationException e) {</span>
+<span class="nc" id="L111">      throw new RuntimeException(e);</span>
+<span class="fc" id="L112">    }</span>
+<span class="fc" id="L113">    injectMembers(result);</span>
+<span class="fc" id="L114">    return result;</span>
+  }
+
+  @Override public void injectMembers(T t) {
+    try {
+<span class="fc bfc" id="L119" title="All 2 branches covered.">      for (int i = 0; i &lt; fields.length; i++) {</span>
+<span class="fc" id="L120">        fields[i].set(t, fieldBindings[i].get());</span>
+      }
+<span class="fc bfc" id="L122" title="All 2 branches covered.">      if (supertypeBinding != null) {</span>
+<span class="fc" id="L123">        supertypeBinding.injectMembers(t);</span>
+      }
+<span class="nc" id="L125">    } catch (IllegalAccessException e) {</span>
+<span class="nc" id="L126">      throw new AssertionError(e);</span>
+<span class="fc" id="L127">    }</span>
+<span class="fc" id="L128">  }</span>
+
+  @Override public void getDependencies(Set&lt;Binding&lt;?&gt;&gt; get, Set&lt;Binding&lt;?&gt;&gt; injectMembers) {
+<span class="pc bpc" id="L131" title="1 of 2 branches missed.">    if (parameterBindings != null) {</span>
+<span class="fc" id="L132">      Collections.addAll(get, parameterBindings);</span>
+    }
+<span class="fc" id="L134">    Collections.addAll(injectMembers, fieldBindings);</span>
+<span class="pc bpc" id="L135" title="1 of 2 branches missed.">    if (supertypeBinding != null) {</span>
+<span class="nc" id="L136">      injectMembers.add(supertypeBinding);</span>
+    }
+<span class="fc" id="L138">  }</span>
+
+  @Override public String toString() {
+<span class="pc bpc" id="L141" title="1 of 2 branches missed.">    return provideKey != null ? provideKey : membersKey;</span>
+  }
+
+  public static &lt;T&gt; Binding&lt;T&gt; create(Class&lt;T&gt; type, boolean mustHaveInjections) {
+<span class="fc" id="L145">    boolean singleton = type.isAnnotationPresent(Singleton.class);</span>
+<span class="fc" id="L146">    List&lt;String&gt; keys = new ArrayList&lt;String&gt;();</span>
+
+    // Lookup the injectable fields and their corresponding keys.
+<span class="fc" id="L149">    List&lt;Field&gt; injectedFields = new ArrayList&lt;Field&gt;();</span>
+<span class="fc bfc" id="L150" title="All 2 branches covered.">    for (Class&lt;?&gt; c = type; c != Object.class; c = c.getSuperclass()) {</span>
+<span class="fc bfc" id="L151" title="All 2 branches covered.">      for (Field field : c.getDeclaredFields()) {</span>
+<span class="fc bfc" id="L152" title="All 4 branches covered.">        if (!field.isAnnotationPresent(Inject.class) || Modifier.isStatic(field.getModifiers())) {</span>
+<span class="fc" id="L153">          continue;</span>
+        }
+<span class="fc bfc" id="L155" title="All 2 branches covered.">        if ((field.getModifiers() &amp; Modifier.PRIVATE) != 0) {</span>
+<span class="fc" id="L156">          throw new IllegalStateException(&quot;Can't inject private field: &quot; + field);</span>
+        }
+<span class="fc" id="L158">        field.setAccessible(true);</span>
+<span class="fc" id="L159">        injectedFields.add(field);</span>
+<span class="fc" id="L160">        keys.add(Keys.get(field.getGenericType(), field.getAnnotations(), field));</span>
+      }
+    }
+
+    // Look up @Inject-annotated constructors. If there's no @Inject-annotated
+    // constructor, use a default public constructor if the class has other
+    // injections. Otherwise treat the class as non-injectable.
+<span class="fc" id="L167">    Constructor&lt;T&gt; injectedConstructor = null;</span>
+<span class="fc bfc" id="L168" title="All 2 branches covered.">    for (Constructor&lt;T&gt; constructor : getConstructorsForType(type)) {</span>
+<span class="fc bfc" id="L169" title="All 2 branches covered.">      if (!constructor.isAnnotationPresent(Inject.class)) {</span>
+<span class="fc" id="L170">        continue;</span>
+      }
+<span class="fc bfc" id="L172" title="All 2 branches covered.">      if (injectedConstructor != null) {</span>
+<span class="fc" id="L173">        throw new InvalidBindingException(type.getName(), &quot;has too many injectable constructors&quot;);</span>
+      }
+<span class="fc" id="L175">      injectedConstructor = constructor;</span>
+    }
+<span class="fc bfc" id="L177" title="All 2 branches covered.">    if (injectedConstructor == null) {</span>
+<span class="fc bfc" id="L178" title="All 2 branches covered.">      if (!injectedFields.isEmpty()) {</span>
+        try {
+<span class="fc" id="L180">          injectedConstructor = type.getDeclaredConstructor();</span>
+<span class="fc" id="L181">        } catch (NoSuchMethodException ignored) {</span>
+<span class="fc" id="L182">        }</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">      } else if (mustHaveInjections) {</span>
+<span class="fc" id="L184">        throw new InvalidBindingException(type.getName(),</span>
+            &quot;has no injectable members. Do you want to add an injectable constructor?&quot;);
+      }
+    }
+
+    int parameterCount;
+    String provideKey;
+<span class="fc bfc" id="L191" title="All 2 branches covered.">    if (injectedConstructor != null) {</span>
+<span class="fc bfc" id="L192" title="All 2 branches covered.">      if ((injectedConstructor.getModifiers() &amp; Modifier.PRIVATE) != 0) {</span>
+<span class="fc" id="L193">        throw new IllegalStateException(&quot;Can't inject private constructor: &quot; + injectedConstructor);</span>
+      }
+
+<span class="fc" id="L196">      provideKey = Keys.get(type);</span>
+<span class="fc" id="L197">      injectedConstructor.setAccessible(true);</span>
+<span class="fc" id="L198">      Type[] types = injectedConstructor.getGenericParameterTypes();</span>
+<span class="fc" id="L199">      parameterCount = types.length;</span>
+<span class="fc bfc" id="L200" title="All 2 branches covered.">      if (parameterCount != 0) {</span>
+<span class="fc" id="L201">        Annotation[][] annotations = injectedConstructor.getParameterAnnotations();</span>
+<span class="fc bfc" id="L202" title="All 2 branches covered.">        for (int p = 0; p &lt; types.length; p++) {</span>
+<span class="fc" id="L203">          keys.add(Keys.get(types[p], annotations[p], injectedConstructor));</span>
+        }
+      }
+<span class="fc" id="L206">    } else {</span>
+<span class="fc" id="L207">      provideKey = null;</span>
+<span class="fc" id="L208">      parameterCount = 0;</span>
+<span class="pc bpc" id="L209" title="1 of 2 branches missed.">      if (singleton) {</span>
+<span class="nc" id="L210">        throw new IllegalArgumentException(</span>
+<span class="nc" id="L211">            &quot;No injectable constructor on @Singleton &quot; + type.getName());</span>
+      }
+    }
+
+<span class="fc" id="L215">    Class&lt;? super T&gt; supertype = type.getSuperclass();</span>
+<span class="pc bpc" id="L216" title="1 of 2 branches missed.">    if (supertype != null) {</span>
+<span class="fc bfc" id="L217" title="All 2 branches covered.">      if (Keys.isPlatformType(supertype.getName())) {</span>
+<span class="fc" id="L218">        supertype = null;</span>
+      } else {
+<span class="fc" id="L220">        keys.add(Keys.getMembersKey(supertype));</span>
+      }
+    }
+
+<span class="fc" id="L224">    String membersKey = Keys.getMembersKey(type);</span>
+<span class="fc" id="L225">    return new ReflectiveAtInjectBinding&lt;T&gt;(provideKey, membersKey, singleton, type,</span>
+<span class="fc" id="L226">        injectedFields.toArray(new Field[injectedFields.size()]), injectedConstructor,</span>
+<span class="fc" id="L227">        parameterCount, supertype, keys.toArray(new String[keys.size()]));</span>
+  }
+
+  @SuppressWarnings(&quot;unchecked&quot;) // Class.getDeclaredConstructors is an unsafe API.
+  private static &lt;T&gt; Constructor&lt;T&gt;[] getConstructorsForType(Class&lt;T&gt; type) {
+<span class="fc" id="L232">    return (Constructor&lt;T&gt;[]) type.getDeclaredConstructors();</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

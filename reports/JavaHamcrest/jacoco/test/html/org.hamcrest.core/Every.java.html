@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Every.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JavaHamcrest</a> &gt; <a href="index.source.html" class="el_package">org.hamcrest.core</a> &gt; <span class="el_source">Every.java</span></div><h1>Every.java</h1><pre class="source lang-java linenums">package org.hamcrest.core;
+
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeDiagnosingMatcher;
+
+public class Every&lt;T&gt; extends TypeSafeDiagnosingMatcher&lt;Iterable&lt;? extends T&gt;&gt; {
+    private final Matcher&lt;? super T&gt; matcher;
+
+<span class="fc" id="L10">    public Every(Matcher&lt;? super T&gt; matcher) {</span>
+<span class="fc" id="L11">        this.matcher= matcher;</span>
+<span class="fc" id="L12">    }</span>
+
+    @Override
+    public boolean matchesSafely(Iterable&lt;? extends T&gt; collection, Description mismatchDescription) {
+<span class="fc bfc" id="L16" title="All 2 branches covered.">        for (T t : collection) {</span>
+<span class="fc bfc" id="L17" title="All 2 branches covered.">            if (!matcher.matches(t)) {</span>
+<span class="fc" id="L18">                mismatchDescription.appendText(&quot;an item &quot;);</span>
+<span class="fc" id="L19">                matcher.describeMismatch(t, mismatchDescription);</span>
+<span class="fc" id="L20">                return false;</span>
+            }
+<span class="fc" id="L22">        }</span>
+<span class="fc" id="L23">        return true;</span>
+    }
+
+    @Override
+    public void describeTo(Description description) {
+<span class="fc" id="L28">        description.appendText(&quot;every item is &quot;).appendDescriptionOf(matcher);</span>
+<span class="fc" id="L29">    }</span>
+
+    /**
+     * Creates a matcher for {@link Iterable}s that only matches when a single pass over the
+     * examined {@link Iterable} yields items that are all matched by the specified
+     * &lt;code&gt;itemMatcher&lt;/code&gt;.
+     * For example:
+     * &lt;pre&gt;assertThat(Arrays.asList(&quot;bar&quot;, &quot;baz&quot;), everyItem(startsWith(&quot;ba&quot;)))&lt;/pre&gt;
+     * 
+     * @param itemMatcher
+     *     the matcher to apply to every item provided by the examined {@link Iterable}
+     */
+    public static &lt;U&gt; Matcher&lt;Iterable&lt;? extends U&gt;&gt; everyItem(final Matcher&lt;U&gt; itemMatcher) {
+<span class="fc" id="L42">        return new Every&lt;&gt;(itemMatcher);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

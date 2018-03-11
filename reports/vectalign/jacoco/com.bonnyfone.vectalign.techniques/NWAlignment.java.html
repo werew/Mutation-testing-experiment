@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NWAlignment.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">vectalign</a> &gt; <a href="index.source.html" class="el_package">com.bonnyfone.vectalign.techniques</a> &gt; <span class="el_source">NWAlignment.java</span></div><h1>NWAlignment.java</h1><pre class="source lang-java linenums">package com.bonnyfone.vectalign.techniques;
+
+import android.support.v7.graphics.drawable.PathParser;
+import com.bonnyfone.vectalign.PathNodeUtils;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+
+/**
+ * Needleman–Wunsch algorithm re-interpreted to align VectorDrawable sequences.
+ */
+public class NWAlignment {
+    private ArrayList&lt;PathParser.PathDataNode&gt; mListA;
+    private ArrayList&lt;PathParser.PathDataNode&gt; mListB;
+    private ArrayList&lt;PathParser.PathDataNode&gt; mOriginalListA;
+    private ArrayList&lt;PathParser.PathDataNode&gt; mOriginalListB;
+    private ArrayList&lt;PathParser.PathDataNode&gt; mAlignedListA;
+    private ArrayList&lt;PathParser.PathDataNode&gt; mAlignedListB;
+    private int[][] mD;
+
+<span class="fc" id="L21">    private int match = 1;</span>
+<span class="fc" id="L22">    private int missmatch = -1;</span>
+<span class="fc" id="L23">    private int indel = 0;</span>
+
+<span class="fc" id="L25">    public NWAlignment(ArrayList&lt;PathParser.PathDataNode&gt; from, ArrayList&lt;PathParser.PathDataNode&gt; to){</span>
+<span class="fc" id="L26">        mOriginalListA = from;</span>
+<span class="fc" id="L27">        mOriginalListB = to;</span>
+
+<span class="fc" id="L29">        mListA = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L30">        mListA.addAll(mOriginalListA);</span>
+
+<span class="fc" id="L32">        mListB = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L33">        mListB.addAll(mOriginalListB);</span>
+
+        //Add dumb command at start
+<span class="fc" id="L36">        PathParser.PathDataNode dumbNode = new PathParser.PathDataNode('D', new float[]{});</span>
+<span class="fc" id="L37">        mListA.add(0, dumbNode);</span>
+<span class="fc" id="L38">        mListB.add(0, dumbNode);</span>
+<span class="fc" id="L39">    }</span>
+
+    private void initMatrixD(){
+<span class="fc" id="L42">        mD = new int[mListA.size() + 1][mListB.size() + 1];</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">        for (int i = 0; i &lt;= mListA.size(); i++) {</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">            for (int j = 0; j &lt;= mListB.size(); j++) {</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">                if (i == 0)</span>
+<span class="fc" id="L46">                    mD[i][j] = -j;</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">                else if (j == 0)</span>
+<span class="fc" id="L48">                    mD[i][j] = -i;</span>
+                else
+<span class="fc" id="L50">                    mD[i][j] = 0;</span>
+            }
+        }
+<span class="fc" id="L53">    }</span>
+
+    public void align(){
+<span class="fc" id="L56">        initMatrixD();</span>
+<span class="fc" id="L57">        mAlignedListA = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L58">        mAlignedListB = new ArrayList&lt;&gt;();</span>
+
+        //process matrix D
+<span class="fc bfc" id="L61" title="All 2 branches covered.">        for (int i = 1; i &lt;= mListA.size(); i++) {</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">            for (int j = 1; j &lt;= mListB.size(); j++) {</span>
+<span class="fc" id="L63">                int scoreDiag = mD[i-1][j-1] + getScore(i, j);</span>
+<span class="fc" id="L64">                int scoreLeft = mD[i][j-1] + indel;</span>
+<span class="fc" id="L65">                int scoreUp = mD[i-1][j] + indel;</span>
+<span class="fc" id="L66">                mD[i][j] = Math.max(Math.max(scoreDiag, scoreLeft), scoreUp);</span>
+            }
+        }
+
+        //backtracking
+<span class="fc" id="L71">        int i = mListA.size();</span>
+<span class="fc" id="L72">        int j = mListB.size();</span>
+<span class="fc" id="L73">        float[] arrayType = new float[]{};</span>
+<span class="pc bpc" id="L74" title="1 of 4 branches missed.">        while (i &gt; 0 &amp;&amp; j &gt; 0) {</span>
+
+<span class="fc" id="L76">            PathParser.PathDataNode newNodeA = null;</span>
+<span class="fc" id="L77">            PathParser.PathDataNode newNodeB = null;</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">            if (mD[i][j] == mD[i-1][j-1] + getScore(i, j)) {</span>
+<span class="fc" id="L79">                newNodeA = mListA.get(i-1);</span>
+<span class="fc" id="L80">                newNodeB = mListB.get(j-1);</span>
+<span class="fc" id="L81">                i--;</span>
+<span class="fc" id="L82">                j--;</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">            } else if (mD[i][j] == mD[i][j-1] + indel) {</span>
+<span class="fc" id="L84">                newNodeA = new PathParser.PathDataNode(PathNodeUtils.CMD_PLACEHOLDER, arrayType);</span>
+<span class="fc" id="L85">                newNodeB = mListB.get(j-1);</span>
+<span class="fc" id="L86">                j--;</span>
+            } else {
+<span class="fc" id="L88">                newNodeA = mListA.get(i-1);</span>
+<span class="fc" id="L89">                newNodeB = new PathParser.PathDataNode(PathNodeUtils.CMD_PLACEHOLDER, arrayType);</span>
+<span class="fc" id="L90">                i--;</span>
+            }
+
+            //insert new nodes in reverse order
+<span class="fc" id="L94">            mAlignedListA.add(0, newNodeA);</span>
+<span class="fc" id="L95">            mAlignedListB.add(0, newNodeB);</span>
+<span class="fc" id="L96">        }</span>
+
+        //Remove dumbs node
+<span class="fc" id="L99">        Iterator iterators[] = new Iterator[]{mAlignedListA.iterator(), mAlignedListB.iterator()};</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">        for(Iterator it : iterators){</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">            while(it.hasNext()){</span>
+<span class="fc" id="L102">                PathParser.PathDataNode node = (PathParser.PathDataNode) it.next();</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">                if(node.mType == PathNodeUtils.CMD_DUMB)</span>
+<span class="fc" id="L104">                    it.remove();</span>
+<span class="fc" id="L105">            }</span>
+        }
+
+<span class="fc" id="L108">    }</span>
+
+    private int getScore(int i, int j) {
+<span class="fc bfc" id="L111" title="All 2 branches covered.">        if (mListA.get(i - 1).mType == mListB.get(j - 1).mType){</span>
+<span class="fc" id="L112">            return match; //Arbitrary positive score</span>
+        } else {
+<span class="fc" id="L114">            return missmatch; //Arbitrary negative score</span>
+        }
+    }
+
+
+    public ArrayList&lt;PathParser.PathDataNode&gt; getAlignedFrom() {
+<span class="fc" id="L120">        return mAlignedListA;</span>
+    }
+
+    public ArrayList&lt;PathParser.PathDataNode&gt; getAlignedTo() {
+<span class="fc" id="L124">        return mAlignedListB;</span>
+    }
+
+    public ArrayList&lt;PathParser.PathDataNode&gt; getOriginalFrom() {
+<span class="fc" id="L128">        return mOriginalListA;</span>
+    }
+
+    public ArrayList&lt;PathParser.PathDataNode&gt; getOriginalTo() {
+<span class="fc" id="L132">        return mOriginalListB;</span>
+    }
+
+    void printMatrix() {
+<span class="nc" id="L136">        System.out.println(&quot;D =&quot;);</span>
+<span class="nc bnc" id="L137" title="All 2 branches missed.">        for (int i = 0; i &lt; mListA.size() + 1; i++) {</span>
+<span class="nc bnc" id="L138" title="All 2 branches missed.">            for (int j = 0; j &lt; mListB.size() + 1; j++) {</span>
+<span class="nc" id="L139">                System.out.print(String.format(&quot;%4d &quot;, mD[i][j]));</span>
+            }
+<span class="nc" id="L141">            System.out.println();</span>
+        }
+<span class="nc" id="L143">        System.out.println();</span>
+<span class="nc" id="L144">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

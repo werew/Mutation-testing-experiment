@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PathNodeUtils.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">vectalign</a> &gt; <a href="index.source.html" class="el_package">com.bonnyfone.vectalign</a> &gt; <span class="el_source">PathNodeUtils.java</span></div><h1>PathNodeUtils.java</h1><pre class="source lang-java linenums">package com.bonnyfone.vectalign;
+
+import android.support.v7.graphics.drawable.PathParser;
+
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+
+/**
+ * Created by ziby on 07/08/15.
+ */
+<span class="nc" id="L13">public class PathNodeUtils {</span>
+
+    public static final char CMD_PLACEHOLDER = '#';
+    public static final char CMD_DUMB = 'D';
+
+
+    /**
+     * Return the number of arguments expected for a specific command
+     * @param type
+     * @return
+     */
+    static int commandArguments(char type){
+<span class="pc bpc" id="L25" title="3 of 7 branches missed.">        switch (type) {</span>
+            case CMD_PLACEHOLDER:
+            case 'z':
+            case 'Z':
+<span class="fc" id="L29">                return 0;</span>
+            case 'm':
+            case 'M':
+            case 'l':
+            case 'L':
+            case 't':
+            case 'T':
+<span class="fc" id="L36">                return 2;</span>
+            case 'h':
+            case 'H':
+            case 'v':
+            case 'V':
+<span class="fc" id="L41">                return 1;</span>
+            case 'c':
+            case 'C':
+<span class="fc" id="L44">                return 6;</span>
+            case 's':
+            case 'S':
+            case 'q':
+            case 'Q':
+<span class="nc" id="L49">                return 4;</span>
+            case 'a':
+            case 'A':
+<span class="nc" id="L52">                return 7;</span>
+
+        }
+<span class="nc" id="L55">        return -1;</span>
+    }
+
+
+    /**
+     * Check if the given node sequences are equivalent (in terms of incremental graphic commands).
+     * //FIXME this is an approximated method
+     * @param original
+     * @param alternative
+     * @return
+     */
+    public static boolean isEquivalent(ArrayList&lt;PathParser.PathDataNode&gt; original, ArrayList&lt;PathParser.PathDataNode&gt; alternative){
+<span class="fc" id="L67">        int innerStart = 0;</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">        for(PathParser.PathDataNode o : original){</span>
+<span class="fc" id="L69">            boolean found = false;</span>
+<span class="fc bfc" id="L70" title="All 4 branches covered.">            for(int i = innerStart; i &lt; alternative.size() &amp;&amp; !found; i++ ){</span>
+<span class="fc" id="L71">                PathParser.PathDataNode n = alternative.get(i);</span>
+<span class="pc bpc" id="L72" title="4 of 10 branches missed.">                if((o.mType == n.mType &amp;&amp; Arrays.equals(o.mParams, n.mParams)) || ((o.mType == 'Z' || o.mType == 'z') &amp;&amp; n.mType == 'L' /*transformZ*/)){</span>
+<span class="fc" id="L73">                    found = true;</span>
+<span class="fc" id="L74">                    innerStart = i+1;</span>
+                }
+            }
+
+<span class="fc bfc" id="L78" title="All 2 branches covered.">            if(!found)</span>
+<span class="fc" id="L79">                return false;</span>
+<span class="fc" id="L80">        }</span>
+
+<span class="fc" id="L82">        return true;</span>
+    }
+
+    public static ArrayList&lt;PathParser.PathDataNode&gt; transform(PathParser.PathDataNode[] elements){
+<span class="fc" id="L86">        return transform(elements, 0, true);</span>
+    }
+
+    /**
+     * Transform the input list. Expand (eventually) compressed element and create extra copy if needed.
+     * @param elements
+     * @param extraCopy
+     * @return
+     */
+    public static ArrayList&lt;PathParser.PathDataNode&gt; transform(PathParser.PathDataNode[] elements, int extraCopy, boolean transformZ){
+<span class="pc bpc" id="L96" title="1 of 2 branches missed.">        if(elements == null)</span>
+<span class="nc" id="L97">            return null;</span>
+
+<span class="fc" id="L99">        ArrayList&lt;PathParser.PathDataNode&gt; transformed = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">        for(PathParser.PathDataNode node : elements){</span>
+
+<span class="fc" id="L102">            int cmdArgs = commandArguments(node.mType);</span>
+<span class="fc" id="L103">            int argsProvided = node.mParams.length;</span>
+
+<span class="fc bfc" id="L105" title="All 2 branches covered.">            if(node.mType == 'z')</span>
+<span class="fc" id="L106">                node.mType = 'Z';</span>
+
+<span class="pc bpc" id="L108" title="1 of 2 branches missed.">            if(cmdArgs == -1){</span>
+<span class="nc" id="L109">                System.err.println(&quot;Command not supported! &quot; + node.mType);</span>
+            }
+<span class="pc bpc" id="L111" title="1 of 2 branches missed.">            else if(argsProvided &lt; cmdArgs){</span>
+<span class="nc" id="L112">                System.err.println(&quot;Command &quot; + node.mType + &quot; requires &quot; + cmdArgs + &quot; params! Passing only &quot; + argsProvided);</span>
+            }
+<span class="fc bfc" id="L114" title="All 2 branches covered.">            else if(cmdArgs == node.mParams.length){</span>
+                //Normal command with the exact number of params
+<span class="fc" id="L116">                transformed.add(node);</span>
+<span class="pc bpc" id="L117" title="4 of 8 branches missed.">                if(extraCopy &gt; 0 &amp;&amp; (transformZ || node.mType != 'Z') &amp;&amp; node.mType != PathNodeUtils.CMD_DUMB){ //never add extra z/Z or dumb commands</span>
+<span class="fc" id="L118">                    PathParser.PathDataNode extraNodes = new PathParser.PathDataNode(node);</span>
+<span class="fc bfc" id="L119" title="All 2 branches covered.">                    if(Character.isLowerCase(node.mType)){ // this is a relative movement. If we want to create extra nodes, we need to create neutral relative commands</span>
+<span class="fc" id="L120">                        Arrays.fill(extraNodes.mParams, 0.0f); //FIXME is good?</span>
+                    }
+
+<span class="fc bfc" id="L123" title="All 2 branches covered.">                    for(int j=0; j&lt;extraCopy; j++)</span>
+<span class="fc" id="L124">                        transformed.add(extraNodes);</span>
+<span class="fc" id="L125">                }</span>
+            }
+            else{
+                //Multiple groups of params, verify consistency
+<span class="fc" id="L129">                int mod = (argsProvided % cmdArgs);</span>
+<span class="pc bpc" id="L130" title="1 of 2 branches missed.">                if(mod != 0){</span>
+<span class="nc" id="L131">                    System.err.println(&quot;Providing multiple groups of params for command &quot; + node.mType + &quot;, but in wrong number (missing &quot; + mod +&quot; args)&quot; );</span>
+                }
+                else{
+                    //Create multiple nodes
+<span class="fc" id="L135">                    int iter = argsProvided / cmdArgs;</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">                    for(int i=0; i&lt; iter; i++){</span>
+<span class="fc" id="L137">                        PathParser.PathDataNode newNode = new PathParser.PathDataNode(node.mType, PathParser.copyOfRange(node.mParams, i*cmdArgs, (i+1) *cmdArgs));</span>
+<span class="fc" id="L138">                        transformed.add(newNode);</span>
+
+<span class="fc bfc" id="L140" title="All 2 branches covered.">                        if(extraCopy &gt; 0){</span>
+<span class="fc" id="L141">                            PathParser.PathDataNode extraNodes = new PathParser.PathDataNode(newNode);;</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">                            if(Character.isLowerCase(newNode.mType)){ // this is a relative movement. If we want to create extra nodes, we need to create neutral relative commands</span>
+<span class="fc" id="L143">                                Arrays.fill(extraNodes.mParams, 0.0f); //FIXME is good?</span>
+                            }
+
+<span class="fc bfc" id="L146" title="All 2 branches covered.">                            for(int j=0; j&lt;extraCopy; j++)</span>
+<span class="fc" id="L147">                                transformed.add(extraNodes);</span>
+                        }
+                    }
+                }
+            }
+        }
+
+
+<span class="pc bpc" id="L155" title="1 of 2 branches missed.">        if(transformZ){</span>
+<span class="fc" id="L156">            float[][] penPos = PathNodeUtils.calculatePenPosition(transformed);</span>
+<span class="fc" id="L157">            int i = 0;</span>
+<span class="fc bfc" id="L158" title="All 2 branches covered.">            for(PathParser.PathDataNode node : transformed){</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">                if(node.mType == 'Z'){</span>
+<span class="fc" id="L160">                    node.mType = 'L';</span>
+<span class="fc" id="L161">                    node.mParams = penPos[i];</span>
+                }
+<span class="fc" id="L163">                i++;</span>
+<span class="fc" id="L164">            }</span>
+        }
+
+<span class="fc" id="L167">        return transformed;</span>
+    }
+
+
+    /**
+     * Simplify eventually useless nodes
+     * @param from
+     * @param to
+     */
+    static void simplify(ArrayList&lt;PathParser.PathDataNode&gt; from, ArrayList&lt;PathParser.PathDataNode&gt; to){
+<span class="pc bpc" id="L177" title="1 of 2 branches missed.">        if(from.size() != to.size()){</span>
+<span class="nc" id="L178">            System.err.println(&quot;Cannot simplify lists of nodes of different sizes&quot;);</span>
+<span class="nc" id="L179">            return;</span>
+        }
+
+<span class="fc" id="L182">        System.out.println(&quot;Simplify lists with size &quot;+from.size());</span>
+
+<span class="fc" id="L184">        boolean removeIndexes[] = new boolean[from.size()];</span>
+<span class="fc" id="L185">        int last = from.size()-1; //avoid last</span>
+
+<span class="fc bfc" id="L187" title="All 2 branches covered.">        for(int i=0; i&lt;last; i++){</span>
+<span class="fc bfc" id="L188" title="All 4 branches covered.">            if(from.get(i).isEqual(from.get(i+1)) &amp;&amp; to.get(i).isEqual(to.get(i+1))){</span>
+<span class="fc" id="L189">                removeIndexes[i] = true;</span>
+            }
+        }
+
+<span class="fc" id="L193">        Iterator iterators[] = new Iterator[]{from.iterator(), to.iterator()};</span>
+<span class="fc bfc" id="L194" title="All 2 branches covered.">        for(Iterator it : iterators){</span>
+<span class="fc" id="L195">            int i = 0;</span>
+<span class="fc bfc" id="L196" title="All 2 branches covered.">            while(it.hasNext()){</span>
+<span class="fc" id="L197">                it.next();</span>
+<span class="fc bfc" id="L198" title="All 2 branches covered.">                if(removeIndexes[i++])</span>
+<span class="fc" id="L199">                    it.remove();</span>
+            }
+        }
+
+<span class="fc" id="L203">        System.out.println(&quot;Final size after simplify is &quot;+from.size());</span>
+<span class="fc" id="L204">    }</span>
+
+    public static float[][] calculatePenPosition(ArrayList&lt;PathParser.PathDataNode&gt; sequence){
+<span class="fc" id="L207">        float penPos[][] = new float[sequence.size()][2];</span>
+
+<span class="fc" id="L209">        float[] lastStart = new float[]{0 ,0};</span>
+<span class="fc" id="L210">        float currentX = 0;</span>
+<span class="fc" id="L211">        float currentY = 0;</span>
+<span class="fc" id="L212">        boolean saveNewStart = false;</span>
+
+<span class="fc bfc" id="L214" title="All 2 branches covered.">        for(int i=0; i&lt;sequence.size(); i++){</span>
+<span class="fc" id="L215">            PathParser.PathDataNode node = sequence.get(i);</span>
+<span class="pc bpc" id="L216" title="1 of 4 branches missed.">            if(node.mType == 'z' || node.mType == 'Z'){ //Close path and restart from last start</span>
+<span class="fc" id="L217">                currentX = lastStart[0];</span>
+<span class="fc" id="L218">                currentY = lastStart[1];</span>
+<span class="fc" id="L219">                saveNewStart = true;</span>
+            }
+            else{
+<span class="fc" id="L222">                float[] positionFromParams = getPositionFromParams(node);</span>
+<span class="fc bfc" id="L223" title="All 2 branches covered.">                if(positionFromParams != null){</span>
+<span class="fc bfc" id="L224" title="All 2 branches covered.">                    if(Character.isLowerCase(node.mType)){ //relative movement (it's already correct in case of 'v' or 'h'</span>
+<span class="fc" id="L225">                        currentX += positionFromParams[0];</span>
+<span class="fc" id="L226">                        currentY += positionFromParams[1];</span>
+                    }
+                    else{ //absolute movement
+<span class="fc bfc" id="L229" title="All 4 branches covered.">                        if(i&gt;0 &amp;&amp; node.mType == 'V'){</span>
+<span class="fc" id="L230">                            currentX = penPos[i-1][0];</span>
+<span class="fc" id="L231">                            currentY = positionFromParams[1];</span>
+                        }
+<span class="pc bpc" id="L233" title="1 of 4 branches missed.">                        else if(i&gt;0 &amp;&amp; node.mType == 'H'){</span>
+<span class="nc" id="L234">                            currentX = positionFromParams[0];</span>
+<span class="nc" id="L235">                            currentY = penPos[i-1][1];</span>
+                        }
+                        else{
+<span class="fc" id="L238">                            currentX = positionFromParams[0];</span>
+<span class="fc" id="L239">                            currentY = positionFromParams[1];</span>
+                        }
+                    }
+
+<span class="fc bfc" id="L243" title="All 4 branches covered.">                    if(node.mType == 'm' || node.mType == 'M'){</span>
+<span class="fc" id="L244">                        saveNewStart = true;</span>
+                    }
+
+<span class="fc bfc" id="L247" title="All 2 branches covered.">                    if(saveNewStart){</span>
+<span class="fc" id="L248">                        lastStart = new float[]{currentX, currentY};</span>
+<span class="fc" id="L249">                        saveNewStart = false;</span>
+                    }
+                }
+            }
+
+<span class="fc" id="L254">            penPos[i][0] = currentX;</span>
+<span class="fc" id="L255">            penPos[i][1] = currentY;</span>
+        }
+
+<span class="fc" id="L258">        return penPos;</span>
+    }
+
+    static float[] getPositionFromParams(PathParser.PathDataNode node){
+<span class="pc bpc" id="L262" title="2 of 6 branches missed.">        if(node == null || node.mParams == null || node.mParams.length == 0)</span>
+<span class="fc" id="L263">            return null;</span>
+
+<span class="fc" id="L265">        float[] ris = new float[2];</span>
+
+<span class="fc bfc" id="L267" title="All 2 branches covered.">        if(Character.toLowerCase(node.mType) == 'v'){</span>
+<span class="fc" id="L268">            ris[1] = node.mParams[0];</span>
+        }
+<span class="fc bfc" id="L270" title="All 2 branches covered.">        else if(Character.toLowerCase(node.mType) == 'h'){</span>
+<span class="fc" id="L271">            ris[0] = node.mParams[0];</span>
+        }
+        else{
+<span class="fc" id="L274">            ris[0] = node.mParams[node.mParams.length -2];</span>
+<span class="fc" id="L275">            ris[1] = node.mParams[node.mParams.length -1];</span>
+        }
+<span class="fc" id="L277">        return ris;</span>
+    }
+
+    /**
+     * Create a VectorDrawable sequence from a list of nodes
+     * @param nodes
+     * @return
+     */
+    public static String pathNodesToString(ArrayList&lt;PathParser.PathDataNode&gt; nodes, boolean onlyCommands){
+
+        //Format float to avoid scientific notation
+<span class="fc" id="L288">        DecimalFormat floatFormatter = new DecimalFormat(&quot;###.#########&quot;);</span>
+
+<span class="fc" id="L290">        StringBuilder sb = new StringBuilder();</span>
+<span class="fc bfc" id="L291" title="All 2 branches covered.">        for(PathParser.PathDataNode n : nodes){</span>
+<span class="fc" id="L292">            sb.append(n.mType);</span>
+<span class="fc" id="L293">            sb.append(' ');</span>
+<span class="fc bfc" id="L294" title="All 2 branches covered.">            if(!onlyCommands){</span>
+<span class="fc bfc" id="L295" title="All 2 branches covered.">                for(float p : n.mParams){</span>
+<span class="pc bpc" id="L296" title="2 of 4 branches missed.">                    if((&quot;&quot;+p).contains(&quot;e&quot;) || (&quot;&quot;+p).contains(&quot;E&quot;)) //apply decimal format only for scientific notation number</span>
+<span class="nc" id="L297">                        sb.append(floatFormatter.format(p));</span>
+                    else
+<span class="fc" id="L299">                        sb.append(p);</span>
+
+<span class="fc" id="L301">                    sb.append(',');</span>
+                }
+<span class="fc" id="L303">                sb.replace(sb.length()-1, sb.length(),&quot; &quot;);</span>
+            }
+<span class="fc" id="L305">        }</span>
+<span class="fc" id="L306">        return sb.toString();</span>
+    }
+
+    public static String pathNodesToString(ArrayList&lt;PathParser.PathDataNode&gt; nodes){
+<span class="fc" id="L310">        return pathNodesToString(nodes, false);</span>
+    }
+
+
+    /**
+     * Return the max X,Y values
+     * @param nodes
+     * @return
+     */
+    public static float[] getMaxValues(PathParser.PathDataNode[] nodes){
+<span class="nc bnc" id="L320" title="All 2 branches missed.">        if(nodes == null)</span>
+<span class="nc" id="L321">            return null;</span>
+
+<span class="nc" id="L323">        ArrayList&lt;PathParser.PathDataNode&gt; nodeAsList = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L324">        nodeAsList.addAll(Arrays.asList(nodes));</span>
+<span class="nc" id="L325">        return getMaxValues(nodeAsList);</span>
+    }
+
+    /**
+     * Return the max X,Y values
+     * @param nodes
+     * @return
+     */
+    public static float[] getMaxValues(ArrayList&lt;PathParser.PathDataNode&gt; nodes){
+<span class="nc bnc" id="L334" title="All 2 branches missed.">        if(nodes == null)</span>
+<span class="nc" id="L335">            return null;</span>
+
+<span class="nc" id="L337">        float[][] penPos = calculatePenPosition(nodes);</span>
+
+<span class="nc" id="L339">        float ris[] = new float[]{0, 0};</span>
+<span class="nc bnc" id="L340" title="All 2 branches missed.">        for(float pen[] : penPos){</span>
+<span class="nc bnc" id="L341" title="All 2 branches missed.">            if(pen[0] &gt; ris[0])</span>
+<span class="nc" id="L342">                ris[0] = pen[0];</span>
+
+<span class="nc bnc" id="L344" title="All 2 branches missed.">            if(pen[1] &gt; ris[1])</span>
+<span class="nc" id="L345">                ris[1] = pen[1];</span>
+        }
+<span class="nc" id="L347">        return ris;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

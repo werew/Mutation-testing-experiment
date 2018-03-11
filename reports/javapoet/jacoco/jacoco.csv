@@ -1,0 +1,34 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+JavaPoet,com.squareup.javapoet,NameAllocator,0,178,0,18,0,34,0,16,0,7
+JavaPoet,com.squareup.javapoet,ClassName,3,575,4,48,0,88,4,43,0,21
+JavaPoet,com.squareup.javapoet,LineWrapper,31,232,5,29,1,54,5,19,0,6
+JavaPoet,com.squareup.javapoet,FieldSpec.Builder,45,82,3,3,9,20,5,9,3,8
+JavaPoet,com.squareup.javapoet,CodeWriter,4,1094,4,142,0,238,4,107,0,33
+JavaPoet,com.squareup.javapoet,MethodSpec.Builder,114,326,12,16,20,71,13,36,4,31
+JavaPoet,com.squareup.javapoet,WildcardTypeName,46,180,5,17,7,30,10,14,5,8
+JavaPoet,com.squareup.javapoet,CodeBlock,30,138,3,3,6,26,4,14,1,14
+JavaPoet,com.squareup.javapoet,CodeBlock.CodeBlockJoiner,13,37,2,2,4,11,2,4,1,3
+JavaPoet,com.squareup.javapoet,TypeSpec.Kind,0,156,0,0,0,27,0,2,0,2
+JavaPoet,com.squareup.javapoet,CodeBlock.Builder,1,795,1,94,0,135,1,68,0,20
+JavaPoet,com.squareup.javapoet,Util,2,243,2,35,0,50,2,31,0,11
+JavaPoet,com.squareup.javapoet,LineWrapper.FlushType,0,39,0,0,0,2,0,2,0,2
+JavaPoet,com.squareup.javapoet,AnnotationSpec,27,462,3,39,4,85,3,30,0,12
+JavaPoet,com.squareup.javapoet,AnnotationSpec.Builder,0,174,0,10,0,25,0,11,0,6
+JavaPoet,com.squareup.javapoet,ParameterSpec,23,206,3,7,4,40,5,12,2,10
+JavaPoet,com.squareup.javapoet,TypeSpec.Builder,12,872,8,82,1,126,9,65,1,28
+JavaPoet,com.squareup.javapoet,TypeVariableName,12,276,2,14,2,53,4,21,2,15
+JavaPoet,com.squareup.javapoet,TypeSpec,22,946,10,88,3,189,11,57,1,18
+JavaPoet,com.squareup.javapoet,ParameterizedTypeName,42,245,4,20,4,42,7,16,3,8
+JavaPoet,com.squareup.javapoet,TypeName.new SimpleTypeVisitor8() {...},23,128,5,18,5,29,5,19,0,9
+JavaPoet,com.squareup.javapoet,TypeName.new Object() {...},8,53,0,0,0,1,0,1,0,1
+JavaPoet,com.squareup.javapoet,JavaFile.Builder,4,134,4,6,0,23,4,9,0,8
+JavaPoet,com.squareup.javapoet,AnnotationSpec.Visitor,0,75,0,2,0,11,0,7,0,6
+JavaPoet,com.squareup.javapoet,TypeName,91,525,36,72,11,112,33,46,1,24
+JavaPoet,com.squareup.javapoet,JavaFile.new Appendable() {...},2,7,0,0,1,3,1,3,1,3
+JavaPoet,com.squareup.javapoet,ParameterSpec.Builder,39,65,4,2,7,17,4,7,1,7
+JavaPoet,com.squareup.javapoet,JavaFile.new SimpleJavaFileObject() {...},3,24,0,0,1,4,1,3,1,3
+JavaPoet,com.squareup.javapoet,FieldSpec,51,166,5,7,8,34,5,10,1,8
+JavaPoet,com.squareup.javapoet,MethodSpec,14,653,8,52,2,125,8,35,0,13
+JavaPoet,com.squareup.javapoet,ArrayTypeName,18,62,0,0,3,11,3,8,3,8
+JavaPoet,com.squareup.javapoet,JavaFile,66,383,7,27,17,69,7,23,3,10
+JavaPoet,com.squareup.javapoet,LineWrapper.new Object() {...},3,23,0,0,0,1,0,1,0,1

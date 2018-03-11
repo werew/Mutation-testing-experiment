@@ -1,0 +1,606 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Retrofit.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Retrofit</a> &gt; <a href="index.source.html" class="el_package">retrofit2</a> &gt; <span class="el_source">Retrofit.java</span></div><h1>Retrofit.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2012 Square, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package retrofit2;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executor;
+import javax.annotation.Nullable;
+import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
+import retrofit2.http.GET;
+import retrofit2.http.HTTP;
+import retrofit2.http.Header;
+import retrofit2.http.Url;
+
+import static java.util.Collections.unmodifiableList;
+import static retrofit2.Utils.checkNotNull;
+
+/**
+ * Retrofit adapts a Java interface to HTTP calls by using annotations on the declared methods to
+ * define how requests are made. Create instances using {@linkplain Builder
+ * the builder} and pass your interface to {@link #create} to generate an implementation.
+ * &lt;p&gt;
+ * For example,
+ * &lt;pre&gt;&lt;code&gt;
+ * Retrofit retrofit = new Retrofit.Builder()
+ *     .baseUrl(&quot;https://api.example.com/&quot;)
+ *     .addConverterFactory(GsonConverterFactory.create())
+ *     .build();
+ *
+ * MyApi api = retrofit.create(MyApi.class);
+ * Response&amp;lt;User&amp;gt; user = api.getUser().execute();
+ * &lt;/code&gt;&lt;/pre&gt;
+ *
+ * @author Bob Lee (bob@squareup.com)
+ * @author Jake Wharton (jw@squareup.com)
+ */
+public final class Retrofit {
+<span class="fc" id="L61">  private final Map&lt;Method, ServiceMethod&lt;?, ?&gt;&gt; serviceMethodCache = new ConcurrentHashMap&lt;&gt;();</span>
+
+  final okhttp3.Call.Factory callFactory;
+  final HttpUrl baseUrl;
+  final List&lt;Converter.Factory&gt; converterFactories;
+  final List&lt;CallAdapter.Factory&gt; callAdapterFactories;
+  final @Nullable Executor callbackExecutor;
+  final boolean validateEagerly;
+
+  Retrofit(okhttp3.Call.Factory callFactory, HttpUrl baseUrl,
+      List&lt;Converter.Factory&gt; converterFactories, List&lt;CallAdapter.Factory&gt; callAdapterFactories,
+<span class="fc" id="L72">      @Nullable Executor callbackExecutor, boolean validateEagerly) {</span>
+<span class="fc" id="L73">    this.callFactory = callFactory;</span>
+<span class="fc" id="L74">    this.baseUrl = baseUrl;</span>
+<span class="fc" id="L75">    this.converterFactories = converterFactories; // Copy+unmodifiable at call site.</span>
+<span class="fc" id="L76">    this.callAdapterFactories = callAdapterFactories; // Copy+unmodifiable at call site.</span>
+<span class="fc" id="L77">    this.callbackExecutor = callbackExecutor;</span>
+<span class="fc" id="L78">    this.validateEagerly = validateEagerly;</span>
+<span class="fc" id="L79">  }</span>
+
+  /**
+   * Create an implementation of the API endpoints defined by the {@code service} interface.
+   * &lt;p&gt;
+   * The relative path for a given method is obtained from an annotation on the method describing
+   * the request type. The built-in methods are {@link retrofit2.http.GET GET},
+   * {@link retrofit2.http.PUT PUT}, {@link retrofit2.http.POST POST}, {@link retrofit2.http.PATCH
+   * PATCH}, {@link retrofit2.http.HEAD HEAD}, {@link retrofit2.http.DELETE DELETE} and
+   * {@link retrofit2.http.OPTIONS OPTIONS}. You can use a custom HTTP method with
+   * {@link HTTP @HTTP}. For a dynamic URL, omit the path on the annotation and annotate the first
+   * parameter with {@link Url @Url}.
+   * &lt;p&gt;
+   * Method parameters can be used to replace parts of the URL by annotating them with
+   * {@link retrofit2.http.Path @Path}. Replacement sections are denoted by an identifier
+   * surrounded by curly braces (e.g., &quot;{foo}&quot;). To add items to the query string of a URL use
+   * {@link retrofit2.http.Query @Query}.
+   * &lt;p&gt;
+   * The body of a request is denoted by the {@link retrofit2.http.Body @Body} annotation. The
+   * object will be converted to request representation by one of the {@link Converter.Factory}
+   * instances. A {@link RequestBody} can also be used for a raw representation.
+   * &lt;p&gt;
+   * Alternative request body formats are supported by method annotations and corresponding
+   * parameter annotations:
+   * &lt;ul&gt;
+   * &lt;li&gt;{@link retrofit2.http.FormUrlEncoded @FormUrlEncoded} - Form-encoded data with key-value
+   * pairs specified by the {@link retrofit2.http.Field @Field} parameter annotation.
+   * &lt;li&gt;{@link retrofit2.http.Multipart @Multipart} - RFC 2388-compliant multipart data with
+   * parts specified by the {@link retrofit2.http.Part @Part} parameter annotation.
+   * &lt;/ul&gt;
+   * &lt;p&gt;
+   * Additional static headers can be added for an endpoint using the
+   * {@link retrofit2.http.Headers @Headers} method annotation. For per-request control over a
+   * header annotate a parameter with {@link Header @Header}.
+   * &lt;p&gt;
+   * By default, methods return a {@link Call} which represents the HTTP request. The generic
+   * parameter of the call is the response body type and will be converted by one of the
+   * {@link Converter.Factory} instances. {@link ResponseBody} can also be used for a raw
+   * representation. {@link Void} can be used if you do not care about the body contents.
+   * &lt;p&gt;
+   * For example:
+   * &lt;pre&gt;
+   * public interface CategoryService {
+   *   &amp;#64;POST(&quot;category/{cat}/&quot;)
+   *   Call&amp;lt;List&amp;lt;Item&amp;gt;&amp;gt; categoryList(@Path(&quot;cat&quot;) String a, @Query(&quot;page&quot;) int b);
+   * }
+   * &lt;/pre&gt;
+   */
+  @SuppressWarnings(&quot;unchecked&quot;) // Single-interface proxy creation guarded by parameter safety.
+  public &lt;T&gt; T create(final Class&lt;T&gt; service) {
+<span class="fc" id="L129">    Utils.validateServiceInterface(service);</span>
+<span class="fc bfc" id="L130" title="All 2 branches covered.">    if (validateEagerly) {</span>
+<span class="nc" id="L131">      eagerlyValidateMethods(service);</span>
+    }
+<span class="fc" id="L133">    return (T) Proxy.newProxyInstance(service.getClassLoader(), new Class&lt;?&gt;[] { service },</span>
+<span class="fc" id="L134">        new InvocationHandler() {</span>
+<span class="fc" id="L135">          private final Platform platform = Platform.get();</span>
+
+          @Override public Object invoke(Object proxy, Method method, @Nullable Object[] args)
+              throws Throwable {
+            // If the method is a method from Object then defer to normal invocation.
+<span class="fc bfc" id="L140" title="All 2 branches covered.">            if (method.getDeclaringClass() == Object.class) {</span>
+<span class="fc" id="L141">              return method.invoke(this, args);</span>
+            }
+<span class="pc bpc" id="L143" title="1 of 2 branches missed.">            if (platform.isDefaultMethod(method)) {</span>
+<span class="nc" id="L144">              return platform.invokeDefaultMethod(method, service, proxy, args);</span>
+            }
+<span class="fc" id="L146">            ServiceMethod&lt;Object, Object&gt; serviceMethod =</span>
+<span class="fc" id="L147">                (ServiceMethod&lt;Object, Object&gt;) loadServiceMethod(method);</span>
+<span class="fc" id="L148">            OkHttpCall&lt;Object&gt; okHttpCall = new OkHttpCall&lt;&gt;(serviceMethod, args);</span>
+<span class="fc" id="L149">            return serviceMethod.adapt(okHttpCall);</span>
+          }
+        });
+  }
+
+  private void eagerlyValidateMethods(Class&lt;?&gt; service) {
+<span class="fc" id="L155">    Platform platform = Platform.get();</span>
+<span class="pc bpc" id="L156" title="1 of 2 branches missed.">    for (Method method : service.getDeclaredMethods()) {</span>
+<span class="pc bpc" id="L157" title="1 of 2 branches missed.">      if (!platform.isDefaultMethod(method)) {</span>
+<span class="nc" id="L158">        loadServiceMethod(method);</span>
+      }
+    }
+<span class="nc" id="L161">  }</span>
+
+  ServiceMethod&lt;?, ?&gt; loadServiceMethod(Method method) {
+<span class="fc" id="L164">    ServiceMethod&lt;?, ?&gt; result = serviceMethodCache.get(method);</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">    if (result != null) return result;</span>
+
+<span class="fc" id="L167">    synchronized (serviceMethodCache) {</span>
+<span class="fc" id="L168">      result = serviceMethodCache.get(method);</span>
+<span class="pc bpc" id="L169" title="1 of 2 branches missed.">      if (result == null) {</span>
+<span class="fc" id="L170">        result = new ServiceMethod.Builder&lt;&gt;(this, method).build();</span>
+<span class="fc" id="L171">        serviceMethodCache.put(method, result);</span>
+      }
+<span class="fc" id="L173">    }</span>
+<span class="fc" id="L174">    return result;</span>
+  }
+
+  /**
+   * The factory used to create {@linkplain okhttp3.Call OkHttp calls} for sending a HTTP requests.
+   * Typically an instance of {@link OkHttpClient}.
+   */
+  public okhttp3.Call.Factory callFactory() {
+<span class="fc" id="L182">    return callFactory;</span>
+  }
+
+  /** The API base URL. */
+  public HttpUrl baseUrl() {
+<span class="fc" id="L187">    return baseUrl;</span>
+  }
+
+  /**
+   * Returns a list of the factories tried when creating a
+   * {@linkplain #callAdapter(Type, Annotation[])} call adapter}.
+   */
+  public List&lt;CallAdapter.Factory&gt; callAdapterFactories() {
+<span class="fc" id="L195">    return callAdapterFactories;</span>
+  }
+
+  /**
+   * Returns the {@link CallAdapter} for {@code returnType} from the available {@linkplain
+   * #callAdapterFactories() factories}.
+   *
+   * @throws IllegalArgumentException if no call adapter available for {@code type}.
+   */
+  public CallAdapter&lt;?, ?&gt; callAdapter(Type returnType, Annotation[] annotations) {
+<span class="fc" id="L205">    return nextCallAdapter(null, returnType, annotations);</span>
+  }
+
+  /**
+   * Returns the {@link CallAdapter} for {@code returnType} from the available {@linkplain
+   * #callAdapterFactories() factories} except {@code skipPast}.
+   *
+   * @throws IllegalArgumentException if no call adapter available for {@code type}.
+   */
+  public CallAdapter&lt;?, ?&gt; nextCallAdapter(@Nullable CallAdapter.Factory skipPast, Type returnType,
+      Annotation[] annotations) {
+<span class="fc" id="L216">    checkNotNull(returnType, &quot;returnType == null&quot;);</span>
+<span class="fc" id="L217">    checkNotNull(annotations, &quot;annotations == null&quot;);</span>
+
+<span class="fc" id="L219">    int start = callAdapterFactories.indexOf(skipPast) + 1;</span>
+<span class="fc bfc" id="L220" title="All 2 branches covered.">    for (int i = start, count = callAdapterFactories.size(); i &lt; count; i++) {</span>
+<span class="fc" id="L221">      CallAdapter&lt;?, ?&gt; adapter = callAdapterFactories.get(i).get(returnType, annotations, this);</span>
+<span class="fc bfc" id="L222" title="All 2 branches covered.">      if (adapter != null) {</span>
+<span class="fc" id="L223">        return adapter;</span>
+      }
+    }
+
+<span class="fc" id="L227">    StringBuilder builder = new StringBuilder(&quot;Could not locate call adapter for &quot;)</span>
+<span class="fc" id="L228">        .append(returnType)</span>
+<span class="fc" id="L229">        .append(&quot;.\n&quot;);</span>
+<span class="fc bfc" id="L230" title="All 2 branches covered.">    if (skipPast != null) {</span>
+<span class="fc" id="L231">      builder.append(&quot;  Skipped:&quot;);</span>
+<span class="fc bfc" id="L232" title="All 2 branches covered.">      for (int i = 0; i &lt; start; i++) {</span>
+<span class="fc" id="L233">        builder.append(&quot;\n   * &quot;).append(callAdapterFactories.get(i).getClass().getName());</span>
+      }
+<span class="fc" id="L235">      builder.append('\n');</span>
+    }
+<span class="fc" id="L237">    builder.append(&quot;  Tried:&quot;);</span>
+<span class="fc bfc" id="L238" title="All 2 branches covered.">    for (int i = start, count = callAdapterFactories.size(); i &lt; count; i++) {</span>
+<span class="fc" id="L239">      builder.append(&quot;\n   * &quot;).append(callAdapterFactories.get(i).getClass().getName());</span>
+    }
+<span class="fc" id="L241">    throw new IllegalArgumentException(builder.toString());</span>
+  }
+
+  /**
+   * Returns an unmodifiable list of the factories tried when creating a
+   * {@linkplain #requestBodyConverter(Type, Annotation[], Annotation[]) request body converter}, a
+   * {@linkplain #responseBodyConverter(Type, Annotation[]) response body converter}, or a
+   * {@linkplain #stringConverter(Type, Annotation[]) string converter}.
+   */
+  public List&lt;Converter.Factory&gt; converterFactories() {
+<span class="fc" id="L251">    return converterFactories;</span>
+  }
+
+  /**
+   * Returns a {@link Converter} for {@code type} to {@link RequestBody} from the available
+   * {@linkplain #converterFactories() factories}.
+   *
+   * @throws IllegalArgumentException if no converter available for {@code type}.
+   */
+  public &lt;T&gt; Converter&lt;T, RequestBody&gt; requestBodyConverter(Type type,
+      Annotation[] parameterAnnotations, Annotation[] methodAnnotations) {
+<span class="fc" id="L262">    return nextRequestBodyConverter(null, type, parameterAnnotations, methodAnnotations);</span>
+  }
+
+  /**
+   * Returns a {@link Converter} for {@code type} to {@link RequestBody} from the available
+   * {@linkplain #converterFactories() factories} except {@code skipPast}.
+   *
+   * @throws IllegalArgumentException if no converter available for {@code type}.
+   */
+  public &lt;T&gt; Converter&lt;T, RequestBody&gt; nextRequestBodyConverter(
+      @Nullable Converter.Factory skipPast, Type type, Annotation[] parameterAnnotations,
+      Annotation[] methodAnnotations) {
+<span class="fc" id="L274">    checkNotNull(type, &quot;type == null&quot;);</span>
+<span class="fc" id="L275">    checkNotNull(parameterAnnotations, &quot;parameterAnnotations == null&quot;);</span>
+<span class="fc" id="L276">    checkNotNull(methodAnnotations, &quot;methodAnnotations == null&quot;);</span>
+
+<span class="fc" id="L278">    int start = converterFactories.indexOf(skipPast) + 1;</span>
+<span class="fc bfc" id="L279" title="All 2 branches covered.">    for (int i = start, count = converterFactories.size(); i &lt; count; i++) {</span>
+<span class="fc" id="L280">      Converter.Factory factory = converterFactories.get(i);</span>
+<span class="fc" id="L281">      Converter&lt;?, RequestBody&gt; converter =</span>
+<span class="fc" id="L282">          factory.requestBodyConverter(type, parameterAnnotations, methodAnnotations, this);</span>
+<span class="fc bfc" id="L283" title="All 2 branches covered.">      if (converter != null) {</span>
+        //noinspection unchecked
+<span class="fc" id="L285">        return (Converter&lt;T, RequestBody&gt;) converter;</span>
+      }
+    }
+
+<span class="fc" id="L289">    StringBuilder builder = new StringBuilder(&quot;Could not locate RequestBody converter for &quot;)</span>
+<span class="fc" id="L290">        .append(type)</span>
+<span class="fc" id="L291">        .append(&quot;.\n&quot;);</span>
+<span class="fc bfc" id="L292" title="All 2 branches covered.">    if (skipPast != null) {</span>
+<span class="fc" id="L293">      builder.append(&quot;  Skipped:&quot;);</span>
+<span class="fc bfc" id="L294" title="All 2 branches covered.">      for (int i = 0; i &lt; start; i++) {</span>
+<span class="fc" id="L295">        builder.append(&quot;\n   * &quot;).append(converterFactories.get(i).getClass().getName());</span>
+      }
+<span class="fc" id="L297">      builder.append('\n');</span>
+    }
+<span class="fc" id="L299">    builder.append(&quot;  Tried:&quot;);</span>
+<span class="fc bfc" id="L300" title="All 2 branches covered.">    for (int i = start, count = converterFactories.size(); i &lt; count; i++) {</span>
+<span class="fc" id="L301">      builder.append(&quot;\n   * &quot;).append(converterFactories.get(i).getClass().getName());</span>
+    }
+<span class="fc" id="L303">    throw new IllegalArgumentException(builder.toString());</span>
+  }
+
+  /**
+   * Returns a {@link Converter} for {@link ResponseBody} to {@code type} from the available
+   * {@linkplain #converterFactories() factories}.
+   *
+   * @throws IllegalArgumentException if no converter available for {@code type}.
+   */
+  public &lt;T&gt; Converter&lt;ResponseBody, T&gt; responseBodyConverter(Type type, Annotation[] annotations) {
+<span class="fc" id="L313">    return nextResponseBodyConverter(null, type, annotations);</span>
+  }
+
+  /**
+   * Returns a {@link Converter} for {@link ResponseBody} to {@code type} from the available
+   * {@linkplain #converterFactories() factories} except {@code skipPast}.
+   *
+   * @throws IllegalArgumentException if no converter available for {@code type}.
+   */
+  public &lt;T&gt; Converter&lt;ResponseBody, T&gt; nextResponseBodyConverter(
+      @Nullable Converter.Factory skipPast, Type type, Annotation[] annotations) {
+<span class="fc" id="L324">    checkNotNull(type, &quot;type == null&quot;);</span>
+<span class="fc" id="L325">    checkNotNull(annotations, &quot;annotations == null&quot;);</span>
+
+<span class="fc" id="L327">    int start = converterFactories.indexOf(skipPast) + 1;</span>
+<span class="fc bfc" id="L328" title="All 2 branches covered.">    for (int i = start, count = converterFactories.size(); i &lt; count; i++) {</span>
+<span class="fc" id="L329">      Converter&lt;ResponseBody, ?&gt; converter =</span>
+<span class="fc" id="L330">          converterFactories.get(i).responseBodyConverter(type, annotations, this);</span>
+<span class="fc bfc" id="L331" title="All 2 branches covered.">      if (converter != null) {</span>
+        //noinspection unchecked
+<span class="fc" id="L333">        return (Converter&lt;ResponseBody, T&gt;) converter;</span>
+      }
+    }
+
+<span class="fc" id="L337">    StringBuilder builder = new StringBuilder(&quot;Could not locate ResponseBody converter for &quot;)</span>
+<span class="fc" id="L338">        .append(type)</span>
+<span class="fc" id="L339">        .append(&quot;.\n&quot;);</span>
+<span class="fc bfc" id="L340" title="All 2 branches covered.">    if (skipPast != null) {</span>
+<span class="fc" id="L341">      builder.append(&quot;  Skipped:&quot;);</span>
+<span class="fc bfc" id="L342" title="All 2 branches covered.">      for (int i = 0; i &lt; start; i++) {</span>
+<span class="fc" id="L343">        builder.append(&quot;\n   * &quot;).append(converterFactories.get(i).getClass().getName());</span>
+      }
+<span class="fc" id="L345">      builder.append('\n');</span>
+    }
+<span class="fc" id="L347">    builder.append(&quot;  Tried:&quot;);</span>
+<span class="fc bfc" id="L348" title="All 2 branches covered.">    for (int i = start, count = converterFactories.size(); i &lt; count; i++) {</span>
+<span class="fc" id="L349">      builder.append(&quot;\n   * &quot;).append(converterFactories.get(i).getClass().getName());</span>
+    }
+<span class="fc" id="L351">    throw new IllegalArgumentException(builder.toString());</span>
+  }
+
+  /**
+   * Returns a {@link Converter} for {@code type} to {@link String} from the available
+   * {@linkplain #converterFactories() factories}.
+   */
+  public &lt;T&gt; Converter&lt;T, String&gt; stringConverter(Type type, Annotation[] annotations) {
+<span class="fc" id="L359">    checkNotNull(type, &quot;type == null&quot;);</span>
+<span class="fc" id="L360">    checkNotNull(annotations, &quot;annotations == null&quot;);</span>
+
+<span class="fc bfc" id="L362" title="All 2 branches covered.">    for (int i = 0, count = converterFactories.size(); i &lt; count; i++) {</span>
+<span class="fc" id="L363">      Converter&lt;?, String&gt; converter =</span>
+<span class="fc" id="L364">          converterFactories.get(i).stringConverter(type, annotations, this);</span>
+<span class="fc bfc" id="L365" title="All 2 branches covered.">      if (converter != null) {</span>
+        //noinspection unchecked
+<span class="fc" id="L367">        return (Converter&lt;T, String&gt;) converter;</span>
+      }
+    }
+
+    // Nothing matched. Resort to default converter which just calls toString().
+    //noinspection unchecked
+<span class="fc" id="L373">    return (Converter&lt;T, String&gt;) BuiltInConverters.ToStringConverter.INSTANCE;</span>
+  }
+
+  /**
+   * The executor used for {@link Callback} methods on a {@link Call}. This may be {@code null},
+   * in which case callbacks should be made synchronously on the background thread.
+   */
+  public @Nullable Executor callbackExecutor() {
+<span class="fc" id="L381">    return callbackExecutor;</span>
+  }
+
+  public Builder newBuilder() {
+<span class="fc" id="L385">    return new Builder(this);</span>
+  }
+
+  /**
+   * Build a new {@link Retrofit}.
+   * &lt;p&gt;
+   * Calling {@link #baseUrl} is required before calling {@link #build()}. All other methods
+   * are optional.
+   */
+  public static final class Builder {
+    private final Platform platform;
+    private @Nullable okhttp3.Call.Factory callFactory;
+    private HttpUrl baseUrl;
+<span class="fc" id="L398">    private final List&lt;Converter.Factory&gt; converterFactories = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L399">    private final List&lt;CallAdapter.Factory&gt; callAdapterFactories = new ArrayList&lt;&gt;();</span>
+    private @Nullable Executor callbackExecutor;
+    private boolean validateEagerly;
+
+<span class="fc" id="L403">    Builder(Platform platform) {</span>
+<span class="fc" id="L404">      this.platform = platform;</span>
+<span class="fc" id="L405">    }</span>
+
+    public Builder() {
+<span class="fc" id="L408">      this(Platform.get());</span>
+<span class="fc" id="L409">    }</span>
+
+<span class="fc" id="L411">    Builder(Retrofit retrofit) {</span>
+<span class="fc" id="L412">      platform = Platform.get();</span>
+<span class="fc" id="L413">      callFactory = retrofit.callFactory;</span>
+<span class="fc" id="L414">      baseUrl = retrofit.baseUrl;</span>
+
+<span class="fc" id="L416">      converterFactories.addAll(retrofit.converterFactories);</span>
+      // Remove the default BuiltInConverters instance added by build().
+<span class="fc" id="L418">      converterFactories.remove(0);</span>
+
+<span class="fc" id="L420">      callAdapterFactories.addAll(retrofit.callAdapterFactories);</span>
+      // Remove the default, platform-aware call adapter added by build().
+<span class="fc" id="L422">      callAdapterFactories.remove(callAdapterFactories.size() - 1);</span>
+
+<span class="fc" id="L424">      callbackExecutor = retrofit.callbackExecutor;</span>
+<span class="fc" id="L425">      validateEagerly = retrofit.validateEagerly;</span>
+<span class="fc" id="L426">    }</span>
+
+    /**
+     * The HTTP client used for requests.
+     * &lt;p&gt;
+     * This is a convenience method for calling {@link #callFactory}.
+     */
+    public Builder client(OkHttpClient client) {
+<span class="fc" id="L434">      return callFactory(checkNotNull(client, &quot;client == null&quot;));</span>
+    }
+
+    /**
+     * Specify a custom call factory for creating {@link Call} instances.
+     * &lt;p&gt;
+     * Note: Calling {@link #client} automatically sets this value.
+     */
+    public Builder callFactory(okhttp3.Call.Factory factory) {
+<span class="fc" id="L443">      this.callFactory = checkNotNull(factory, &quot;factory == null&quot;);</span>
+<span class="fc" id="L444">      return this;</span>
+    }
+
+    /**
+     * Set the API base URL.
+     *
+     * @see #baseUrl(HttpUrl)
+     */
+    public Builder baseUrl(String baseUrl) {
+<span class="fc" id="L453">      checkNotNull(baseUrl, &quot;baseUrl == null&quot;);</span>
+<span class="fc" id="L454">      HttpUrl httpUrl = HttpUrl.parse(baseUrl);</span>
+<span class="fc bfc" id="L455" title="All 2 branches covered.">      if (httpUrl == null) {</span>
+<span class="fc" id="L456">        throw new IllegalArgumentException(&quot;Illegal URL: &quot; + baseUrl);</span>
+      }
+<span class="fc" id="L458">      return baseUrl(httpUrl);</span>
+    }
+
+    /**
+     * Set the API base URL.
+     * &lt;p&gt;
+     * The specified endpoint values (such as with {@link GET @GET}) are resolved against this
+     * value using {@link HttpUrl#resolve(String)}. The behavior of this matches that of an
+     * {@code &lt;a href=&quot;&quot;&gt;} link on a website resolving on the current URL.
+     * &lt;p&gt;
+     * &lt;b&gt;Base URLs should always end in {@code /}.&lt;/b&gt;
+     * &lt;p&gt;
+     * A trailing {@code /} ensures that endpoints values which are relative paths will correctly
+     * append themselves to a base which has path components.
+     * &lt;p&gt;
+     * &lt;b&gt;Correct:&lt;/b&gt;&lt;br&gt;
+     * Base URL: http://example.com/api/&lt;br&gt;
+     * Endpoint: foo/bar/&lt;br&gt;
+     * Result: http://example.com/api/foo/bar/
+     * &lt;p&gt;
+     * &lt;b&gt;Incorrect:&lt;/b&gt;&lt;br&gt;
+     * Base URL: http://example.com/api&lt;br&gt;
+     * Endpoint: foo/bar/&lt;br&gt;
+     * Result: http://example.com/foo/bar/
+     * &lt;p&gt;
+     * This method enforces that {@code baseUrl} has a trailing {@code /}.
+     * &lt;p&gt;
+     * &lt;b&gt;Endpoint values which contain a leading {@code /} are absolute.&lt;/b&gt;
+     * &lt;p&gt;
+     * Absolute values retain only the host from {@code baseUrl} and ignore any specified path
+     * components.
+     * &lt;p&gt;
+     * Base URL: http://example.com/api/&lt;br&gt;
+     * Endpoint: /foo/bar/&lt;br&gt;
+     * Result: http://example.com/foo/bar/
+     * &lt;p&gt;
+     * Base URL: http://example.com/&lt;br&gt;
+     * Endpoint: /foo/bar/&lt;br&gt;
+     * Result: http://example.com/foo/bar/
+     * &lt;p&gt;
+     * &lt;b&gt;Endpoint values may be a full URL.&lt;/b&gt;
+     * &lt;p&gt;
+     * Values which have a host replace the host of {@code baseUrl} and values also with a scheme
+     * replace the scheme of {@code baseUrl}.
+     * &lt;p&gt;
+     * Base URL: http://example.com/&lt;br&gt;
+     * Endpoint: https://github.com/square/retrofit/&lt;br&gt;
+     * Result: https://github.com/square/retrofit/
+     * &lt;p&gt;
+     * Base URL: http://example.com&lt;br&gt;
+     * Endpoint: //github.com/square/retrofit/&lt;br&gt;
+     * Result: http://github.com/square/retrofit/ (note the scheme stays 'http')
+     */
+    public Builder baseUrl(HttpUrl baseUrl) {
+<span class="fc" id="L512">      checkNotNull(baseUrl, &quot;baseUrl == null&quot;);</span>
+<span class="fc" id="L513">      List&lt;String&gt; pathSegments = baseUrl.pathSegments();</span>
+<span class="fc bfc" id="L514" title="All 2 branches covered.">      if (!&quot;&quot;.equals(pathSegments.get(pathSegments.size() - 1))) {</span>
+<span class="fc" id="L515">        throw new IllegalArgumentException(&quot;baseUrl must end in /: &quot; + baseUrl);</span>
+      }
+<span class="fc" id="L517">      this.baseUrl = baseUrl;</span>
+<span class="fc" id="L518">      return this;</span>
+    }
+
+    /** Add converter factory for serialization and deserialization of objects. */
+    public Builder addConverterFactory(Converter.Factory factory) {
+<span class="fc" id="L523">      converterFactories.add(checkNotNull(factory, &quot;factory == null&quot;));</span>
+<span class="fc" id="L524">      return this;</span>
+    }
+
+    /**
+     * Add a call adapter factory for supporting service method return types other than {@link
+     * Call}.
+     */
+    public Builder addCallAdapterFactory(CallAdapter.Factory factory) {
+<span class="fc" id="L532">      callAdapterFactories.add(checkNotNull(factory, &quot;factory == null&quot;));</span>
+<span class="fc" id="L533">      return this;</span>
+    }
+
+    /**
+     * The executor on which {@link Callback} methods are invoked when returning {@link Call} from
+     * your service method.
+     * &lt;p&gt;
+     * Note: {@code executor} is not used for {@linkplain #addCallAdapterFactory custom method
+     * return types}.
+     */
+    public Builder callbackExecutor(Executor executor) {
+<span class="fc" id="L544">      this.callbackExecutor = checkNotNull(executor, &quot;executor == null&quot;);</span>
+<span class="fc" id="L545">      return this;</span>
+    }
+
+    /** Returns a modifiable list of call adapter factories. */
+    public List&lt;CallAdapter.Factory&gt; callAdapterFactories() {
+<span class="fc" id="L550">      return this.callAdapterFactories;</span>
+    }
+
+    /** Returns a modifiable list of converter factories. */
+    public List&lt;Converter.Factory&gt; converterFactories() {
+<span class="fc" id="L555">      return this.converterFactories;</span>
+    }
+
+    /**
+     * When calling {@link #create} on the resulting {@link Retrofit} instance, eagerly validate
+     * the configuration of all methods in the supplied interface.
+     */
+    public Builder validateEagerly(boolean validateEagerly) {
+<span class="fc" id="L563">      this.validateEagerly = validateEagerly;</span>
+<span class="fc" id="L564">      return this;</span>
+    }
+
+    /**
+     * Create the {@link Retrofit} instance using the configured values.
+     * &lt;p&gt;
+     * Note: If neither {@link #client} nor {@link #callFactory} is called a default {@link
+     * OkHttpClient} will be created and used.
+     */
+    public Retrofit build() {
+<span class="fc bfc" id="L574" title="All 2 branches covered.">      if (baseUrl == null) {</span>
+<span class="fc" id="L575">        throw new IllegalStateException(&quot;Base URL required.&quot;);</span>
+      }
+
+<span class="fc" id="L578">      okhttp3.Call.Factory callFactory = this.callFactory;</span>
+<span class="fc bfc" id="L579" title="All 2 branches covered.">      if (callFactory == null) {</span>
+<span class="fc" id="L580">        callFactory = new OkHttpClient();</span>
+      }
+
+<span class="fc" id="L583">      Executor callbackExecutor = this.callbackExecutor;</span>
+<span class="fc bfc" id="L584" title="All 2 branches covered.">      if (callbackExecutor == null) {</span>
+<span class="fc" id="L585">        callbackExecutor = platform.defaultCallbackExecutor();</span>
+      }
+
+      // Make a defensive copy of the adapters and add the default Call adapter.
+<span class="fc" id="L589">      List&lt;CallAdapter.Factory&gt; callAdapterFactories = new ArrayList&lt;&gt;(this.callAdapterFactories);</span>
+<span class="fc" id="L590">      callAdapterFactories.add(platform.defaultCallAdapterFactory(callbackExecutor));</span>
+
+      // Make a defensive copy of the converters.
+<span class="fc" id="L593">      List&lt;Converter.Factory&gt; converterFactories =</span>
+<span class="fc" id="L594">          new ArrayList&lt;&gt;(1 + this.converterFactories.size());</span>
+
+      // Add the built-in converter factory first. This prevents overriding its behavior but also
+      // ensures correct behavior when using converters that consume all types.
+<span class="fc" id="L598">      converterFactories.add(new BuiltInConverters());</span>
+<span class="fc" id="L599">      converterFactories.addAll(this.converterFactories);</span>
+
+<span class="fc" id="L601">      return new Retrofit(callFactory, baseUrl, unmodifiableList(converterFactories),</span>
+<span class="fc" id="L602">          unmodifiableList(callAdapterFactories), callbackExecutor, validateEagerly);</span>
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>IsAnything.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JavaHamcrest</a> &gt; <a href="index.source.html" class="el_package">org.hamcrest.core</a> &gt; <span class="el_source">IsAnything.java</span></div><h1>IsAnything.java</h1><pre class="source lang-java linenums">package org.hamcrest.core;
+
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+
+
+/**
+ * A matcher that always returns &lt;code&gt;true&lt;/code&gt;.
+ */
+public class IsAnything&lt;T&gt; extends BaseMatcher&lt;T&gt; {
+
+    private final String message;
+
+    public IsAnything() {
+<span class="fc" id="L16">        this(&quot;ANYTHING&quot;);</span>
+<span class="fc" id="L17">    }</span>
+
+<span class="fc" id="L19">    public IsAnything(String message) {</span>
+<span class="fc" id="L20">        this.message = message;</span>
+<span class="fc" id="L21">    }</span>
+
+    @Override
+    public boolean matches(Object o) {
+<span class="fc" id="L25">        return true;</span>
+    }
+
+    @Override
+    public void describeTo(Description description) {
+<span class="fc" id="L30">        description.appendText(message);</span>
+<span class="fc" id="L31">    }</span>
+
+    /**
+     * Creates a matcher that always matches, regardless of the examined object.
+     */
+<span class="fc" id="L36">    public static Matcher&lt;Object&gt; anything() { return new IsAnything&lt;&gt;(); }</span>
+
+    /**
+     * Creates a matcher that always matches, regardless of the examined object, but describes
+     * itself with the specified {@link String}.
+     *
+     * @param description
+     *     a meaningful {@link String} used when describing itself
+     */
+    public static Matcher&lt;Object&gt; anything(String description) {
+<span class="fc" id="L46">        return new IsAnything&lt;&gt;(description);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

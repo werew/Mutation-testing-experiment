@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TypeSafeMatcher.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JavaHamcrest</a> &gt; <a href="index.source.html" class="el_package">org.hamcrest</a> &gt; <span class="el_source">TypeSafeMatcher.java</span></div><h1>TypeSafeMatcher.java</h1><pre class="source lang-java linenums">package org.hamcrest;
+
+import org.hamcrest.internal.ReflectiveTypeFinder;
+
+/**
+ * Convenient base class for Matchers that require a non-null value of a specific type.
+ * This simply implements the null check, checks the type and then casts.
+ *
+ * @author Joe Walnes
+ * @author Steve Freeman
+ * @author Nat Pryce
+ */
+public abstract class TypeSafeMatcher&lt;T&gt; extends BaseMatcher&lt;T&gt; {
+<span class="fc" id="L14">    private static final ReflectiveTypeFinder TYPE_FINDER = new ReflectiveTypeFinder(&quot;matchesSafely&quot;, 1, 0);</span>
+    
+    final private Class&lt;?&gt; expectedType;
+
+    /**
+     * The default constructor for simple sub types
+     */
+    protected TypeSafeMatcher() {
+<span class="fc" id="L22">        this(TYPE_FINDER);</span>
+<span class="fc" id="L23">    }</span>
+   
+    /**
+     * Use this constructor if the subclass that implements &lt;code&gt;matchesSafely&lt;/code&gt; 
+     * is &lt;em&gt;not&lt;/em&gt; the class that binds &amp;lt;T&amp;gt; to a type. 
+     * @param expectedType The expectedType of the actual value.
+     */
+<span class="nc" id="L30">    protected TypeSafeMatcher(Class&lt;?&gt; expectedType) {</span>
+<span class="nc" id="L31">        this.expectedType = expectedType;</span>
+<span class="nc" id="L32">    }</span>
+    
+    /**
+     * Use this constructor if the subclass that implements &lt;code&gt;matchesSafely&lt;/code&gt; 
+     * is &lt;em&gt;not&lt;/em&gt; the class that binds &amp;lt;T&amp;gt; to a type. 
+     * @param typeFinder A type finder to extract the type
+     */
+<span class="fc" id="L39">    protected TypeSafeMatcher(ReflectiveTypeFinder typeFinder) {</span>
+<span class="fc" id="L40">      this.expectedType = typeFinder.findExpectedType(getClass()); </span>
+<span class="fc" id="L41">    }</span>
+ 
+    /**
+     * Subclasses should implement this. The item will already have been checked for
+     * the specific type and will never be null.
+     */
+    protected abstract boolean matchesSafely(T item);
+    
+    /**
+     * Subclasses should override this. The item will already have been checked for
+     * the specific type and will never be null.
+     */
+    protected void describeMismatchSafely(T item, Description mismatchDescription) {
+<span class="fc" id="L54">        super.describeMismatch(item, mismatchDescription);</span>
+<span class="fc" id="L55">    }</span>
+    
+    /**
+     * Methods made final to prevent accidental override.
+     * If you need to override this, there's no point on extending TypeSafeMatcher.
+     * Instead, extend the {@link BaseMatcher}.
+     */
+    @Override
+    @SuppressWarnings({&quot;unchecked&quot;})
+    public final boolean matches(Object item) {
+<span class="fc bfc" id="L65" title="All 2 branches covered.">        return item != null</span>
+<span class="fc bfc" id="L66" title="All 2 branches covered.">                &amp;&amp; expectedType.isInstance(item)</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">                &amp;&amp; matchesSafely((T) item);</span>
+    }
+    
+    @SuppressWarnings(&quot;unchecked&quot;)
+    @Override
+    final public void describeMismatch(Object item, Description description) {
+<span class="fc bfc" id="L73" title="All 2 branches covered.">        if (item == null) {</span>
+<span class="fc" id="L74">            super.describeMismatch(null, description);</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">        } else if (! expectedType.isInstance(item)) {</span>
+<span class="fc" id="L76">            description.appendText(&quot;was a &quot;)</span>
+<span class="fc" id="L77">                       .appendText(item.getClass().getName())</span>
+<span class="fc" id="L78">                       .appendText(&quot; (&quot;)</span>
+<span class="fc" id="L79">                       .appendValue(item)</span>
+<span class="fc" id="L80">                       .appendText(&quot;)&quot;);</span>
+        } else {
+<span class="fc" id="L82">            describeMismatchSafely((T)item, description);</span>
+        }
+<span class="fc" id="L84">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

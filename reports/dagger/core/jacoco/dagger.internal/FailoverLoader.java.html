@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FailoverLoader.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Dagger</a> &gt; <a href="index.source.html" class="el_package">dagger.internal</a> &gt; <span class="el_source">FailoverLoader.java</span></div><h1>FailoverLoader.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2013 Square, Inc.
+ * Copyright (C) 2013 Google, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package dagger.internal;
+
+
+import dagger.internal.loaders.ReflectiveAtInjectBinding;
+import dagger.internal.loaders.ReflectiveStaticInjection;
+
+import static dagger.internal.loaders.GeneratedAdapters.INJECT_ADAPTER_SUFFIX;
+import static dagger.internal.loaders.GeneratedAdapters.MODULE_ADAPTER_SUFFIX;
+import static dagger.internal.loaders.GeneratedAdapters.STATIC_INJECTION_SUFFIX;
+
+/**
+ * Handles loading/finding of modules, injection bindings, and static injections by use of a
+ * strategy of &quot;load the appropriate generated code&quot; or, if no such code is found, create a
+ * reflective equivalent.
+ */
+<span class="fc" id="L32">public final class FailoverLoader extends Loader {</span>
+  /*
+   * Note that String.concat is used throughout this code because it is the most efficient way to
+   * concatenate _two_ strings.  javac uses StringBuilder for the + operator and it has proven to
+   * be wasteful in terms of both CPU and memory allocated.
+   */
+
+<span class="fc" id="L39">  private final Memoizer&lt;Class&lt;?&gt;, ModuleAdapter&lt;?&gt;&gt; loadedAdapters =</span>
+<span class="fc" id="L40">      new Memoizer&lt;Class&lt;?&gt;, ModuleAdapter&lt;?&gt;&gt;() {</span>
+        @Override protected ModuleAdapter&lt;?&gt; create(Class&lt;?&gt; type) {
+<span class="fc" id="L42">          ModuleAdapter&lt;?&gt; result =</span>
+<span class="fc" id="L43">              instantiate(type.getName().concat(MODULE_ADAPTER_SUFFIX), type.getClassLoader());</span>
+<span class="pc bpc" id="L44" title="1 of 2 branches missed.">          if (result == null) {</span>
+<span class="nc" id="L45">            throw new IllegalStateException(&quot;Module adapter for &quot; + type + &quot; could not be loaded. &quot;</span>
+                + &quot;Please ensure that code generation was run for this module.&quot;);
+          }
+<span class="fc" id="L48">          return result;</span>
+        }
+      };
+
+  /**
+   * Obtains a module adapter for {@code module} from the first responding resolver.
+   */
+  @SuppressWarnings(&quot;unchecked&quot;) // cache ensures types match
+  @Override public &lt;T&gt; ModuleAdapter&lt;T&gt; getModuleAdapter(Class&lt;T&gt; type) {
+<span class="fc" id="L57">    return (ModuleAdapter&lt;T&gt;) loadedAdapters.get(type);</span>
+  }
+
+  @Override public Binding&lt;?&gt; getAtInjectBinding(
+      String key, String className, ClassLoader classLoader, boolean mustHaveInjections) {
+<span class="fc" id="L62">    Binding&lt;?&gt; result = instantiate(className.concat(INJECT_ADAPTER_SUFFIX), classLoader);</span>
+<span class="pc bpc" id="L63" title="1 of 2 branches missed.">    if (result != null) {</span>
+<span class="nc" id="L64">      return result; // Found loadable adapter, returning it.</span>
+    }
+<span class="fc" id="L66">    Class&lt;?&gt; type = loadClass(classLoader, className);</span>
+<span class="pc bpc" id="L67" title="1 of 2 branches missed.">    if (type.equals(Void.class)) {</span>
+<span class="nc" id="L68">      throw new IllegalStateException(</span>
+<span class="nc" id="L69">          String.format(&quot;Could not load class %s needed for binding %s&quot;, className, key));</span>
+    }
+<span class="pc bpc" id="L71" title="1 of 2 branches missed.">    if (type.isInterface()) {</span>
+<span class="nc" id="L72">      return null; // Short-circuit since we can't build reflective bindings for interfaces.</span>
+    }
+<span class="fc" id="L74">    return ReflectiveAtInjectBinding.create(type, mustHaveInjections);</span>
+  }
+
+  @Override public StaticInjection getStaticInjection(Class&lt;?&gt; injectedClass) {
+<span class="nc" id="L78">    StaticInjection result = instantiate(</span>
+<span class="nc" id="L79">          injectedClass.getName().concat(STATIC_INJECTION_SUFFIX), injectedClass.getClassLoader());</span>
+<span class="nc bnc" id="L80" title="All 2 branches missed.">    if (result != null) {</span>
+<span class="nc" id="L81">      return result;</span>
+    }
+<span class="nc" id="L83">    return ReflectiveStaticInjection.create(injectedClass);</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

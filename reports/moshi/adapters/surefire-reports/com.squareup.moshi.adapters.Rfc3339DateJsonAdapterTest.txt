@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.squareup.moshi.adapters.Rfc3339DateJsonAdapterTest
+-------------------------------------------------------------------------------
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.406 sec - in com.squareup.moshi.adapters.Rfc3339DateJsonAdapterTest

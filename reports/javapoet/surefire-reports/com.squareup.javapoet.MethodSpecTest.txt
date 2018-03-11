@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.squareup.javapoet.MethodSpecTest
+-------------------------------------------------------------------------------
+Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.823 sec - in com.squareup.javapoet.MethodSpecTest

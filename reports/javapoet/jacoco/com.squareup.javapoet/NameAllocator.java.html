@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NameAllocator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JavaPoet</a> &gt; <a href="index.source.html" class="el_package">com.squareup.javapoet</a> &gt; <span class="el_source">NameAllocator.java</span></div><h1>NameAllocator.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2015 Square, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.squareup.javapoet;
+
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import javax.lang.model.SourceVersion;
+
+import static com.squareup.javapoet.Util.checkNotNull;
+
+/**
+ * Assigns Java identifier names to avoid collisions, keywords, and invalid characters. To use,
+ * first create an instance and allocate all of the names that you need. Typically this is a
+ * mix of user-supplied names and constants: &lt;pre&gt;   {@code
+ *
+ *   NameAllocator nameAllocator = new NameAllocator();
+ *   for (MyProperty property : properties) {
+ *     nameAllocator.newName(property.name(), property);
+ *   }
+ *   nameAllocator.newName(&quot;sb&quot;, &quot;string builder&quot;);
+ * }&lt;/pre&gt;
+ *
+ * Pass a unique tag object to each allocation. The tag scopes the name, and can be used to look up
+ * the allocated name later. Typically the tag is the object that is being named. In the above
+ * example we use {@code property} for the user-supplied property names, and {@code &quot;string
+ * builder&quot;} for our constant string builder.
+ *
+ * &lt;p&gt;Once we've allocated names we can use them when generating code: &lt;pre&gt;   {@code
+ *
+ *   MethodSpec.Builder builder = MethodSpec.methodBuilder(&quot;toString&quot;)
+ *       .addAnnotation(Override.class)
+ *       .addModifiers(Modifier.PUBLIC)
+ *       .returns(String.class);
+ *
+ *   builder.addStatement(&quot;$1T $2N = new $1T()&quot;,
+ *       StringBuilder.class, nameAllocator.get(&quot;string builder&quot;));
+ *   for (MyProperty property : properties) {
+ *     builder.addStatement(&quot;$N.append($N)&quot;,
+ *         nameAllocator.get(&quot;string builder&quot;), nameAllocator.get(property));
+ *   }
+ *   builder.addStatement(&quot;return $N&quot;, nameAllocator.get(&quot;string builder&quot;));
+ *   return builder.build();
+ * }&lt;/pre&gt;
+ *
+ * The above code generates unique names if presented with conflicts. Given user-supplied properties
+ * with names {@code ab} and {@code sb} this generates the following:  &lt;pre&gt;   {@code
+ *
+ *   &amp;#64;Override
+ *   public String toString() {
+ *     StringBuilder sb_ = new StringBuilder();
+ *     sb_.append(ab);
+ *     sb_.append(sb);
+ *     return sb_.toString();
+ *   }
+ * }&lt;/pre&gt;
+ *
+ * The underscore is appended to {@code sb} to avoid conflicting with the user-supplied {@code sb}
+ * property. Underscores are also prefixed for names that start with a digit, and used to replace
+ * name-unsafe characters like space or dash.
+ *
+ * &lt;p&gt;When dealing with multiple independent inner scopes, use a {@link #clone()} of the
+ * NameAllocator used for the outer scope to further refine name allocation for a specific inner
+ * scope.
+ */
+public final class NameAllocator implements Cloneable {
+  private final Set&lt;String&gt; allocatedNames;
+  private final Map&lt;Object, String&gt; tagToName;
+
+  public NameAllocator() {
+<span class="fc" id="L86">    this(new LinkedHashSet&lt;&gt;(), new LinkedHashMap&lt;&gt;());</span>
+<span class="fc" id="L87">  }</span>
+
+  private NameAllocator(LinkedHashSet&lt;String&gt; allocatedNames,
+<span class="fc" id="L90">                        LinkedHashMap&lt;Object, String&gt; tagToName) {</span>
+<span class="fc" id="L91">    this.allocatedNames = allocatedNames;</span>
+<span class="fc" id="L92">    this.tagToName = tagToName;</span>
+<span class="fc" id="L93">  }</span>
+
+  /**
+   * Return a new name using {@code suggestion} that will not be a Java identifier or clash with
+   * other names.
+   */
+  public String newName(String suggestion) {
+<span class="fc" id="L100">    return newName(suggestion, UUID.randomUUID().toString());</span>
+  }
+
+  /**
+   * Return a new name using {@code suggestion} that will not be a Java identifier or clash with
+   * other names. The returned value can be queried multiple times by passing {@code tag} to
+   * {@link #get(Object)}.
+   */
+  public String newName(String suggestion, Object tag) {
+<span class="fc" id="L109">    checkNotNull(suggestion, &quot;suggestion&quot;);</span>
+<span class="fc" id="L110">    checkNotNull(tag, &quot;tag&quot;);</span>
+
+<span class="fc" id="L112">    suggestion = toJavaIdentifier(suggestion);</span>
+
+<span class="fc bfc" id="L114" title="All 4 branches covered.">    while (SourceVersion.isKeyword(suggestion) || !allocatedNames.add(suggestion)) {</span>
+<span class="fc" id="L115">      suggestion = suggestion + &quot;_&quot;;</span>
+    }
+
+<span class="fc" id="L118">    String replaced = tagToName.put(tag, suggestion);</span>
+<span class="fc bfc" id="L119" title="All 2 branches covered.">    if (replaced != null) {</span>
+<span class="fc" id="L120">      tagToName.put(tag, replaced); // Put things back as they were!</span>
+<span class="fc" id="L121">      throw new IllegalArgumentException(&quot;tag &quot; + tag + &quot; cannot be used for both '&quot; + replaced</span>
+          + &quot;' and '&quot; + suggestion + &quot;'&quot;);
+    }
+
+<span class="fc" id="L125">    return suggestion;</span>
+  }
+
+  public static String toJavaIdentifier(String suggestion) {
+<span class="fc" id="L129">    StringBuilder result = new StringBuilder();</span>
+<span class="fc bfc" id="L130" title="All 2 branches covered.">    for (int i = 0; i &lt; suggestion.length(); ) {</span>
+<span class="fc" id="L131">      int codePoint = suggestion.codePointAt(i);</span>
+<span class="fc bfc" id="L132" title="All 2 branches covered.">      if (i == 0</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">          &amp;&amp; !Character.isJavaIdentifierStart(codePoint)</span>
+<span class="fc bfc" id="L134" title="All 2 branches covered.">          &amp;&amp; Character.isJavaIdentifierPart(codePoint)) {</span>
+<span class="fc" id="L135">        result.append(&quot;_&quot;);</span>
+      }
+
+<span class="fc bfc" id="L138" title="All 2 branches covered.">      int validCodePoint = Character.isJavaIdentifierPart(codePoint) ? codePoint : '_';</span>
+<span class="fc" id="L139">      result.appendCodePoint(validCodePoint);</span>
+<span class="fc" id="L140">      i += Character.charCount(codePoint);</span>
+<span class="fc" id="L141">    }</span>
+<span class="fc" id="L142">    return result.toString();</span>
+  }
+
+  /** Retrieve a name created with {@link #newName(String, Object)}. */
+  public String get(Object tag) {
+<span class="fc" id="L147">    String result = tagToName.get(tag);</span>
+<span class="fc bfc" id="L148" title="All 2 branches covered.">    if (result == null) {</span>
+<span class="fc" id="L149">      throw new IllegalArgumentException(&quot;unknown tag: &quot; + tag);</span>
+    }
+<span class="fc" id="L151">    return result;</span>
+  }
+
+  /**
+   * Create a deep copy of this NameAllocator. Useful to create multiple independent refinements
+   * of a NameAllocator to be used in the respective definition of multiples, independently-scoped,
+   * inner code blocks.
+   *
+   * @return A deep copy of this NameAllocator.
+   */
+  @Override
+  public NameAllocator clone() {
+<span class="fc" id="L163">    return new NameAllocator(</span>
+        new LinkedHashSet&lt;&gt;(this.allocatedNames),
+        new LinkedHashMap&lt;&gt;(this.tagToName));
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

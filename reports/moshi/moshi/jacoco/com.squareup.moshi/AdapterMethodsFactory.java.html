@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AdapterMethodsFactory.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Moshi</a> &gt; <a href="index.source.html" class="el_package">com.squareup.moshi</a> &gt; <span class="el_source">AdapterMethodsFactory.java</span></div><h1>AdapterMethodsFactory.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2015 Square, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.squareup.moshi;
+
+import com.squareup.moshi.internal.Util;
+import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import javax.annotation.Nullable;
+
+import static com.squareup.moshi.internal.Util.jsonAnnotations;
+
+final class AdapterMethodsFactory implements JsonAdapter.Factory {
+  private final List&lt;AdapterMethod&gt; toAdapters;
+  private final List&lt;AdapterMethod&gt; fromAdapters;
+
+<span class="fc" id="L36">  AdapterMethodsFactory(List&lt;AdapterMethod&gt; toAdapters, List&lt;AdapterMethod&gt; fromAdapters) {</span>
+<span class="fc" id="L37">    this.toAdapters = toAdapters;</span>
+<span class="fc" id="L38">    this.fromAdapters = fromAdapters;</span>
+<span class="fc" id="L39">  }</span>
+
+  @Override public @Nullable JsonAdapter&lt;?&gt; create(
+      final Type type, final Set&lt;? extends Annotation&gt; annotations, final Moshi moshi) {
+<span class="fc" id="L43">    final AdapterMethod toAdapter = get(toAdapters, type, annotations);</span>
+<span class="fc" id="L44">    final AdapterMethod fromAdapter = get(fromAdapters, type, annotations);</span>
+<span class="fc bfc" id="L45" title="All 4 branches covered.">    if (toAdapter == null &amp;&amp; fromAdapter == null) return null;</span>
+
+    final JsonAdapter&lt;Object&gt; delegate;
+<span class="fc bfc" id="L48" title="All 4 branches covered.">    if (toAdapter == null || fromAdapter == null) {</span>
+      try {
+<span class="fc" id="L50">        delegate = moshi.nextAdapter(this, type, annotations);</span>
+<span class="fc" id="L51">      } catch (IllegalArgumentException e) {</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">        String missingAnnotation = toAdapter == null ? &quot;@ToJson&quot; : &quot;@FromJson&quot;;</span>
+<span class="fc" id="L53">        throw new IllegalArgumentException(&quot;No &quot; + missingAnnotation + &quot; adapter for &quot;</span>
+            + type + &quot; annotated &quot; + annotations);
+<span class="fc" id="L55">      }</span>
+    } else {
+<span class="fc" id="L57">      delegate = null;</span>
+    }
+
+<span class="fc bfc" id="L60" title="All 2 branches covered.">    if (toAdapter != null) toAdapter.bind(moshi, this);</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">    if (fromAdapter != null) fromAdapter.bind(moshi, this);</span>
+
+<span class="fc" id="L63">    return new JsonAdapter&lt;Object&gt;() {</span>
+      @Override public void toJson(JsonWriter writer, @Nullable Object value) throws IOException {
+<span class="fc bfc" id="L65" title="All 2 branches covered.">        if (toAdapter == null) {</span>
+<span class="fc" id="L66">          delegate.toJson(writer, value);</span>
+<span class="fc bfc" id="L67" title="All 4 branches covered.">        } else if (!toAdapter.nullable &amp;&amp; value == null) {</span>
+<span class="fc" id="L68">          writer.nullValue();</span>
+        } else {
+          try {
+<span class="fc" id="L71">            toAdapter.toJson(moshi, writer, value);</span>
+<span class="fc" id="L72">          } catch (InvocationTargetException e) {</span>
+<span class="fc" id="L73">            Throwable cause = e.getCause();</span>
+<span class="pc bpc" id="L74" title="1 of 2 branches missed.">            if (cause instanceof IOException) throw (IOException) cause;</span>
+<span class="fc" id="L75">            throw new JsonDataException(cause + &quot; at &quot; + writer.getPath(), cause);</span>
+<span class="fc" id="L76">          }</span>
+        }
+<span class="fc" id="L78">      }</span>
+
+      @Override public @Nullable Object fromJson(JsonReader reader) throws IOException {
+<span class="fc bfc" id="L81" title="All 2 branches covered.">        if (fromAdapter == null) {</span>
+<span class="fc" id="L82">          return delegate.fromJson(reader);</span>
+<span class="fc bfc" id="L83" title="All 4 branches covered.">        } else if (!fromAdapter.nullable &amp;&amp; reader.peek() == JsonReader.Token.NULL) {</span>
+<span class="fc" id="L84">          reader.nextNull();</span>
+<span class="fc" id="L85">          return null;</span>
+        } else {
+          try {
+<span class="fc" id="L88">            return fromAdapter.fromJson(moshi, reader);</span>
+<span class="fc" id="L89">          } catch (InvocationTargetException e) {</span>
+<span class="fc" id="L90">            Throwable cause = e.getCause();</span>
+<span class="pc bpc" id="L91" title="1 of 2 branches missed.">            if (cause instanceof IOException) throw (IOException) cause;</span>
+<span class="fc" id="L92">            throw new JsonDataException(cause + &quot; at &quot; + reader.getPath(), cause);</span>
+          }
+        }
+      }
+
+      @Override public String toString() {
+<span class="nc" id="L98">        return &quot;JsonAdapter&quot; + annotations + &quot;(&quot; + type + &quot;)&quot;;</span>
+      }
+    };
+  }
+
+  public static AdapterMethodsFactory get(Object adapter) {
+<span class="fc" id="L104">    List&lt;AdapterMethod&gt; toAdapters = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L105">    List&lt;AdapterMethod&gt; fromAdapters = new ArrayList&lt;&gt;();</span>
+
+<span class="fc bfc" id="L107" title="All 2 branches covered.">    for (Class&lt;?&gt; c = adapter.getClass(); c != Object.class; c = c.getSuperclass()) {</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">      for (Method m : c.getDeclaredMethods()) {</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">        if (m.isAnnotationPresent(ToJson.class)) {</span>
+<span class="fc" id="L110">          AdapterMethod toAdapter = toAdapter(adapter, m);</span>
+<span class="fc" id="L111">          AdapterMethod conflicting = get(toAdapters, toAdapter.type, toAdapter.annotations);</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">          if (conflicting != null) {</span>
+<span class="fc" id="L113">            throw new IllegalArgumentException(&quot;Conflicting @ToJson methods:\n&quot;</span>
+                + &quot;    &quot; + conflicting.method + &quot;\n&quot;
+                + &quot;    &quot; + toAdapter.method);
+          }
+<span class="fc" id="L117">          toAdapters.add(toAdapter);</span>
+        }
+
+<span class="fc bfc" id="L120" title="All 2 branches covered.">        if (m.isAnnotationPresent(FromJson.class)) {</span>
+<span class="fc" id="L121">          AdapterMethod fromAdapter = fromAdapter(adapter, m);</span>
+<span class="fc" id="L122">          AdapterMethod conflicting = get(fromAdapters, fromAdapter.type, fromAdapter.annotations);</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">          if (conflicting != null) {</span>
+<span class="fc" id="L124">            throw new IllegalArgumentException(&quot;Conflicting @FromJson methods:\n&quot;</span>
+                + &quot;    &quot; + conflicting.method + &quot;\n&quot;
+                + &quot;    &quot; + fromAdapter.method);
+          }
+<span class="fc" id="L128">          fromAdapters.add(fromAdapter);</span>
+        }
+      }
+    }
+
+<span class="fc bfc" id="L133" title="All 4 branches covered.">    if (toAdapters.isEmpty() &amp;&amp; fromAdapters.isEmpty()) {</span>
+<span class="fc" id="L134">      throw new IllegalArgumentException(&quot;Expected at least one @ToJson or @FromJson method on &quot;</span>
+<span class="fc" id="L135">          + adapter.getClass().getName());</span>
+    }
+
+<span class="fc" id="L138">    return new AdapterMethodsFactory(toAdapters, fromAdapters);</span>
+  }
+
+  /**
+   * Returns an object that calls a {@code method} method on {@code adapter} in service of
+   * converting an object to JSON.
+   */
+  static AdapterMethod toAdapter(Object adapter, Method method) {
+<span class="fc" id="L146">    method.setAccessible(true);</span>
+<span class="fc" id="L147">    final Type returnType = method.getGenericReturnType();</span>
+<span class="fc" id="L148">    final Type[] parameterTypes = method.getGenericParameterTypes();</span>
+<span class="fc" id="L149">    final Annotation[][] parameterAnnotations = method.getParameterAnnotations();</span>
+
+<span class="pc bpc" id="L151" title="1 of 6 branches missed.">    if (parameterTypes.length &gt;= 2</span>
+        &amp;&amp; parameterTypes[0] == JsonWriter.class
+        &amp;&amp; returnType == void.class
+<span class="pc bpc" id="L154" title="1 of 2 branches missed.">        &amp;&amp; parametersAreJsonAdapters(2, parameterTypes)) {</span>
+      // void pointToJson(JsonWriter jsonWriter, Point point) {
+      // void pointToJson(JsonWriter jsonWriter, Point point, JsonAdapter&lt;?&gt; adapter, ...) {
+<span class="fc" id="L157">      Set&lt;? extends Annotation&gt; qualifierAnnotations = jsonAnnotations(parameterAnnotations[1]);</span>
+<span class="fc" id="L158">      return new AdapterMethod(parameterTypes[1], qualifierAnnotations, adapter, method,</span>
+<span class="fc" id="L159">          parameterTypes.length, 2, true) {</span>
+        @Override public void toJson(Moshi moshi, JsonWriter writer, @Nullable Object value)
+            throws IOException, InvocationTargetException {
+<span class="fc" id="L162">          invoke(writer, value);</span>
+<span class="fc" id="L163">        }</span>
+      };
+
+<span class="fc bfc" id="L166" title="All 4 branches covered.">    } else if (parameterTypes.length == 1 &amp;&amp; returnType != void.class) {</span>
+      // List&lt;Integer&gt; pointToJson(Point point) {
+<span class="fc" id="L168">      final Set&lt;? extends Annotation&gt; returnTypeAnnotations = jsonAnnotations(method);</span>
+<span class="fc" id="L169">      final Set&lt;? extends Annotation&gt; qualifierAnnotations =</span>
+<span class="fc" id="L170">          jsonAnnotations(parameterAnnotations[0]);</span>
+<span class="fc" id="L171">      boolean nullable = Util.hasNullable(parameterAnnotations[0]);</span>
+<span class="fc" id="L172">      return new AdapterMethod(parameterTypes[0], qualifierAnnotations, adapter, method,</span>
+<span class="fc" id="L173">          parameterTypes.length, 1, nullable) {</span>
+        private JsonAdapter&lt;Object&gt; delegate;
+
+        @Override public void bind(Moshi moshi, JsonAdapter.Factory factory) {
+<span class="fc" id="L177">          super.bind(moshi, factory);</span>
+<span class="fc bfc" id="L178" title="All 2 branches covered.">          delegate = Types.equals(parameterTypes[0], returnType)</span>
+<span class="fc bfc" id="L179" title="All 2 branches covered.">              &amp;&amp; qualifierAnnotations.equals(returnTypeAnnotations)</span>
+<span class="fc" id="L180">              ? moshi.nextAdapter(factory, returnType, returnTypeAnnotations)</span>
+<span class="fc" id="L181">              : moshi.adapter(returnType, returnTypeAnnotations);</span>
+<span class="fc" id="L182">        }</span>
+
+        @Override public void toJson(Moshi moshi, JsonWriter writer, @Nullable Object value)
+            throws IOException, InvocationTargetException {
+<span class="fc" id="L186">          Object intermediate = invoke(value);</span>
+<span class="fc" id="L187">          delegate.toJson(writer, intermediate);</span>
+<span class="fc" id="L188">        }</span>
+      };
+
+    } else {
+<span class="fc" id="L192">      throw new IllegalArgumentException(&quot;Unexpected signature for &quot; + method + &quot;.\n&quot;</span>
+          + &quot;@ToJson method signatures may have one of the following structures:\n&quot;
+          + &quot;    &lt;any access modifier&gt; void toJson(JsonWriter writer, T value) throws &lt;any&gt;;\n&quot;
+          + &quot;    &lt;any access modifier&gt; void toJson(JsonWriter writer, T value,&quot;
+          + &quot; JsonAdapter&lt;any&gt; delegate, &lt;any more delegates&gt;) throws &lt;any&gt;;\n&quot;
+          + &quot;    &lt;any access modifier&gt; R toJson(T value) throws &lt;any&gt;;\n&quot;);
+    }
+  }
+
+  /** Returns true if {@code parameterTypes[offset..]} contains only JsonAdapters. */
+  private static boolean parametersAreJsonAdapters(int offset, Type[] parameterTypes) {
+<span class="fc bfc" id="L203" title="All 2 branches covered.">    for (int i = offset, length = parameterTypes.length; i &lt; length; i++) {</span>
+<span class="pc bpc" id="L204" title="1 of 2 branches missed.">      if (!(parameterTypes[i] instanceof ParameterizedType)) return false;</span>
+<span class="pc bpc" id="L205" title="1 of 2 branches missed.">      if (((ParameterizedType) parameterTypes[i]).getRawType() != JsonAdapter.class) return false;</span>
+    }
+<span class="fc" id="L207">    return true;</span>
+  }
+
+  /**
+   * Returns an object that calls a {@code method} method on {@code adapter} in service of
+   * converting an object from JSON.
+   */
+  static AdapterMethod fromAdapter(Object adapter, Method method) {
+<span class="fc" id="L215">    method.setAccessible(true);</span>
+<span class="fc" id="L216">    final Type returnType = method.getGenericReturnType();</span>
+<span class="fc" id="L217">    final Set&lt;? extends Annotation&gt; returnTypeAnnotations = jsonAnnotations(method);</span>
+<span class="fc" id="L218">    final Type[] parameterTypes = method.getGenericParameterTypes();</span>
+<span class="fc" id="L219">    Annotation[][] parameterAnnotations = method.getParameterAnnotations();</span>
+
+<span class="pc bpc" id="L221" title="2 of 6 branches missed.">    if (parameterTypes.length &gt;= 1</span>
+        &amp;&amp; parameterTypes[0] == JsonReader.class
+        &amp;&amp; returnType != void.class
+<span class="pc bpc" id="L224" title="1 of 2 branches missed.">        &amp;&amp; parametersAreJsonAdapters(1, parameterTypes)) {</span>
+      // Point pointFromJson(JsonReader jsonReader) {
+      // Point pointFromJson(JsonReader jsonReader, JsonAdapter&lt;?&gt; adapter, ...) {
+<span class="fc" id="L227">      return new AdapterMethod(returnType, returnTypeAnnotations, adapter, method,</span>
+<span class="fc" id="L228">          parameterTypes.length, 1, true) {</span>
+        @Override public Object fromJson(Moshi moshi, JsonReader reader)
+            throws IOException, InvocationTargetException {
+<span class="fc" id="L231">          return invoke(reader);</span>
+        }
+      };
+
+<span class="fc bfc" id="L235" title="All 4 branches covered.">    } else if (parameterTypes.length == 1 &amp;&amp; returnType != void.class) {</span>
+      // Point pointFromJson(List&lt;Integer&gt; o) {
+<span class="fc" id="L237">      final Set&lt;? extends Annotation&gt; qualifierAnnotations</span>
+<span class="fc" id="L238">          = jsonAnnotations(parameterAnnotations[0]);</span>
+<span class="fc" id="L239">      boolean nullable = Util.hasNullable(parameterAnnotations[0]);</span>
+<span class="fc" id="L240">      return new AdapterMethod(returnType, returnTypeAnnotations, adapter, method,</span>
+<span class="fc" id="L241">          parameterTypes.length, 1, nullable) {</span>
+        JsonAdapter&lt;Object&gt; delegate;
+
+        @Override public void bind(Moshi moshi, JsonAdapter.Factory factory) {
+<span class="fc" id="L245">          super.bind(moshi, factory);</span>
+<span class="fc bfc" id="L246" title="All 2 branches covered.">          delegate = Types.equals(parameterTypes[0], returnType)</span>
+<span class="fc bfc" id="L247" title="All 2 branches covered.">              &amp;&amp; qualifierAnnotations.equals(returnTypeAnnotations)</span>
+<span class="fc" id="L248">              ? moshi.nextAdapter(factory, parameterTypes[0], qualifierAnnotations)</span>
+<span class="fc" id="L249">              : moshi.adapter(parameterTypes[0], qualifierAnnotations);</span>
+<span class="fc" id="L250">        }</span>
+
+        @Override public Object fromJson(Moshi moshi, JsonReader reader)
+            throws IOException, InvocationTargetException {
+<span class="fc" id="L254">          Object intermediate = delegate.fromJson(reader);</span>
+<span class="fc" id="L255">          return invoke(intermediate);</span>
+        }
+      };
+
+    } else {
+<span class="fc" id="L260">      throw new IllegalArgumentException(&quot;Unexpected signature for &quot; + method + &quot;.\n&quot;</span>
+          + &quot;@FromJson method signatures may have one of the following structures:\n&quot;
+          + &quot;    &lt;any access modifier&gt; R fromJson(JsonReader jsonReader) throws &lt;any&gt;;\n&quot;
+          + &quot;    &lt;any access modifier&gt; R fromJson(JsonReader jsonReader,&quot;
+          + &quot; JsonAdapter&lt;any&gt; delegate, &lt;any more delegates&gt;) throws &lt;any&gt;;\n&quot;
+          + &quot;    &lt;any access modifier&gt; R fromJson(T value) throws &lt;any&gt;;\n&quot;);
+    }
+  }
+
+  /** Returns the matching adapter method from the list. */
+  private static @Nullable AdapterMethod get(
+      List&lt;AdapterMethod&gt; adapterMethods, Type type, Set&lt;? extends Annotation&gt; annotations) {
+<span class="fc bfc" id="L272" title="All 2 branches covered.">    for (int i = 0, size = adapterMethods.size(); i &lt; size; i++) {</span>
+<span class="fc" id="L273">      AdapterMethod adapterMethod = adapterMethods.get(i);</span>
+<span class="fc bfc" id="L274" title="All 4 branches covered.">      if (Types.equals(adapterMethod.type, type) &amp;&amp; adapterMethod.annotations.equals(annotations)) {</span>
+<span class="fc" id="L275">        return adapterMethod;</span>
+      }
+    }
+<span class="fc" id="L278">    return null;</span>
+  }
+
+  abstract static class AdapterMethod {
+    final Type type;
+    final Set&lt;? extends Annotation&gt; annotations;
+    final Object adapter;
+    final Method method;
+    final int adaptersOffset;
+    final JsonAdapter&lt;?&gt;[] jsonAdapters;
+    final boolean nullable;
+
+    AdapterMethod(Type type, Set&lt;? extends Annotation&gt; annotations, Object adapter,
+<span class="fc" id="L291">        Method method, int parameterCount, int adaptersOffset, boolean nullable) {</span>
+<span class="fc" id="L292">      this.type = Types.canonicalize(type);</span>
+<span class="fc" id="L293">      this.annotations = annotations;</span>
+<span class="fc" id="L294">      this.adapter = adapter;</span>
+<span class="fc" id="L295">      this.method = method;</span>
+<span class="fc" id="L296">      this.adaptersOffset = adaptersOffset;</span>
+<span class="fc" id="L297">      this.jsonAdapters = new JsonAdapter[parameterCount - adaptersOffset];</span>
+<span class="fc" id="L298">      this.nullable = nullable;</span>
+<span class="fc" id="L299">    }</span>
+
+    public void bind(Moshi moshi, JsonAdapter.Factory factory) {
+<span class="fc bfc" id="L302" title="All 2 branches covered.">      if (jsonAdapters.length &gt; 0) {</span>
+<span class="fc" id="L303">        Type[] parameterTypes = method.getGenericParameterTypes();</span>
+<span class="fc" id="L304">        Annotation[][] parameterAnnotations = method.getParameterAnnotations();</span>
+<span class="fc bfc" id="L305" title="All 2 branches covered.">        for (int i = adaptersOffset, size = parameterTypes.length; i &lt; size; i++) {</span>
+<span class="fc" id="L306">          Type type = ((ParameterizedType) parameterTypes[i]).getActualTypeArguments()[0];</span>
+<span class="fc" id="L307">          Set&lt;? extends Annotation&gt; jsonAnnotations = jsonAnnotations(parameterAnnotations[i]);</span>
+<span class="fc" id="L308">          jsonAdapters[i - adaptersOffset] =</span>
+<span class="pc bpc" id="L309" title="1 of 4 branches missed.">              Types.equals(this.type, type) &amp;&amp; annotations.equals(jsonAnnotations)</span>
+<span class="fc" id="L310">                  ? moshi.nextAdapter(factory, type, jsonAnnotations)</span>
+<span class="fc" id="L311">                  : moshi.adapter(type, jsonAnnotations);</span>
+        }
+      }
+<span class="fc" id="L314">    }</span>
+
+    public void toJson(Moshi moshi, JsonWriter writer, @Nullable Object value)
+        throws IOException, InvocationTargetException {
+<span class="nc" id="L318">      throw new AssertionError();</span>
+    }
+
+    public @Nullable Object fromJson(Moshi moshi, JsonReader reader)
+        throws IOException, InvocationTargetException {
+<span class="nc" id="L323">      throw new AssertionError();</span>
+    }
+
+    /** Invoke the method with one fixed argument, plus any number of JSON adapter arguments. */
+    protected @Nullable Object invoke(@Nullable Object a1) throws InvocationTargetException {
+<span class="fc" id="L328">      Object[] args = new Object[1 + jsonAdapters.length];</span>
+<span class="fc" id="L329">      args[0] = a1;</span>
+<span class="fc" id="L330">      System.arraycopy(jsonAdapters, 0, args, 1, jsonAdapters.length);</span>
+
+      try {
+<span class="fc" id="L333">        return method.invoke(adapter, args);</span>
+<span class="nc" id="L334">      } catch (IllegalAccessException e) {</span>
+<span class="nc" id="L335">        throw new AssertionError();</span>
+      }
+    }
+
+    /** Invoke the method with two fixed arguments, plus any number of JSON adapter arguments. */
+    protected Object invoke(@Nullable Object a1, @Nullable Object a2)
+        throws InvocationTargetException {
+<span class="fc" id="L342">      Object[] args = new Object[2 + jsonAdapters.length];</span>
+<span class="fc" id="L343">      args[0] = a1;</span>
+<span class="fc" id="L344">      args[1] = a2;</span>
+<span class="fc" id="L345">      System.arraycopy(jsonAdapters, 0, args, 2, jsonAdapters.length);</span>
+
+      try {
+<span class="fc" id="L348">        return method.invoke(adapter, args);</span>
+<span class="nc" id="L349">      } catch (IllegalAccessException e) {</span>
+<span class="nc" id="L350">        throw new AssertionError();</span>
+      }
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

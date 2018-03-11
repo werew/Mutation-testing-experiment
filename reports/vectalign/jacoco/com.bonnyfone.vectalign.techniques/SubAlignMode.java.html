@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SubAlignMode.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">vectalign</a> &gt; <a href="index.source.html" class="el_package">com.bonnyfone.vectalign.techniques</a> &gt; <span class="el_source">SubAlignMode.java</span></div><h1>SubAlignMode.java</h1><pre class="source lang-java linenums">package com.bonnyfone.vectalign.techniques;
+
+import android.support.v7.graphics.drawable.PathParser;
+import com.bonnyfone.vectalign.PathNodeUtils;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+
+/**
+ * Advanced technique which uses a &quot;sub-aligning&quot; approach
+ */
+<span class="fc" id="L13">public class SubAlignMode extends RawAlignMode {</span>
+
+    @Override
+    public  ArrayList&lt;PathParser.PathDataNode&gt;[] align(PathParser.PathDataNode[] from, PathParser.PathDataNode[] to) {
+        //Remove 'Z'
+<span class="fc" id="L18">        ArrayList&lt;PathParser.PathDataNode&gt; transformFrom = PathNodeUtils.transform(from, 0, true);</span>
+<span class="fc" id="L19">        ArrayList&lt;PathParser.PathDataNode&gt; transformTo = PathNodeUtils.transform(to, 0, true);</span>
+
+<span class="fc" id="L21">        int fromSize = transformFrom.size();</span>
+<span class="fc" id="L22">        int toSize = transformTo.size();</span>
+<span class="fc" id="L23">        int min = Math.min(fromSize, toSize);</span>
+<span class="fc" id="L24">        int numberOfSubAligns = (int) Math.max(1, min/2);</span>
+<span class="fc" id="L25">        System.out.println(&quot;Estimated number of sub-alignments: &quot;+numberOfSubAligns);</span>
+<span class="fc" id="L26">        int fromChunkSize = fromSize / numberOfSubAligns;</span>
+<span class="fc" id="L27">        int toChunkSize = toSize / numberOfSubAligns;</span>
+
+<span class="fc" id="L29">        ArrayList&lt;PathParser.PathDataNode&gt; finalFrom = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L30">        ArrayList&lt;PathParser.PathDataNode&gt; finalTo = new ArrayList&lt;&gt;();</span>
+        int startFromIndex, startToIndex, endFromIndex, endToIndex;
+<span class="fc bfc" id="L32" title="All 2 branches covered.">        for(int i=0; i &lt; numberOfSubAligns; i++){</span>
+<span class="fc bfc" id="L33" title="All 2 branches covered.">            if(i == numberOfSubAligns-1){</span>
+<span class="fc" id="L34">                endFromIndex = fromSize;</span>
+<span class="fc" id="L35">                endToIndex = toSize;</span>
+            }
+            else{
+<span class="fc" id="L38">                endFromIndex = Math.min(fromSize, (i + 1) * (fromChunkSize));</span>
+<span class="fc" id="L39">                endToIndex = Math.min(toSize, (i + 1) * (toChunkSize));</span>
+            }
+<span class="fc" id="L41">            startFromIndex = i * fromChunkSize;</span>
+<span class="fc" id="L42">            startToIndex = i * toChunkSize;</span>
+<span class="fc" id="L43">            System.out.println(&quot;Subaligning FROM(&quot;+startFromIndex +&quot;,&quot;+endFromIndex+&quot;) - TO(&quot;+startToIndex +&quot;,&quot;+endToIndex+&quot;)&quot;);</span>
+<span class="fc" id="L44">            ArrayList&lt;PathParser.PathDataNode&gt;[] subAlign = doRawAlign(transformFrom.subList(startFromIndex, endFromIndex).toArray(new PathParser.PathDataNode[1]), transformTo.subList(startToIndex, endToIndex).toArray(new PathParser.PathDataNode[1]));</span>
+<span class="fc" id="L45">            finalFrom.addAll(subAlign[0]);</span>
+<span class="fc" id="L46">            finalTo.addAll(subAlign[1]);</span>
+        }
+
+<span class="fc" id="L49">        return new ArrayList[]{finalFrom, finalTo};</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

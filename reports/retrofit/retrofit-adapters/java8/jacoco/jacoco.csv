@@ -1,0 +1,9 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+Adapter: Java 8,retrofit2.adapter.java8,Java8CallAdapterFactory.ResponseCallAdapter.new Callback() {...},0,21,0,0,0,5,0,3,0,3
+Adapter: Java 8,retrofit2.adapter.java8,Java8CallAdapterFactory.ResponseCallAdapter,0,24,0,0,0,7,0,3,0,3
+Adapter: Java 8,retrofit2.adapter.java8,Java8CallAdapterFactory.BodyCallAdapter,0,24,0,0,0,7,0,3,0,3
+Adapter: Java 8,retrofit2.adapter.java8,Java8CallAdapterFactory,0,50,0,8,0,12,0,6,0,2
+Adapter: Java 8,retrofit2.adapter.java8,Java8CallAdapterFactory.BodyCallAdapter.new Callback() {...},0,34,0,2,0,7,0,4,0,3
+Adapter: Java 8,retrofit2.adapter.java8,Java8CallAdapterFactory.ResponseCallAdapter.new CompletableFuture() {...},9,9,2,0,3,1,2,1,1,1
+Adapter: Java 8,retrofit2.adapter.java8,Java8CallAdapterFactory.BodyCallAdapter.new CompletableFuture() {...},9,9,2,0,3,1,2,1,1,1
+Adapter: Java 8,retrofit2.adapter.java8,HttpException,0,4,0,0,0,2,0,1,0,1

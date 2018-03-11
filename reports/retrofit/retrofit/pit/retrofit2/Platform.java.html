@@ -1,0 +1,1700 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="../style.css">
+</head>
+<body>
+
+
+<h1>Platform.java</h1>
+
+<table class="src">
+
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_1'/>
+1
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_1'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>/*</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_2'/>
+2
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_2'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * Copyright (C) 2013 Square, Inc.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_3'/>
+3
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_3'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_4'/>
+4
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_4'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_5'/>
+5
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_5'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * you may not use this file except in compliance with the License.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_6'/>
+6
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_6'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * You may obtain a copy of the License at</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_7'/>
+7
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_7'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_8'/>
+8
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_8'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *      http://www.apache.org/licenses/LICENSE-2.0</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_9'/>
+9
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_9'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_10'/>
+10
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_10'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * Unless required by applicable law or agreed to in writing, software</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_11'/>
+11
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_11'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * distributed under the License is distributed on an &#34;AS IS&#34; BASIS,</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_12'/>
+12
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_12'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_13'/>
+13
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_13'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * See the License for the specific language governing permissions and</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_14'/>
+14
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_14'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * limitations under the License.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_15'/>
+15
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_15'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> */</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_16'/>
+16
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_16'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>package retrofit2;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_17'/>
+17
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_17'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_18'/>
+18
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_18'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import android.os.Build;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_19'/>
+19
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_19'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import android.os.Handler;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_20'/>
+20
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_20'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import android.os.Looper;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_21'/>
+21
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_21'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.lang.invoke.MethodHandles.Lookup;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_22'/>
+22
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_22'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.lang.reflect.Constructor;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_23'/>
+23
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_23'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.lang.reflect.Method;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_24'/>
+24
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_24'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.util.concurrent.Executor;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_25'/>
+25
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_25'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import javax.annotation.Nullable;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_26'/>
+26
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_26'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_27'/>
+27
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_27'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_28'/>
+28
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_28'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>class Platform {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_29'/>
+29
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_29'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>  private static final Platform PLATFORM = findPlatform();</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_30'/>
+30
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_30'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_31'/>
+31
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_31'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  static Platform get() {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_32'/>
+32
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_32'>1</a>
+<span>
+1. get : mutated return of Object value for retrofit2/Platform::get to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    return PLATFORM;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_33'/>
+33
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_33'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_34'/>
+34
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_34'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_35'/>
+35
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_35'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  private static Platform findPlatform() {</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_36'/>
+36
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_36'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    try {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_37'/>
+37
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_37'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      Class.forName(&#34;android.os.Build&#34;);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_38'/>
+38
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_38'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      if (Build.VERSION.SDK_INT != 0) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_39'/>
+39
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_39'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>        return new Android();</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_40'/>
+40
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_40'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      }</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_41'/>
+41
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_41'></a>
+<span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>    } catch (ClassNotFoundException ignored) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_42'/>
+42
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_42'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_43'/>
+43
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_43'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    try {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_44'/>
+44
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_44'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      Class.forName(&#34;java.util.Optional&#34;);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_45'/>
+45
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_45'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      return new Java8();</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_46'/>
+46
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_46'></a>
+<span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>    } catch (ClassNotFoundException ignored) {</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_47'/>
+47
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_47'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_48'/>
+48
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_48'></a>
+<span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>    return new Platform();</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_49'/>
+49
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_49'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_50'/>
+50
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_50'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_51'/>
+51
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_51'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  @Nullable Executor defaultCallbackExecutor() {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_52'/>
+52
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_52'>1</a>
+<span>
+1. defaultCallbackExecutor : mutated return of Object value for retrofit2/Platform::defaultCallbackExecutor to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    return null;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_53'/>
+53
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_53'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_54'/>
+54
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_54'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_55'/>
+55
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_55'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  CallAdapter.Factory defaultCallAdapterFactory(@Nullable Executor callbackExecutor) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_56'/>
+56
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_56'>1</a>
+<span>
+1. defaultCallAdapterFactory : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    if (callbackExecutor != null) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_57'/>
+57
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_57'>1</a>
+<span>
+1. defaultCallAdapterFactory : mutated return of Object value for retrofit2/Platform::defaultCallAdapterFactory to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      return new ExecutorCallAdapterFactory(callbackExecutor);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_58'/>
+58
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_58'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_59'/>
+59
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_59'>1</a>
+<span>
+1. defaultCallAdapterFactory : mutated return of Object value for retrofit2/Platform::defaultCallAdapterFactory to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    return DefaultCallAdapterFactory.INSTANCE;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_60'/>
+60
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_60'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_61'/>
+61
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_61'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_62'/>
+62
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_62'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  boolean isDefaultMethod(Method method) {</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_63'/>
+63
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_63'>1</a>
+<span>
+1. isDefaultMethod : replaced return of integer sized value with (x == 0 ? 1 : 0) &rarr; NO_COVERAGE<br/>
+
+</span>
+</td>
+<td class='uncovered'><pre><span  class='survived'>    return false;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_64'/>
+64
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_64'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_65'/>
+65
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_65'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_66'/>
+66
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_66'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  @Nullable Object invokeDefaultMethod(Method method, Class&#60;?&#62; declaringClass, Object object,</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_67'/>
+67
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_67'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      @Nullable Object... args) throws Throwable {</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_68'/>
+68
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_68'></a>
+<span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>    throw new UnsupportedOperationException();</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_69'/>
+69
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_69'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_70'/>
+70
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_70'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_71'/>
+71
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_71'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  @IgnoreJRERequirement // Only classloaded and used on Java 8.</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_72'/>
+72
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_72'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>  static class Java8 extends Platform {</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_73'/>
+73
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_73'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    @Override boolean isDefaultMethod(Method method) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_74'/>
+74
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_74'>1</a>
+<span>
+1. isDefaultMethod : replaced return of integer sized value with (x == 0 ? 1 : 0) &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      return method.isDefault();</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_75'/>
+75
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_75'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_76'/>
+76
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_76'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_77'/>
+77
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_77'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    @Override Object invokeDefaultMethod(Method method, Class&#60;?&#62; declaringClass, Object object,</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_78'/>
+78
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_78'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        @Nullable Object... args) throws Throwable {</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_79'/>
+79
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_79'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      // Because the service interface might not be public, we need to use a MethodHandle lookup</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_80'/>
+80
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_80'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      // that ignores the visibility of the declaringClass.</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_81'/>
+81
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_81'></a>
+<span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>      Constructor&#60;Lookup&#62; constructor = Lookup.class.getDeclaredConstructor(Class.class, int.class);</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_82'/>
+82
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_82'>1</a>
+<span>
+1. invokeDefaultMethod : removed call to java/lang/reflect/Constructor::setAccessible &rarr; NO_COVERAGE<br/>
+
+</span>
+</td>
+<td class='uncovered'><pre><span  class='survived'>      constructor.setAccessible(true);</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_83'/>
+83
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_83'>1</a>
+<span>
+1. invokeDefaultMethod : mutated return of Object value for retrofit2/Platform$Java8::invokeDefaultMethod to ( if (x != null) null else throw new RuntimeException ) &rarr; NO_COVERAGE<br/>
+
+</span>
+</td>
+<td class='uncovered'><pre><span  class='survived'>      return constructor.newInstance(declaringClass, -1 /* trusted */)</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_84'/>
+84
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_84'></a>
+<span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>          .unreflectSpecial(method, declaringClass)</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_85'/>
+85
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_85'></a>
+<span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>          .bindTo(object)</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_86'/>
+86
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_86'></a>
+<span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>          .invokeWithArguments(args);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_87'/>
+87
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_87'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_88'/>
+88
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_88'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_89'/>
+89
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_89'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_90'/>
+90
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_90'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>  static class Android extends Platform {</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_91'/>
+91
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_91'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    @Override public Executor defaultCallbackExecutor() {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_92'/>
+92
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_92'>1</a>
+<span>
+1. defaultCallbackExecutor : mutated return of Object value for retrofit2/Platform$Android::defaultCallbackExecutor to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      return new MainThreadExecutor();</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_93'/>
+93
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_93'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_94'/>
+94
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_94'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_95'/>
+95
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_95'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    @Override CallAdapter.Factory defaultCallAdapterFactory(@Nullable Executor callbackExecutor) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_96'/>
+96
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_96'>1</a>
+<span>
+1. defaultCallAdapterFactory : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      if (callbackExecutor == null) throw new AssertionError();</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_97'/>
+97
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_97'>1</a>
+<span>
+1. defaultCallAdapterFactory : mutated return of Object value for retrofit2/Platform$Android::defaultCallAdapterFactory to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      return new ExecutorCallAdapterFactory(callbackExecutor);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_98'/>
+98
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_98'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_99'/>
+99
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_99'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_100'/>
+100
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_100'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    static class MainThreadExecutor implements Executor {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_101'/>
+101
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_101'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      private final Handler handler = new Handler(Looper.getMainLooper());</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_102'/>
+102
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_102'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_103'/>
+103
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_103'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      @Override public void execute(Runnable r) {</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_104'/>
+104
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_104'></a>
+<span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>        handler.post(r);</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_105'/>
+105
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_105'></a>
+<span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>      }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_106'/>
+106
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_106'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_107'/>
+107
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_107'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@78420ad4_108'/>
+108
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_108'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>}</span></pre></td></tr>
+
+
+
+<tr><td></td><td></td><td><h2>Mutations</h2></td></tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@78420ad4_32'>32</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_32'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>get<br/><b>Killed by : </b>retrofit2.ExecutorCallAdapterFactoryTest.rawTypeThrows(retrofit2.ExecutorCallAdapterFactoryTest)</span></span> mutated return of Object value for retrofit2/Platform::get to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@78420ad4_52'>52</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_52'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>defaultCallbackExecutor<br/><b>Killed by : </b>retrofit2.ExecutorCallAdapterFactoryTest.rawTypeThrows(retrofit2.ExecutorCallAdapterFactoryTest)</span></span> mutated return of Object value for retrofit2/Platform::defaultCallbackExecutor to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@78420ad4_56'>56</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_56'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>defaultCallAdapterFactory<br/><b>Killed by : </b>retrofit2.CallTest.requestThrowingBeforeEnqueueFailsEnqueue(retrofit2.CallTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@78420ad4_57'>57</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_57'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>defaultCallAdapterFactory<br/><b>Killed by : </b>retrofit2.RetrofitTest.callbackExecutorUsedForFailure(retrofit2.RetrofitTest)</span></span> mutated return of Object value for retrofit2/Platform::defaultCallAdapterFactory to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@78420ad4_59'>59</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_59'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>defaultCallAdapterFactory<br/><b>Killed by : </b>retrofit2.RequestBuilderTest.twoMethodsFail(retrofit2.RequestBuilderTest)</span></span> mutated return of Object value for retrofit2/Platform::defaultCallAdapterFactory to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@78420ad4_63'>63</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_63'/> 
+
+<p class='NO_COVERAGE'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>isDefaultMethod<br/><b>Killed by : </b>none</span></span> replaced return of integer sized value with (x == 0 ? 1 : 0) &rarr; NO_COVERAGE</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@78420ad4_74'>74</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_74'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>isDefaultMethod<br/><b>Killed by : </b>retrofit2.RetrofitTest.callFactoryThrowingPropagates(retrofit2.RetrofitTest)</span></span> replaced return of integer sized value with (x == 0 ? 1 : 0) &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@78420ad4_82'>82</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_82'/> 
+
+<p class='NO_COVERAGE'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>invokeDefaultMethod<br/><b>Killed by : </b>none</span></span> removed call to java/lang/reflect/Constructor::setAccessible &rarr; NO_COVERAGE</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@78420ad4_83'>83</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_83'/> 
+
+<p class='NO_COVERAGE'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>invokeDefaultMethod<br/><b>Killed by : </b>none</span></span> mutated return of Object value for retrofit2/Platform$Java8::invokeDefaultMethod to ( if (x != null) null else throw new RuntimeException ) &rarr; NO_COVERAGE</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@78420ad4_92'>92</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_92'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>defaultCallbackExecutor<br/><b>Killed by : </b>retrofit2.RequestBuilderAndroidTest.getWithAndroidUriUrlAbsolute(retrofit2.RequestBuilderAndroidTest)</span></span> mutated return of Object value for retrofit2/Platform$Android::defaultCallbackExecutor to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@78420ad4_96'>96</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_96'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>defaultCallAdapterFactory<br/><b>Killed by : </b>retrofit2.RequestBuilderAndroidTest.getWithAndroidUriUrl(retrofit2.RequestBuilderAndroidTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@78420ad4_97'>97</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@78420ad4_97'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>defaultCallAdapterFactory<br/><b>Killed by : </b>retrofit2.RequestBuilderAndroidTest.getWithAndroidUriUrlAbsolute(retrofit2.RequestBuilderAndroidTest)</span></span> mutated return of Object value for retrofit2/Platform$Android::defaultCallAdapterFactory to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED</p> 
+</td>
+</tr>
+
+</table>
+
+
+<h2>Active mutators</h2>
+<ul>
+<li class='mutator'>INCREMENTS_MUTATOR</li>
+<li class='mutator'>VOID_METHOD_CALL_MUTATOR</li>
+<li class='mutator'>RETURN_VALS_MUTATOR</li>
+<li class='mutator'>MATH_MUTATOR</li>
+<li class='mutator'>NEGATE_CONDITIONALS_MUTATOR</li>
+<li class='mutator'>INVERT_NEGS_MUTATOR</li>
+<li class='mutator'>CONDITIONALS_BOUNDARY_MUTATOR</li>
+
+</ul>
+
+<h2>Tests examined</h2>
+<ul>
+<li>retrofit2.RequestBuilderTest.getAbsoluteUrl(retrofit2.RequestBuilderTest) (2 ms)</li><li>retrofit2.RequestBuilderTest.queryParamMapsConvertedToNullShouldError(retrofit2.RequestBuilderTest) (2 ms)</li><li>retrofit2.ExecutorCallAdapterFactoryTest.adaptedCallCloneDeepCopy(retrofit2.ExecutorCallAdapterFactoryTest) (6 ms)</li><li>retrofit2.RequestBuilderTest.fieldMapRejectsNullKeys(retrofit2.RequestBuilderTest) (4 ms)</li><li>retrofit2.RequestBuilderTest.contentTypeAnnotationHeaderOverrides(retrofit2.RequestBuilderTest) (3 ms)</li><li>retrofit2.RequestBuilderTest.getWithQuery(retrofit2.RequestBuilderTest) (3 ms)</li><li>retrofit2.RequestBuilderTest.fieldParamMapsConvertedToNullShouldError(retrofit2.RequestBuilderTest) (6 ms)</li><li>retrofit2.RequestBuilderTest.formEncodedFieldOptional(retrofit2.RequestBuilderTest) (3 ms)</li><li>retrofit2.RetrofitTest.callAdapterFactoryPropagated(retrofit2.RetrofitTest) (46 ms)</li><li>retrofit2.RequestBuilderTest.multipartRequiresName(retrofit2.RequestBuilderTest) (2 ms)</li><li>retrofit2.RequestBuilderTest.formEncodedFieldList(retrofit2.RequestBuilderTest) (4 ms)</li><li>retrofit2.RetrofitTest.validateEagerlyDisabledByDefault(retrofit2.RetrofitTest) (16 ms)</li><li>retrofit2.RequestBuilderTest.getWithHttpUrl(retrofit2.RequestBuilderTest) (3 ms)</li><li>retrofit2.RequestBuilderTest.multipartOkHttpPartForbidsName(retrofit2.RequestBuilderTest) (2 ms)</li><li>retrofit2.RequestBuilderTest.multipartArrayOkHttpPart(retrofit2.RequestBuilderTest) (2 ms)</li><li>retrofit2.RequestBuilderTest.getWithNullUrl(retrofit2.RequestBuilderTest) (3 ms)</li><li>retrofit2.RequestBuilderTest.getWithQueryNameParam(retrofit2.RequestBuilderTest) (3 ms)</li><li>retrofit2.RequestBuilderTest.getWithEncodedPathSegments(retrofit2.RequestBuilderTest) (3 ms)</li><li>retrofit2.RequestBuilderTest.getWithEncodedQueryNameParam(retrofit2.RequestBuilderTest) (2 ms)</li><li>retrofit2.RetrofitTest.callFactoryDefault(retrofit2.RetrofitTest) (25 ms)</li><li>retrofit2.RetrofitTest.voidResponsesArePooled(retrofit2.RetrofitTest) (69 ms)</li><li>retrofit2.CallTest.reportsExecutedSync(retrofit2.CallTest) (28 ms)</li><li>retrofit2.RequestBuilderTest.multipartPartMapRejectsNullValues(retrofit2.RequestBuilderTest) (5 ms)</li><li>retrofit2.RetrofitTest.callAdapterFactoryQueriedCanDelegateTwiceWithoutRecursion(retrofit2.RetrofitTest) (64 ms)</li><li>retrofit2.RequestBuilderTest.formEncodedFieldMap(retrofit2.RequestBuilderTest) (3 ms)</li><li>retrofit2.RequestBuilderTest.getWithPathAndQueryHashParam(retrofit2.RequestBuilderTest) (3 ms)</li><li>retrofit2.RetrofitTest.voidReturnTypeNotAllowed(retrofit2.RetrofitTest) (20 ms)</li><li>retrofit2.CallTest.http205SkipsConverter(retrofit2.CallTest) (54 ms)</li><li>retrofit2.RetrofitTest.platformAwareAdapterAbsentInCloneBuilder(retrofit2.RetrofitTest) (12 ms)</li><li>retrofit2.RequestBuilderTest.post(retrofit2.RequestBuilderTest) (1 ms)</li><li>retrofit2.RequestBuilderTest.getWithQueryThenPathThrows(retrofit2.RequestBuilderTest) (3 ms)</li><li>retrofit2.RequestBuilderTest.multipartPartMapRejectsNullKeys(retrofit2.RequestBuilderTest) (2 ms)</li><li>retrofit2.RequestBuilderTest.headersFailWhenMalformed(retrofit2.RequestBuilderTest) (2 ms)</li><li>retrofit2.RetrofitTest.callAdapterFactoryQueried(retrofit2.RetrofitTest) (46 ms)</li><li>retrofit2.RetrofitTest.missingConverterThrowsOnNonRequestBody(retrofit2.RetrofitTest) (25 ms)</li><li>retrofit2.RequestBuilderTest.customMethodEmptyBody(retrofit2.RequestBuilderTest) (3 ms)</li><li>retrofit2.CallTest.executeCallOnce(retrofit2.CallTest) (14 ms)</li><li>retrofit2.ExecutorCallAdapterFactoryTest.adaptedCallCancel(retrofit2.ExecutorCallAdapterFactoryTest) (81 ms)</li><li>retrofit2.RequestBuilderTest.getWithUnencodedPathSegmentsPreventsRequestSplitting(retrofit2.RequestBuilderTest) (2 ms)</li><li>retrofit2.RetrofitTest.responseConverterFactoryNoMatchThrows(retrofit2.RetrofitTest) (19 ms)</li><li>retrofit2.RetrofitTest.responseTypeCannotBeRetrofitResponse(retrofit2.RetrofitTest) (14 ms)</li><li>retrofit2.RequestBuilderTest.multipartPartMapRejectsOkHttpPartValues(retrofit2.RequestBuilderTest) (2 ms)</li><li>retrofit2.CallTest.requestAfterExecuteThrowingAlsoThrowsForNonFatalErrors(retrofit2.CallTest) (8 ms)</li><li>retrofit2.ExecutorCallAdapterFactoryTest.adaptedCallEnqueueUsesExecutorForFailureCallback(retrofit2.ExecutorCallAdapterFactoryTest) (17 ms)</li><li>retrofit2.RequestBuilderTest.nonBodyHttpMethodWithSingleEntity(retrofit2.RequestBuilderTest) (2 ms)</li><li>retrofit2.RequestBuilderTest.getWithoutUrlThrows(retrofit2.RequestBuilderTest) (4 ms)</li><li>retrofit2.RetrofitTest.voidOutgoingAllowed(retrofit2.RetrofitTest) (27 ms)</li><li>retrofit2.RetrofitTest.baseUrlRequired(retrofit2.RetrofitTest) (2 ms)</li><li>retrofit2.RequestBuilderTest.getWithStringUrlAbsolute(retrofit2.RequestBuilderTest) (2 ms)</li><li>retrofit2.RequestBuilderTest.get(retrofit2.RequestBuilderTest) (2 ms)</li><li>retrofit2.RequestBuilderTest.queryParamOptional(retrofit2.RequestBuilderTest) (1 ms)</li><li>retrofit2.RetrofitTest.requestConverterFactoryQueried(retrofit2.RetrofitTest) (14 ms)</li><li>retrofit2.RequestBuilderTest.queryMapRejectsNullKeys(retrofit2.RequestBuilderTest) (2 ms)</li><li>retrofit2.RetrofitTest.methodAnnotationsPassedToCallAdapter(retrofit2.RetrofitTest) (22 ms)</li><li>retrofit2.ExecutorCallAdapterFactoryTest.adaptedCallEnqueueUsesExecutorForSuccessCallback(retrofit2.ExecutorCallAdapterFactoryTest) (3 ms)</li><li>retrofit2.RequestBuilderTest.multipartPartMapRejectsNonStringKeys(retrofit2.RequestBuilderTest) (2 ms)</li><li>retrofit2.RequestBuilderTest.formEncodedFieldPrimitiveArray(retrofit2.RequestBuilderTest) (11 ms)</li><li>retrofit2.RequestBuilderTest.onlyOneEncodingIsAllowedFormEncodingFirst(retrofit2.RequestBuilderTest) (2 ms)</li><li>retrofit2.RequestBuilderTest.getWithJavaUriUrlAbsolute(retrofit2.RequestBuilderTest) (3 ms)</li><li>retrofit2.RequestBuilderTest.headerParam(retrofit2.RequestBuilderTest) (1 ms)</li><li>retrofit2.CallTest.requestBeforeEnqueueCreates(retrofit2.CallTest) (12 ms)</li><li>retrofit2.RetrofitTest.callCallAdapterAddedByDefault(retrofit2.RetrofitTest) (69 ms)</li><li>retrofit2.RetrofitTest.baseUrlNullThrows(retrofit2.RetrofitTest) (9 ms)</li><li>retrofit2.ExecutorCallAdapterFactoryTest.adaptedCallExecute(retrofit2.ExecutorCallAdapterFactoryTest) (3 ms)</li><li>retrofit2.RequestBuilderTest.multipartWithEncoding(retrofit2.RequestBuilderTest) (3 ms)</li><li>retrofit2.RequestBuilderAndroidTest.getWithAndroidUriUrl(retrofit2.RequestBuilderAndroidTest) (1688 ms)</li><li>retrofit2.RequestBuilderTest.getWithQueryParamPrimitiveArray(retrofit2.RequestBuilderTest) (6 ms)</li><li>retrofit2.RetrofitTest.callbackExecutorPropagatesDefaultAndroid(retrofit2.RetrofitTest) (19 ms)</li><li>retrofit2.RequestBuilderTest.multipartPartOptional(retrofit2.RequestBuilderTest) (2 ms)</li><li>retrofit2.CallTest.http404Async(retrofit2.CallTest) (30 ms)</li><li>retrofit2.RequestBuilderTest.headerParamToString(retrofit2.RequestBuilderTest) (3 ms)</li><li>retrofit2.RequestBuilderTest.contentTypeAnnotationHeaderAddsHeaderWithNoBody(retrofit2.RequestBuilderTest) (3 ms)</li><li>retrofit2.RequestBuilderTest.multipartOkHttpPart(retrofit2.RequestBuilderTest) (3 ms)</li><li>retrofit2.RequestBuilderTest.delete(retrofit2.RequestBuilderTest) (3 ms)</li><li>retrofit2.CallTest.requestThrowingNonFatalErrorBeforeExecuteFailsExecute(retrofit2.CallTest) (12 ms)</li><li>retrofit2.RetrofitTest.responseConverterFactoryQueried(retrofit2.RetrofitTest) (13 ms)</li><li>retrofit2.RequestBuilderTest.twoMethodsFail(retrofit2.RequestBuilderTest) (1 ms)</li><li>retrofit2.RetrofitTest.callAdapterFactoryQueriedCanDelegate(retrofit2.RetrofitTest) (56 ms)</li><li>retrofit2.RequestBuilderTest.parameterWithoutAnnotation(retrofit2.RequestBuilderTest) (1 ms)</li><li>retrofit2.RequestBuilderTest.normalPostWithPathParam(retrofit2.RequestBuilderTest) (2 ms)</li><li>retrofit2.RequestBuilderTest.getWithPathAndQueryQuestionMarkParam(retrofit2.RequestBuilderTest) (3 ms)</li><li>retrofit2.RequestBuilderTest.fieldMapMustBeAMap(retrofit2.RequestBuilderTest) (4 ms)</li><li>retrofit2.RetrofitTest.validateEagerlyDisabledByUser(retrofit2.RetrofitTest) (12 ms)</li><li>retrofit2.RequestBuilderTest.queryMapMustBeAMap(retrofit2.RequestBuilderTest) (1 ms)</li><li>retrofit2.RequestBuilderTest.contentTypeParameterHeaderOverrides(retrofit2.RequestBuilderTest) (5 ms)</li><li>retrofit2.RequestBuilderTest.getWithJavaUriUrl(retrofit2.RequestBuilderTest) (4 ms)</li><li>retrofit2.RequestBuilderTest.head(retrofit2.RequestBuilderTest) (3 ms)</li><li>retrofit2.RetrofitTest.callAdapterFactoryNoMatchThrows(retrofit2.RetrofitTest) (27 ms)</li><li>retrofit2.RequestBuilderTest.invalidPathParam(retrofit2.RequestBuilderTest) (3 ms)</li><li>retrofit2.RequestBuilderTest.multipartFailsOnNonBodyMethod(retrofit2.RequestBuilderTest) (2 ms)</li><li>retrofit2.RequestBuilderTest.patch(retrofit2.RequestBuilderTest) (2 ms)</li><li>retrofit2.ExecutorCallAdapterFactoryTest.responseType(retrofit2.ExecutorCallAdapterFactoryTest) (4 ms)</li><li>retrofit2.RetrofitTest.customCallAdapterMissingThrows(retrofit2.RetrofitTest) (26 ms)</li><li>retrofit2.RetrofitTest.callFactoryReturningNullThrows(retrofit2.RetrofitTest) (4 ms)</li><li>retrofit2.RequestBuilderTest.malformedParameterRelativeUrlThrows(retrofit2.RequestBuilderTest) (2 ms)</li><li>retrofit2.RequestBuilderTest.multipartArray(retrofit2.RequestBuilderTest) (14 ms)</li><li>retrofit2.RequestBuilderTest.multipleParameterAnnotationsNotAllowed(retrofit2.RequestBuilderTest) (1 ms)</li><li>retrofit2.RequestBuilderTest.queryMapRejectsNull(retrofit2.RequestBuilderTest) (2 ms)</li><li>retrofit2.RetrofitTest.callAdapterFactoryDefault(retrofit2.RetrofitTest) (32 ms)</li><li>retrofit2.CallTest.transportProblemAsync(retrofit2.CallTest) (24 ms)</li><li>retrofit2.RequestBuilderTest.malformedAnnotationRelativeUrlThrows(retrofit2.RequestBuilderTest) (1 ms)</li><li>retrofit2.RequestBuilderTest.headerMapRejectsNullKeys(retrofit2.RequestBuilderTest) (1 ms)</li><li>retrofit2.RetrofitTest.callFactoryUsed(retrofit2.RetrofitTest) (52 ms)</li><li>retrofit2.RetrofitTest.objectMethodsStillWork(retrofit2.RetrofitTest) (11 ms)</li><li>retrofit2.CallTest.requestAfterEnqueueFailingThrowsForNonFatalErrors(retrofit2.CallTest) (16 ms)</li><li>retrofit2.RequestBuilderTest.multipartIterable(retrofit2.RequestBuilderTest) (2 ms)</li><li>retrofit2.RequestBuilderTest.malformedContentTypeHeaderThrows(retrofit2.RequestBuilderTest) (1 ms)</li><li>retrofit2.CallTest.emptyResponse(retrofit2.CallTest) (22 ms)</li><li>retrofit2.RequestBuilderTest.getWithEncodedPathParam(retrofit2.RequestBuilderTest) (2 ms)</li><li>retrofit2.RequestBuilderTest.put(retrofit2.RequestBuilderTest) (1 ms)</li><li>retrofit2.RequestBuilderTest.bodyRequired(retrofit2.RequestBuilderTest) (3 ms)</li><li>retrofit2.RetrofitTest.argumentCapture(retrofit2.RetrofitTest) (207 ms)</li><li>retrofit2.RequestBuilderTest.headerParamArray(retrofit2.RequestBuilderTest) (9 ms)</li><li>retrofit2.CallTest.requestThrowingNonFatalErrorBeforeEnqueueFailsEnqueue(retrofit2.CallTest) (27 ms)</li><li>retrofit2.RetrofitTest.callFactoryThrowingPropagates(retrofit2.RetrofitTest) (3 ms)</li><li>retrofit2.RequestBuilderTest.bodyInNonBodyRequest(retrofit2.RequestBuilderTest) (7 ms)</li><li>retrofit2.CallTest.successfulRequestResponseWhenMimeTypeMissing(retrofit2.CallTest) (15 ms)</li><li>retrofit2.CallTest.conversionProblemIncomingMaskedByConverterIsUnwrapped(retrofit2.CallTest) (12 ms)</li><li>retrofit2.RequestBuilderTest.bodyWithPathParams(retrofit2.RequestBuilderTest) (4 ms)</li><li>retrofit2.RequestBuilderTest.pathParamRequired(retrofit2.RequestBuilderTest) (3 ms)</li><li>retrofit2.RequestBuilderTest.multipartPartMap(retrofit2.RequestBuilderTest) (1 ms)</li><li>retrofit2.RequestBuilderTest.headerMapSupportsSubclasses(retrofit2.RequestBuilderTest) (3 ms)</li><li>retrofit2.RequestBuilderTest.fieldMapSupportsSubclasses(retrofit2.RequestBuilderTest) (5 ms)</li><li>retrofit2.CallTest.conversionProblemIncomingSync(retrofit2.CallTest) (20 ms)</li><li>retrofit2.RequestBuilderTest.emptyBody(retrofit2.RequestBuilderTest) (3 ms)</li><li>retrofit2.RequestBuilderTest.implicitMultipartForbidden(retrofit2.RequestBuilderTest) (2 ms)</li><li>retrofit2.RetrofitTest.parameterAnnotationsPassedToStringConverter(retrofit2.RetrofitTest) (15 ms)</li><li>retrofit2.RetrofitTest.callFactoryPropagated(retrofit2.RetrofitTest) (9 ms)</li><li>retrofit2.RetrofitTest.customCallAdapter(retrofit2.RetrofitTest) (28 ms)</li><li>retrofit2.RetrofitTest.callAdapterFactoryNullThrows(retrofit2.RetrofitTest) (4 ms)</li><li>retrofit2.RetrofitTest.validateEagerlyFailsAtCreation(retrofit2.RetrofitTest) (17 ms)</li><li>retrofit2.RequestBuilderAndroidTest.getWithAndroidUriUrlAbsolute(retrofit2.RequestBuilderAndroidTest) (7 ms)</li><li>retrofit2.RequestBuilderTest.formEncodedFieldArray(retrofit2.RequestBuilderTest) (3 ms)</li><li>retrofit2.RequestBuilderTest.queryParamOptionalOmitsQuery(retrofit2.RequestBuilderTest) (2 ms)</li><li>retrofit2.RetrofitTest.converterNullThrows(retrofit2.RetrofitTest) (6 ms)</li><li>retrofit2.RequestBuilderTest.multipartArrayRequiresName(retrofit2.RequestBuilderTest) (2 ms)</li><li>retrofit2.RequestBuilderTest.fieldParamsSkippedIfConvertedToNull(retrofit2.RequestBuilderTest) (6 ms)</li><li>retrofit2.RequestBuilderTest.multipartFailsWithNoParts(retrofit2.RequestBuilderTest) (1 ms)</li><li>retrofit2.RequestBuilderTest.multipartOkHttpIterablePart(retrofit2.RequestBuilderTest) (2 ms)</li><li>retrofit2.RetrofitTest.builtInConvertersFirstInClone(retrofit2.RetrofitTest) (54 ms)</li><li>retrofit2.RetrofitTest.requestConverterFactoryNoMatchThrows(retrofit2.RetrofitTest) (19 ms)</li><li>retrofit2.RequestBuilderTest.getWithQueryThenUrlThrows(retrofit2.RequestBuilderTest) (5 ms)</li><li>retrofit2.RequestBuilderTest.headerMapRejectsNull(retrofit2.RequestBuilderTest) (2 ms)</li><li>retrofit2.RequestBuilderTest.formEncodingFailsWithNoParts(retrofit2.RequestBuilderTest) (4 ms)</li><li>retrofit2.RetrofitTest.interfaceWithExtendIsNotSupported(retrofit2.RetrofitTest) (25 ms)</li><li>retrofit2.RequestBuilderTest.getWithNonStringUrlThrows(retrofit2.RequestBuilderTest) (2 ms)</li><li>retrofit2.RequestBuilderTest.fieldMapRejectsNull(retrofit2.RequestBuilderTest) (3 ms)</li><li>retrofit2.CallTest.requestAfterEnqueueFailingThrows(retrofit2.CallTest) (11 ms)</li><li>retrofit2.RequestBuilderTest.malformedContentTypeParameterThrows(retrofit2.RequestBuilderTest) (2 ms)</li><li>retrofit2.RequestBuilderTest.getWithQueryParamList(retrofit2.RequestBuilderTest) (3 ms)</li><li>retrofit2.RequestBuilderTest.multipartPartMapSupportsSubclasses(retrofit2.RequestBuilderTest) (2 ms)</li><li>retrofit2.RetrofitTest.callbackExecutorPropagated(retrofit2.RetrofitTest) (23 ms)</li><li>retrofit2.RetrofitTest.requestConverterFactorySkippedNoMatchThrows(retrofit2.RetrofitTest) (12 ms)</li><li>retrofit2.RetrofitTest.responseBodyIncomingAllowed(retrofit2.RetrofitTest) (16 ms)</li><li>retrofit2.RetrofitTest.clientNullThrows(retrofit2.RetrofitTest) (4 ms)</li><li>retrofit2.RequestBuilderTest.multipartOkHttpArrayPart(retrofit2.RequestBuilderTest) (3 ms)</li><li>retrofit2.CallTest.requestThrowingBeforeExecuteFailsExecute(retrofit2.CallTest) (12 ms)</li><li>retrofit2.RequestBuilderTest.getWithStringUrl(retrofit2.RequestBuilderTest) (2 ms)</li><li>retrofit2.CallTest.http200Sync(retrofit2.CallTest) (10 ms)</li><li>retrofit2.RequestBuilderTest.getUrlAndUrlParamThrows(retrofit2.RequestBuilderTest) (3 ms)</li><li>retrofit2.CallTest.transportProblemSync(retrofit2.CallTest) (18 ms)</li><li>retrofit2.RequestBuilderTest.getWithQueryParamArray(retrofit2.RequestBuilderTest) (6 ms)</li><li>retrofit2.CallTest.http404Sync(retrofit2.CallTest) (46 ms)</li><li>retrofit2.RequestBuilderTest.getWithQueryUrlAndParam(retrofit2.RequestBuilderTest) (3 ms)</li><li>retrofit2.RequestBuilderTest.getWithUrlThenQuery(retrofit2.RequestBuilderTest) (3 ms)</li><li>retrofit2.RequestBuilderTest.getWithPathThenUrlThrows(retrofit2.RequestBuilderTest) (3 ms)</li><li>retrofit2.RequestBuilderTest.formEncodedWithEncodedNameFieldParam(retrofit2.RequestBuilderTest) (4 ms)</li><li>retrofit2.CallTest.requestAfterEnqueueReturnsCachedValue(retrofit2.CallTest) (28 ms)</li><li>retrofit2.RetrofitTest.callbackExecutorNullThrows(retrofit2.RetrofitTest) (8 ms)</li><li>retrofit2.CallTest.http204SkipsConverter(retrofit2.CallTest) (211 ms)</li><li>retrofit2.CallTest.requestBeforeExecuteCreates(retrofit2.CallTest) (14 ms)</li><li>retrofit2.RequestBuilderTest.options(retrofit2.RequestBuilderTest) (1 ms)</li><li>retrofit2.RequestBuilderTest.formEncodedWithEncodedNameFieldParamMap(retrofit2.RequestBuilderTest) (4 ms)</li><li>retrofit2.RetrofitTest.unresolvableResponseTypeThrows(retrofit2.RetrofitTest) (20 ms)</li><li>retrofit2.CallTest.responseBodyBuffers(retrofit2.CallTest) (28 ms)</li><li>retrofit2.RetrofitTest.unresolvableParameterTypeThrows(retrofit2.RetrofitTest) (17 ms)</li><li>retrofit2.RetrofitTest.converterFactoryDefault(retrofit2.RetrofitTest) (20 ms)</li><li>retrofit2.RequestBuilderTest.onlyOneEncodingIsAllowedMultipartFirst(retrofit2.RequestBuilderTest) (2 ms)</li><li>retrofit2.CallTest.fatalErrorsAreNotCaughtEnqueue(retrofit2.CallTest) (19 ms)</li><li>retrofit2.RequestBuilderTest.getWithPathAndQueryParam(retrofit2.RequestBuilderTest) (3 ms)</li><li>retrofit2.RetrofitTest.stringConverterReturningNullResultsInDefault(retrofit2.RetrofitTest) (17 ms)</li><li>retrofit2.RequestBuilderTest.getWithEncodedPathStillPreventsRequestSplitting(retrofit2.RequestBuilderTest) (2 ms)</li><li>retrofit2.RetrofitTest.responseTypeCannotBeOkHttpResponse(retrofit2.RetrofitTest) (15 ms)</li><li>retrofit2.RequestBuilderTest.queryMapRejectsNullValues(retrofit2.RequestBuilderTest) (2 ms)</li><li>retrofit2.RequestBuilderTest.implicitMultipartWithPartMapForbidden(retrofit2.RequestBuilderTest) (2 ms)</li><li>retrofit2.RequestBuilderTest.getWithPathAndQueryAmpersandParam(retrofit2.RequestBuilderTest) (3 ms)</li><li>retrofit2.RequestBuilderTest.multipartPartMapWithEncoding(retrofit2.RequestBuilderTest) (2 ms)</li><li>retrofit2.ExecutorCallAdapterFactoryTest.rawTypeThrows(retrofit2.ExecutorCallAdapterFactoryTest) (3 ms)</li><li>retrofit2.RequestBuilderTest.getWithQueryNameParamList(retrofit2.RequestBuilderTest) (3 ms)</li><li>retrofit2.RequestBuilderTest.getWithUrlThenPathThrows(retrofit2.RequestBuilderTest) (4 ms)</li><li>retrofit2.CallTest.requestThrowingBeforeEnqueueFailsEnqueue(retrofit2.CallTest) (5 ms)</li><li>retrofit2.RequestBuilderTest.headersFailWhenEmptyOnMethod(retrofit2.RequestBuilderTest) (5 ms)</li><li>retrofit2.RequestBuilderTest.getWithQueryNameParamPrimitiveArray(retrofit2.RequestBuilderTest) (2 ms)</li><li>retrofit2.CallTest.cancelOkHttpRequest(retrofit2.CallTest) (27 ms)</li><li>retrofit2.RequestBuilderTest.simpleFormEncoded(retrofit2.RequestBuilderTest) (1 ms)</li><li>retrofit2.RequestBuilderTest.multipartIterableOkHttpPart(retrofit2.RequestBuilderTest) (2 ms)</li><li>retrofit2.RequestBuilderTest.getWithQueryParamMap(retrofit2.RequestBuilderTest) (3 ms)</li><li>retrofit2.RetrofitTest.callbackExecutorUsedForFailure(retrofit2.RetrofitTest) (46 ms)</li><li>retrofit2.RequestBuilderTest.simpleHeaders(retrofit2.RequestBuilderTest) (2 ms)</li><li>retrofit2.RetrofitTest.callbackExecutorUsedForSuccess(retrofit2.RetrofitTest) (47 ms)</li><li>retrofit2.RetrofitTest.methodAndParameterAnnotationsPassedToRequestBodyConverter(retrofit2.RetrofitTest) (25 ms)</li><li>retrofit2.RetrofitTest.responseConverterFactorySkippedNoMatchThrows(retrofit2.RetrofitTest) (17 ms)</li><li>retrofit2.RequestBuilderTest.multipartPartMapMustBeMap(retrofit2.RequestBuilderTest) (1 ms)</li><li>retrofit2.RetrofitTest.callCallCustomAdapter(retrofit2.RetrofitTest) (18 ms)</li><li>retrofit2.CallTest.requestAfterExecuteReturnsCachedValue(retrofit2.CallTest) (22 ms)</li><li>retrofit2.RequestBuilderTest.getWithPathParam(retrofit2.RequestBuilderTest) (3 ms)</li><li>retrofit2.CallTest.cloningExecutedRequestDoesNotCopyState(retrofit2.CallTest) (99 ms)</li><li>retrofit2.CallTest.conversionProblemOutgoingAsync(retrofit2.CallTest) (10 ms)</li><li>retrofit2.RequestBuilderTest.twoBodies(retrofit2.RequestBuilderTest) (2 ms)</li><li>retrofit2.RequestBuilderTest.customMethodWithBody(retrofit2.RequestBuilderTest) (3 ms)</li><li>retrofit2.RequestBuilderTest.getWithEncodedQueryParamMap(retrofit2.RequestBuilderTest) (5 ms)</li><li>retrofit2.RequestBuilderTest.multipartPartsShouldBeInOrder(retrofit2.RequestBuilderTest) (2 ms)</li><li>retrofit2.RetrofitTest.baseUrlStringPropagated(retrofit2.RetrofitTest) (40 ms)</li><li>retrofit2.RequestBuilderTest.headerMapRejectsNullValues(retrofit2.RequestBuilderTest) (1 ms)</li><li>retrofit2.CallTest.fatalErrorsAreNotCaughtExecute(retrofit2.CallTest) (10 ms)</li><li>retrofit2.CallTest.cancelRequest(retrofit2.CallTest) (31 ms)</li><li>retrofit2.RequestBuilderTest.customMethodNoBody(retrofit2.RequestBuilderTest) (3 ms)</li><li>retrofit2.CallTest.cancelBeforeEnqueue(retrofit2.CallTest) (373 ms)</li><li>retrofit2.RequestBuilderTest.multipartPartMapRejectsNull(retrofit2.RequestBuilderTest) (2 ms)</li><li>retrofit2.RequestBuilderTest.fieldMapRejectsNullValues(retrofit2.RequestBuilderTest) (3 ms)</li><li>retrofit2.RetrofitTest.baseUrlInvalidThrows(retrofit2.RetrofitTest) (4 ms)</li><li>retrofit2.RetrofitTest.callFactoryClientPropagated(retrofit2.RetrofitTest) (23 ms)</li><li>retrofit2.RetrofitTest.stringConverterCalledForString(retrofit2.RetrofitTest) (15 ms)</li><li>retrofit2.RetrofitTest.builtInConvertersAbsentInCloneBuilder(retrofit2.RetrofitTest) (34 ms)</li><li>retrofit2.CallTest.rawResponseContentTypeAndLengthButNoSource(retrofit2.CallTest) (37 ms)</li><li>retrofit2.RequestBuilderTest.queryMapSupportsSubclasses(retrofit2.RequestBuilderTest) (5 ms)</li><li>retrofit2.CallTest.responseBodyStreams(retrofit2.CallTest) (28 ms)</li><li>retrofit2.RetrofitTest.cloneSharesStatefulInstances(retrofit2.RetrofitTest) (3 ms)</li><li>retrofit2.RequestBuilderTest.multipleParameterAnnotationsOnlyOneRetrofitAllowed(retrofit2.RequestBuilderTest) (1 ms)</li><li>retrofit2.CallTest.http200Async(retrofit2.CallTest) (14 ms)</li><li>retrofit2.RetrofitTest.callAdapterFactoryDelegateNoMatchThrows(retrofit2.RetrofitTest) (28 ms)</li><li>retrofit2.RequestBuilderTest.implicitFormEncodingByFieldMapForbidden(retrofit2.RequestBuilderTest) (2 ms)</li><li>retrofit2.CallTest.conversionProblemOutgoingSync(retrofit2.CallTest) (7 ms)</li><li>retrofit2.CallTest.reportsExecutedAsync(retrofit2.CallTest) (11 ms)</li><li>retrofit2.RequestBuilderTest.multipartNullRemovesPart(retrofit2.RequestBuilderTest) (4 ms)</li><li>retrofit2.RequestBuilderTest.multipartOkHttpPartWithFilename(retrofit2.RequestBuilderTest) (2 ms)</li><li>retrofit2.RetrofitTest.baseHttpUrlPropagated(retrofit2.RetrofitTest) (45 ms)</li><li>retrofit2.RequestBuilderTest.pathParamNonPathParamAndTypedBytes(retrofit2.RequestBuilderTest) (2 ms)</li><li>retrofit2.RequestBuilderTest.getWithUrlAbsoluteSameHost(retrofit2.RequestBuilderTest) (5 ms)</li><li>retrofit2.RetrofitTest.stringConverterFactoryQueried(retrofit2.RetrofitTest) (11 ms)</li><li>retrofit2.CallTest.responseBody(retrofit2.CallTest) (33 ms)</li><li>retrofit2.RetrofitTest.converterFactoryPropagated(retrofit2.RetrofitTest) (33 ms)</li><li>retrofit2.RetrofitTest.requestBodyOutgoingAllowed(retrofit2.RetrofitTest) (19 ms)</li><li>retrofit2.RetrofitTest.missingConverterThrowsOnNonResponseBody(retrofit2.RetrofitTest) (26 ms)</li><li>retrofit2.RequestBuilderTest.headWithoutVoidThrows(retrofit2.RequestBuilderTest) (14 ms)</li><li>retrofit2.RequestBuilderTest.implicitFormEncodingByFieldForbidden(retrofit2.RequestBuilderTest) (2 ms)</li><li>retrofit2.RequestBuilderTest.formEncodingFailsOnNonBodyMethod(retrofit2.RequestBuilderTest) (3 ms)</li><li>retrofit2.RequestBuilderTest.getWithQueryNameParamArray(retrofit2.RequestBuilderTest) (2 ms)</li><li>retrofit2.RequestBuilderTest.lackingMethod(retrofit2.RequestBuilderTest) (3 ms)</li><li>retrofit2.RequestBuilderTest.queryNameParamOptionalOmitsQuery(retrofit2.RequestBuilderTest) (1 ms)</li><li>retrofit2.RequestBuilderTest.multipartIterableRequiresName(retrofit2.RequestBuilderTest) (2 ms)</li><li>retrofit2.RequestBuilderTest.getWithUnusedAndInvalidNamedPathParam(retrofit2.RequestBuilderTest) (3 ms)</li><li>retrofit2.CallTest.conversionProblemIncomingAsync(retrofit2.CallTest) (28 ms)</li><li>retrofit2.RequestBuilderTest.getWithQueryParam(retrofit2.RequestBuilderTest) (3 ms)</li><li>retrofit2.RequestBuilderTest.queryParamsSkippedIfConvertedToNull(retrofit2.RequestBuilderTest) (2 ms)</li><li>retrofit2.RequestBuilderTest.pathParamNotAllowedInQuery(retrofit2.RequestBuilderTest) (2 ms)</li><li>retrofit2.RequestBuilderTest.getWithHeaderMap(retrofit2.RequestBuilderTest) (3 ms)</li><li>retrofit2.RequestBuilderTest.simpleMultipart(retrofit2.RequestBuilderTest) (1 ms)</li><li>retrofit2.RequestBuilderTest.postWithUrl(retrofit2.RequestBuilderTest) (2 ms)</li><li>retrofit2.RequestBuilderTest.headerParamList(retrofit2.RequestBuilderTest) (1 ms)</li><li>retrofit2.RequestBuilderTest.headerMapMustBeAMap(retrofit2.RequestBuilderTest) (2 ms)</li><li>retrofit2.RequestBuilderTest.getWithEncodedQueryParam(retrofit2.RequestBuilderTest) (3 ms)</li><li>retrofit2.CallTest.requestAfterExecuteThrowingAlsoThrows(retrofit2.CallTest) (8 ms)</li><li>retrofit2.RetrofitTest.callbackExecutorPropagatesDefaultJvm(retrofit2.RetrofitTest) (20 ms)</li><li>retrofit2.CallTest.fatalErrorsAreNotCaughtRequest(retrofit2.CallTest) (7 ms)</li><li>retrofit2.RetrofitTest.baseUrlNoTrailingSlashThrows(retrofit2.RetrofitTest) (3 ms)</li><li>retrofit2.CallTest.cancelBeforeExecute(retrofit2.CallTest) (22 ms)</li><li>retrofit2.RetrofitTest.methodAnnotationsPassedToResponseBodyConverter(retrofit2.RetrofitTest) (26 ms)</li>
+</ul>
+
+<br/>
+
+Report generated by <a href='http://pitest.org'>PIT</a> 1.3.2
+
+</body>
+</html>

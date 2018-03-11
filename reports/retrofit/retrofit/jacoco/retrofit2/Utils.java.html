@@ -1,0 +1,510 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Utils.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Retrofit</a> &gt; <a href="index.source.html" class="el_package">retrofit2</a> &gt; <span class="el_source">Utils.java</span></div><h1>Utils.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2008 Google Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package retrofit2;
+
+import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Array;
+import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.GenericDeclaration;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+import java.lang.reflect.WildcardType;
+import java.util.Arrays;
+import java.util.NoSuchElementException;
+import javax.annotation.Nullable;
+import okhttp3.ResponseBody;
+import okio.Buffer;
+
+final class Utils {
+<span class="fc" id="L34">  static final Type[] EMPTY_TYPE_ARRAY = new Type[0];</span>
+
+  private Utils() {
+    // No instances.
+  }
+
+  static Class&lt;?&gt; getRawType(Type type) {
+<span class="fc" id="L41">    checkNotNull(type, &quot;type == null&quot;);</span>
+
+<span class="fc bfc" id="L43" title="All 2 branches covered.">    if (type instanceof Class&lt;?&gt;) {</span>
+      // Type is a normal class.
+<span class="fc" id="L45">      return (Class&lt;?&gt;) type;</span>
+    }
+<span class="fc bfc" id="L47" title="All 2 branches covered.">    if (type instanceof ParameterizedType) {</span>
+<span class="fc" id="L48">      ParameterizedType parameterizedType = (ParameterizedType) type;</span>
+
+      // I'm not exactly sure why getRawType() returns Type instead of Class. Neal isn't either but
+      // suspects some pathological case related to nested classes exists.
+<span class="fc" id="L52">      Type rawType = parameterizedType.getRawType();</span>
+<span class="pc bpc" id="L53" title="1 of 2 branches missed.">      if (!(rawType instanceof Class)) throw new IllegalArgumentException();</span>
+<span class="fc" id="L54">      return (Class&lt;?&gt;) rawType;</span>
+    }
+<span class="pc bpc" id="L56" title="1 of 2 branches missed.">    if (type instanceof GenericArrayType) {</span>
+<span class="nc" id="L57">      Type componentType = ((GenericArrayType) type).getGenericComponentType();</span>
+<span class="nc" id="L58">      return Array.newInstance(getRawType(componentType), 0).getClass();</span>
+    }
+<span class="fc bfc" id="L60" title="All 2 branches covered.">    if (type instanceof TypeVariable) {</span>
+      // We could use the variable's bounds, but that won't work if there are multiple. Having a raw
+      // type that's more general than necessary is okay.
+<span class="fc" id="L63">      return Object.class;</span>
+    }
+<span class="pc bpc" id="L65" title="1 of 2 branches missed.">    if (type instanceof WildcardType) {</span>
+<span class="fc" id="L66">      return getRawType(((WildcardType) type).getUpperBounds()[0]);</span>
+    }
+
+<span class="nc" id="L69">    throw new IllegalArgumentException(&quot;Expected a Class, ParameterizedType, or &quot;</span>
+<span class="nc" id="L70">          + &quot;GenericArrayType, but &lt;&quot; + type + &quot;&gt; is of type &quot; + type.getClass().getName());</span>
+  }
+
+  /** Returns true if {@code a} and {@code b} are equal. */
+  static boolean equals(Type a, Type b) {
+<span class="nc bnc" id="L75" title="All 2 branches missed.">    if (a == b) {</span>
+<span class="nc" id="L76">      return true; // Also handles (a == null &amp;&amp; b == null).</span>
+
+<span class="nc bnc" id="L78" title="All 2 branches missed.">    } else if (a instanceof Class) {</span>
+<span class="nc" id="L79">      return a.equals(b); // Class already specifies equals().</span>
+
+<span class="nc bnc" id="L81" title="All 2 branches missed.">    } else if (a instanceof ParameterizedType) {</span>
+<span class="nc bnc" id="L82" title="All 2 branches missed.">      if (!(b instanceof ParameterizedType)) return false;</span>
+<span class="nc" id="L83">      ParameterizedType pa = (ParameterizedType) a;</span>
+<span class="nc" id="L84">      ParameterizedType pb = (ParameterizedType) b;</span>
+<span class="nc bnc" id="L85" title="All 2 branches missed.">      return equal(pa.getOwnerType(), pb.getOwnerType())</span>
+<span class="nc bnc" id="L86" title="All 2 branches missed.">          &amp;&amp; pa.getRawType().equals(pb.getRawType())</span>
+<span class="nc bnc" id="L87" title="All 2 branches missed.">          &amp;&amp; Arrays.equals(pa.getActualTypeArguments(), pb.getActualTypeArguments());</span>
+
+<span class="nc bnc" id="L89" title="All 2 branches missed.">    } else if (a instanceof GenericArrayType) {</span>
+<span class="nc bnc" id="L90" title="All 2 branches missed.">      if (!(b instanceof GenericArrayType)) return false;</span>
+<span class="nc" id="L91">      GenericArrayType ga = (GenericArrayType) a;</span>
+<span class="nc" id="L92">      GenericArrayType gb = (GenericArrayType) b;</span>
+<span class="nc" id="L93">      return equals(ga.getGenericComponentType(), gb.getGenericComponentType());</span>
+
+<span class="nc bnc" id="L95" title="All 2 branches missed.">    } else if (a instanceof WildcardType) {</span>
+<span class="nc bnc" id="L96" title="All 2 branches missed.">      if (!(b instanceof WildcardType)) return false;</span>
+<span class="nc" id="L97">      WildcardType wa = (WildcardType) a;</span>
+<span class="nc" id="L98">      WildcardType wb = (WildcardType) b;</span>
+<span class="nc bnc" id="L99" title="All 2 branches missed.">      return Arrays.equals(wa.getUpperBounds(), wb.getUpperBounds())</span>
+<span class="nc bnc" id="L100" title="All 2 branches missed.">          &amp;&amp; Arrays.equals(wa.getLowerBounds(), wb.getLowerBounds());</span>
+
+<span class="nc bnc" id="L102" title="All 2 branches missed.">    } else if (a instanceof TypeVariable) {</span>
+<span class="nc bnc" id="L103" title="All 2 branches missed.">      if (!(b instanceof TypeVariable)) return false;</span>
+<span class="nc" id="L104">      TypeVariable&lt;?&gt; va = (TypeVariable&lt;?&gt;) a;</span>
+<span class="nc" id="L105">      TypeVariable&lt;?&gt; vb = (TypeVariable&lt;?&gt;) b;</span>
+<span class="nc bnc" id="L106" title="All 2 branches missed.">      return va.getGenericDeclaration() == vb.getGenericDeclaration()</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">          &amp;&amp; va.getName().equals(vb.getName());</span>
+
+    } else {
+<span class="nc" id="L110">      return false; // This isn't a type we support!</span>
+    }
+  }
+
+  /**
+   * Returns the generic supertype for {@code supertype}. For example, given a class {@code
+   * IntegerSet}, the result for when supertype is {@code Set.class} is {@code Set&lt;Integer&gt;} and the
+   * result when the supertype is {@code Collection.class} is {@code Collection&lt;Integer&gt;}.
+   */
+  static Type getGenericSupertype(Type context, Class&lt;?&gt; rawType, Class&lt;?&gt; toResolve) {
+<span class="fc bfc" id="L120" title="All 2 branches covered.">    if (toResolve == rawType) return context;</span>
+
+    // We skip searching through interfaces if unknown is an interface.
+<span class="fc bfc" id="L123" title="All 2 branches covered.">    if (toResolve.isInterface()) {</span>
+<span class="fc" id="L124">      Class&lt;?&gt;[] interfaces = rawType.getInterfaces();</span>
+<span class="pc bfc" id="L125" title="All 2 branches covered.">      for (int i = 0, length = interfaces.length; i &lt; length; i++) {</span>
+<span class="pc bpc" id="L126" title="1 of 2 branches missed.">        if (interfaces[i] == toResolve) {</span>
+<span class="fc" id="L127">          return rawType.getGenericInterfaces()[i];</span>
+<span class="nc bnc" id="L128" title="All 2 branches missed.">        } else if (toResolve.isAssignableFrom(interfaces[i])) {</span>
+<span class="nc" id="L129">          return getGenericSupertype(rawType.getGenericInterfaces()[i], interfaces[i], toResolve);</span>
+        }
+      }
+    }
+
+    // Check our supertypes.
+<span class="pc bpc" id="L135" title="1 of 2 branches missed.">    if (!rawType.isInterface()) {</span>
+<span class="pc bpc" id="L136" title="1 of 2 branches missed.">      while (rawType != Object.class) {</span>
+<span class="fc" id="L137">        Class&lt;?&gt; rawSupertype = rawType.getSuperclass();</span>
+<span class="fc bfc" id="L138" title="All 2 branches covered.">        if (rawSupertype == toResolve) {</span>
+<span class="fc" id="L139">          return rawType.getGenericSuperclass();</span>
+<span class="pc bpc" id="L140" title="1 of 2 branches missed.">        } else if (toResolve.isAssignableFrom(rawSupertype)) {</span>
+<span class="fc" id="L141">          return getGenericSupertype(rawType.getGenericSuperclass(), rawSupertype, toResolve);</span>
+        }
+<span class="nc" id="L143">        rawType = rawSupertype;</span>
+<span class="nc" id="L144">      }</span>
+    }
+
+    // We can't resolve this further.
+<span class="nc" id="L148">    return toResolve;</span>
+  }
+
+  private static int indexOf(Object[] array, Object toFind) {
+<span class="pc bpc" id="L152" title="1 of 2 branches missed.">    for (int i = 0; i &lt; array.length; i++) {</span>
+<span class="fc bfc" id="L153" title="All 2 branches covered.">      if (toFind.equals(array[i])) return i;</span>
+    }
+<span class="nc" id="L155">    throw new NoSuchElementException();</span>
+  }
+
+  private static boolean equal(Object a, Object b) {
+<span class="nc bnc" id="L159" title="All 6 branches missed.">    return a == b || (a != null &amp;&amp; a.equals(b));</span>
+  }
+
+  static int hashCodeOrZero(Object o) {
+<span class="nc bnc" id="L163" title="All 2 branches missed.">    return o != null ? o.hashCode() : 0;</span>
+  }
+
+  static String typeToString(Type type) {
+<span class="nc bnc" id="L167" title="All 2 branches missed.">    return type instanceof Class ? ((Class&lt;?&gt;) type).getName() : type.toString();</span>
+  }
+
+  /**
+   * Returns the generic form of {@code supertype}. For example, if this is {@code
+   * ArrayList&lt;String&gt;}, this returns {@code Iterable&lt;String&gt;} given the input {@code
+   * Iterable.class}.
+   *
+   * @param supertype a superclass of, or interface implemented by, this.
+   */
+  static Type getSupertype(Type context, Class&lt;?&gt; contextRawType, Class&lt;?&gt; supertype) {
+<span class="pc bpc" id="L178" title="1 of 2 branches missed.">    if (!supertype.isAssignableFrom(contextRawType)) throw new IllegalArgumentException();</span>
+<span class="fc" id="L179">    return resolve(context, contextRawType,</span>
+<span class="fc" id="L180">        getGenericSupertype(context, contextRawType, supertype));</span>
+  }
+
+  static Type resolve(Type context, Class&lt;?&gt; contextRawType, Type toResolve) {
+    // This implementation is made a little more complicated in an attempt to avoid object-creation.
+    while (true) {
+<span class="fc bfc" id="L186" title="All 2 branches covered.">      if (toResolve instanceof TypeVariable) {</span>
+<span class="fc" id="L187">        TypeVariable&lt;?&gt; typeVariable = (TypeVariable&lt;?&gt;) toResolve;</span>
+<span class="fc" id="L188">        toResolve = resolveTypeVariable(context, contextRawType, typeVariable);</span>
+<span class="pc bpc" id="L189" title="1 of 2 branches missed.">        if (toResolve == typeVariable) {</span>
+<span class="nc" id="L190">          return toResolve;</span>
+        }
+
+<span class="pc bpc" id="L193" title="1 of 4 branches missed.">      } else if (toResolve instanceof Class &amp;&amp; ((Class&lt;?&gt;) toResolve).isArray()) {</span>
+<span class="nc" id="L194">        Class&lt;?&gt; original = (Class&lt;?&gt;) toResolve;</span>
+<span class="nc" id="L195">        Type componentType = original.getComponentType();</span>
+<span class="nc" id="L196">        Type newComponentType = resolve(context, contextRawType, componentType);</span>
+<span class="nc bnc" id="L197" title="All 2 branches missed.">        return componentType == newComponentType ? original : new GenericArrayTypeImpl(</span>
+            newComponentType);
+
+<span class="pc bpc" id="L200" title="1 of 2 branches missed.">      } else if (toResolve instanceof GenericArrayType) {</span>
+<span class="nc" id="L201">        GenericArrayType original = (GenericArrayType) toResolve;</span>
+<span class="nc" id="L202">        Type componentType = original.getGenericComponentType();</span>
+<span class="nc" id="L203">        Type newComponentType = resolve(context, contextRawType, componentType);</span>
+<span class="nc bnc" id="L204" title="All 2 branches missed.">        return componentType == newComponentType ? original : new GenericArrayTypeImpl(</span>
+            newComponentType);
+
+<span class="fc bfc" id="L207" title="All 2 branches covered.">      } else if (toResolve instanceof ParameterizedType) {</span>
+<span class="fc" id="L208">        ParameterizedType original = (ParameterizedType) toResolve;</span>
+<span class="fc" id="L209">        Type ownerType = original.getOwnerType();</span>
+<span class="fc" id="L210">        Type newOwnerType = resolve(context, contextRawType, ownerType);</span>
+<span class="pc bpc" id="L211" title="1 of 2 branches missed.">        boolean changed = newOwnerType != ownerType;</span>
+
+<span class="fc" id="L213">        Type[] args = original.getActualTypeArguments();</span>
+<span class="fc bfc" id="L214" title="All 2 branches covered.">        for (int t = 0, length = args.length; t &lt; length; t++) {</span>
+<span class="fc" id="L215">          Type resolvedTypeArgument = resolve(context, contextRawType, args[t]);</span>
+<span class="fc bfc" id="L216" title="All 2 branches covered.">          if (resolvedTypeArgument != args[t]) {</span>
+<span class="fc bfc" id="L217" title="All 2 branches covered.">            if (!changed) {</span>
+<span class="fc" id="L218">              args = args.clone();</span>
+<span class="fc" id="L219">              changed = true;</span>
+            }
+<span class="fc" id="L221">            args[t] = resolvedTypeArgument;</span>
+          }
+        }
+
+<span class="fc bfc" id="L225" title="All 2 branches covered.">        return changed</span>
+<span class="fc" id="L226">            ? new ParameterizedTypeImpl(newOwnerType, original.getRawType(), args)</span>
+<span class="fc" id="L227">            : original;</span>
+
+<span class="pc bpc" id="L229" title="1 of 2 branches missed.">      } else if (toResolve instanceof WildcardType) {</span>
+<span class="nc" id="L230">        WildcardType original = (WildcardType) toResolve;</span>
+<span class="nc" id="L231">        Type[] originalLowerBound = original.getLowerBounds();</span>
+<span class="nc" id="L232">        Type[] originalUpperBound = original.getUpperBounds();</span>
+
+<span class="nc bnc" id="L234" title="All 2 branches missed.">        if (originalLowerBound.length == 1) {</span>
+<span class="nc" id="L235">          Type lowerBound = resolve(context, contextRawType, originalLowerBound[0]);</span>
+<span class="nc bnc" id="L236" title="All 2 branches missed.">          if (lowerBound != originalLowerBound[0]) {</span>
+<span class="nc" id="L237">            return new WildcardTypeImpl(new Type[] { Object.class }, new Type[] { lowerBound });</span>
+          }
+<span class="nc bnc" id="L239" title="All 2 branches missed.">        } else if (originalUpperBound.length == 1) {</span>
+<span class="nc" id="L240">          Type upperBound = resolve(context, contextRawType, originalUpperBound[0]);</span>
+<span class="nc bnc" id="L241" title="All 2 branches missed.">          if (upperBound != originalUpperBound[0]) {</span>
+<span class="nc" id="L242">            return new WildcardTypeImpl(new Type[] { upperBound }, EMPTY_TYPE_ARRAY);</span>
+          }
+        }
+<span class="nc" id="L245">        return original;</span>
+
+      } else {
+<span class="fc" id="L248">        return toResolve;</span>
+      }
+    }
+  }
+
+  private static Type resolveTypeVariable(
+      Type context, Class&lt;?&gt; contextRawType, TypeVariable&lt;?&gt; unknown) {
+<span class="fc" id="L255">    Class&lt;?&gt; declaredByRaw = declaringClassOf(unknown);</span>
+
+    // We can't reduce this further.
+<span class="pc bpc" id="L258" title="1 of 2 branches missed.">    if (declaredByRaw == null) return unknown;</span>
+
+<span class="fc" id="L260">    Type declaredBy = getGenericSupertype(context, contextRawType, declaredByRaw);</span>
+<span class="pc bpc" id="L261" title="1 of 2 branches missed.">    if (declaredBy instanceof ParameterizedType) {</span>
+<span class="fc" id="L262">      int index = indexOf(declaredByRaw.getTypeParameters(), unknown);</span>
+<span class="fc" id="L263">      return ((ParameterizedType) declaredBy).getActualTypeArguments()[index];</span>
+    }
+
+<span class="nc" id="L266">    return unknown;</span>
+  }
+
+  /**
+   * Returns the declaring class of {@code typeVariable}, or {@code null} if it was not declared by
+   * a class.
+   */
+  private static Class&lt;?&gt; declaringClassOf(TypeVariable&lt;?&gt; typeVariable) {
+<span class="fc" id="L274">    GenericDeclaration genericDeclaration = typeVariable.getGenericDeclaration();</span>
+<span class="pc bpc" id="L275" title="1 of 2 branches missed.">    return genericDeclaration instanceof Class ? (Class&lt;?&gt;) genericDeclaration : null;</span>
+  }
+
+  static void checkNotPrimitive(Type type) {
+<span class="pc bpc" id="L279" title="2 of 4 branches missed.">    if (type instanceof Class&lt;?&gt; &amp;&amp; ((Class&lt;?&gt;) type).isPrimitive()) {</span>
+<span class="nc" id="L280">      throw new IllegalArgumentException();</span>
+    }
+<span class="fc" id="L282">  }</span>
+
+  static &lt;T&gt; T checkNotNull(@Nullable T object, String message) {
+<span class="fc bfc" id="L285" title="All 2 branches covered.">    if (object == null) {</span>
+<span class="fc" id="L286">      throw new NullPointerException(message);</span>
+    }
+<span class="fc" id="L288">    return object;</span>
+  }
+
+  /** Returns true if {@code annotations} contains an instance of {@code cls}. */
+  static boolean isAnnotationPresent(Annotation[] annotations,
+      Class&lt;? extends Annotation&gt; cls) {
+<span class="fc bfc" id="L294" title="All 2 branches covered.">    for (Annotation annotation : annotations) {</span>
+<span class="fc bfc" id="L295" title="All 2 branches covered.">      if (cls.isInstance(annotation)) {</span>
+<span class="fc" id="L296">        return true;</span>
+      }
+    }
+<span class="fc" id="L299">    return false;</span>
+  }
+
+  static ResponseBody buffer(final ResponseBody body) throws IOException {
+<span class="fc" id="L303">    Buffer buffer = new Buffer();</span>
+<span class="fc" id="L304">    body.source().readAll(buffer);</span>
+<span class="fc" id="L305">    return ResponseBody.create(body.contentType(), body.contentLength(), buffer);</span>
+  }
+
+  static &lt;T&gt; void validateServiceInterface(Class&lt;T&gt; service) {
+<span class="pc bpc" id="L309" title="1 of 2 branches missed.">    if (!service.isInterface()) {</span>
+<span class="nc" id="L310">      throw new IllegalArgumentException(&quot;API declarations must be interfaces.&quot;);</span>
+    }
+    // Prevent API interfaces from extending other interfaces. This not only avoids a bug in
+    // Android (http://b.android.com/58753) but it forces composition of API declarations which is
+    // the recommended pattern.
+<span class="fc bfc" id="L315" title="All 2 branches covered.">    if (service.getInterfaces().length &gt; 0) {</span>
+<span class="fc" id="L316">      throw new IllegalArgumentException(&quot;API interfaces must not extend other interfaces.&quot;);</span>
+    }
+<span class="fc" id="L318">  }</span>
+
+  static Type getParameterUpperBound(int index, ParameterizedType type) {
+<span class="fc" id="L321">    Type[] types = type.getActualTypeArguments();</span>
+<span class="fc bfc" id="L322" title="All 4 branches covered.">    if (index &lt; 0 || index &gt;= types.length) {</span>
+<span class="fc" id="L323">      throw new IllegalArgumentException(</span>
+          &quot;Index &quot; + index + &quot; not in range [0,&quot; + types.length + &quot;) for &quot; + type);
+    }
+<span class="fc" id="L326">    Type paramType = types[index];</span>
+<span class="fc bfc" id="L327" title="All 2 branches covered.">    if (paramType instanceof WildcardType) {</span>
+<span class="fc" id="L328">      return ((WildcardType) paramType).getUpperBounds()[0];</span>
+    }
+<span class="fc" id="L330">    return paramType;</span>
+  }
+
+  static boolean hasUnresolvableType(Type type) {
+<span class="fc bfc" id="L334" title="All 2 branches covered.">    if (type instanceof Class&lt;?&gt;) {</span>
+<span class="fc" id="L335">      return false;</span>
+    }
+<span class="fc bfc" id="L337" title="All 2 branches covered.">    if (type instanceof ParameterizedType) {</span>
+<span class="fc" id="L338">      ParameterizedType parameterizedType = (ParameterizedType) type;</span>
+<span class="fc bfc" id="L339" title="All 2 branches covered.">      for (Type typeArgument : parameterizedType.getActualTypeArguments()) {</span>
+<span class="fc bfc" id="L340" title="All 2 branches covered.">        if (hasUnresolvableType(typeArgument)) {</span>
+<span class="fc" id="L341">          return true;</span>
+        }
+      }
+<span class="fc" id="L344">      return false;</span>
+    }
+<span class="fc bfc" id="L346" title="All 2 branches covered.">    if (type instanceof GenericArrayType) {</span>
+<span class="fc" id="L347">      return hasUnresolvableType(((GenericArrayType) type).getGenericComponentType());</span>
+    }
+<span class="fc bfc" id="L349" title="All 2 branches covered.">    if (type instanceof TypeVariable) {</span>
+<span class="fc" id="L350">      return true;</span>
+    }
+<span class="pc bpc" id="L352" title="1 of 2 branches missed.">    if (type instanceof WildcardType) {</span>
+<span class="fc" id="L353">      return true;</span>
+    }
+<span class="nc bnc" id="L355" title="All 2 branches missed.">    String className = type == null ? &quot;null&quot; : type.getClass().getName();</span>
+<span class="nc" id="L356">    throw new IllegalArgumentException(&quot;Expected a Class, ParameterizedType, or &quot;</span>
+        + &quot;GenericArrayType, but &lt;&quot; + type + &quot;&gt; is of type &quot; + className);
+  }
+
+  static Type getCallResponseType(Type returnType) {
+<span class="fc bfc" id="L361" title="All 2 branches covered.">    if (!(returnType instanceof ParameterizedType)) {</span>
+<span class="fc" id="L362">      throw new IllegalArgumentException(</span>
+          &quot;Call return type must be parameterized as Call&lt;Foo&gt; or Call&lt;? extends Foo&gt;&quot;);
+    }
+<span class="fc" id="L365">    return getParameterUpperBound(0, (ParameterizedType) returnType);</span>
+  }
+
+  private static final class ParameterizedTypeImpl implements ParameterizedType {
+    private final Type ownerType;
+    private final Type rawType;
+    private final Type[] typeArguments;
+
+<span class="fc" id="L373">    ParameterizedTypeImpl(Type ownerType, Type rawType, Type... typeArguments) {</span>
+      // Require an owner type if the raw type needs it.
+<span class="pc bpc" id="L375" title="2 of 4 branches missed.">      if (rawType instanceof Class&lt;?&gt;</span>
+<span class="pc bpc" id="L376" title="2 of 4 branches missed.">          &amp;&amp; (ownerType == null) != (((Class&lt;?&gt;) rawType).getEnclosingClass() == null)) {</span>
+<span class="nc" id="L377">        throw new IllegalArgumentException();</span>
+      }
+
+<span class="fc bfc" id="L380" title="All 2 branches covered.">      for (Type typeArgument : typeArguments) {</span>
+<span class="fc" id="L381">        checkNotNull(typeArgument, &quot;typeArgument == null&quot;);</span>
+<span class="fc" id="L382">        checkNotPrimitive(typeArgument);</span>
+      }
+
+<span class="fc" id="L385">      this.ownerType = ownerType;</span>
+<span class="fc" id="L386">      this.rawType = rawType;</span>
+<span class="fc" id="L387">      this.typeArguments = typeArguments.clone();</span>
+<span class="fc" id="L388">    }</span>
+
+    @Override public Type[] getActualTypeArguments() {
+<span class="fc" id="L391">      return typeArguments.clone();</span>
+    }
+
+    @Override public Type getRawType() {
+<span class="nc" id="L395">      return rawType;</span>
+    }
+
+    @Override public Type getOwnerType() {
+<span class="nc" id="L399">      return ownerType;</span>
+    }
+
+    @Override public boolean equals(Object other) {
+<span class="nc bnc" id="L403" title="All 4 branches missed.">      return other instanceof ParameterizedType &amp;&amp; Utils.equals(this, (ParameterizedType) other);</span>
+    }
+
+    @Override public int hashCode() {
+<span class="nc" id="L407">      return Arrays.hashCode(typeArguments) ^ rawType.hashCode() ^ hashCodeOrZero(ownerType);</span>
+    }
+
+    @Override public String toString() {
+<span class="nc bnc" id="L411" title="All 2 branches missed.">      if (typeArguments.length == 0) return typeToString(rawType);</span>
+<span class="nc" id="L412">      StringBuilder result = new StringBuilder(30 * (typeArguments.length + 1));</span>
+<span class="nc" id="L413">      result.append(typeToString(rawType));</span>
+<span class="nc" id="L414">      result.append(&quot;&lt;&quot;).append(typeToString(typeArguments[0]));</span>
+<span class="nc bnc" id="L415" title="All 2 branches missed.">      for (int i = 1; i &lt; typeArguments.length; i++) {</span>
+<span class="nc" id="L416">        result.append(&quot;, &quot;).append(typeToString(typeArguments[i]));</span>
+      }
+<span class="nc" id="L418">      return result.append(&quot;&gt;&quot;).toString();</span>
+    }
+  }
+
+  private static final class GenericArrayTypeImpl implements GenericArrayType {
+    private final Type componentType;
+
+<span class="nc" id="L425">    GenericArrayTypeImpl(Type componentType) {</span>
+<span class="nc" id="L426">      this.componentType = componentType;</span>
+<span class="nc" id="L427">    }</span>
+
+    @Override public Type getGenericComponentType() {
+<span class="nc" id="L430">      return componentType;</span>
+    }
+
+    @Override public boolean equals(Object o) {
+<span class="nc bnc" id="L434" title="All 2 branches missed.">      return o instanceof GenericArrayType</span>
+<span class="nc bnc" id="L435" title="All 2 branches missed.">          &amp;&amp; Utils.equals(this, (GenericArrayType) o);</span>
+    }
+
+    @Override public int hashCode() {
+<span class="nc" id="L439">      return componentType.hashCode();</span>
+    }
+
+    @Override public String toString() {
+<span class="nc" id="L443">      return typeToString(componentType) + &quot;[]&quot;;</span>
+    }
+  }
+
+  /**
+   * The WildcardType interface supports multiple upper bounds and multiple
+   * lower bounds. We only support what the Java 6 language needs - at most one
+   * bound. If a lower bound is set, the upper bound must be Object.class.
+   */
+  private static final class WildcardTypeImpl implements WildcardType {
+    private final Type upperBound;
+    private final Type lowerBound;
+
+<span class="nc" id="L456">    WildcardTypeImpl(Type[] upperBounds, Type[] lowerBounds) {</span>
+<span class="nc bnc" id="L457" title="All 2 branches missed.">      if (lowerBounds.length &gt; 1) throw new IllegalArgumentException();</span>
+<span class="nc bnc" id="L458" title="All 2 branches missed.">      if (upperBounds.length != 1) throw new IllegalArgumentException();</span>
+
+<span class="nc bnc" id="L460" title="All 2 branches missed.">      if (lowerBounds.length == 1) {</span>
+<span class="nc bnc" id="L461" title="All 2 branches missed.">        if (lowerBounds[0] == null) throw new NullPointerException();</span>
+<span class="nc" id="L462">        checkNotPrimitive(lowerBounds[0]);</span>
+<span class="nc bnc" id="L463" title="All 2 branches missed.">        if (upperBounds[0] != Object.class) throw new IllegalArgumentException();</span>
+<span class="nc" id="L464">        this.lowerBound = lowerBounds[0];</span>
+<span class="nc" id="L465">        this.upperBound = Object.class;</span>
+      } else {
+<span class="nc bnc" id="L467" title="All 2 branches missed.">        if (upperBounds[0] == null) throw new NullPointerException();</span>
+<span class="nc" id="L468">        checkNotPrimitive(upperBounds[0]);</span>
+<span class="nc" id="L469">        this.lowerBound = null;</span>
+<span class="nc" id="L470">        this.upperBound = upperBounds[0];</span>
+      }
+<span class="nc" id="L472">    }</span>
+
+    @Override public Type[] getUpperBounds() {
+<span class="nc" id="L475">      return new Type[] { upperBound };</span>
+    }
+
+    @Override public Type[] getLowerBounds() {
+<span class="nc bnc" id="L479" title="All 2 branches missed.">      return lowerBound != null ? new Type[] { lowerBound } : EMPTY_TYPE_ARRAY;</span>
+    }
+
+    @Override public boolean equals(Object other) {
+<span class="nc bnc" id="L483" title="All 4 branches missed.">      return other instanceof WildcardType &amp;&amp; Utils.equals(this, (WildcardType) other);</span>
+    }
+
+    @Override public int hashCode() {
+      // This equals Arrays.hashCode(getLowerBounds()) ^ Arrays.hashCode(getUpperBounds()).
+<span class="nc bnc" id="L488" title="All 2 branches missed.">      return (lowerBound != null ? 31 + lowerBound.hashCode() : 1) ^ (31 + upperBound.hashCode());</span>
+    }
+
+    @Override public String toString() {
+<span class="nc bnc" id="L492" title="All 2 branches missed.">      if (lowerBound != null) return &quot;? super &quot; + typeToString(lowerBound);</span>
+<span class="nc bnc" id="L493" title="All 2 branches missed.">      if (upperBound == Object.class) return &quot;?&quot;;</span>
+<span class="nc" id="L494">      return &quot;? extends &quot; + typeToString(upperBound);</span>
+    }
+  }
+
+  // https://github.com/ReactiveX/RxJava/blob/6a44e5d0543a48f1c378dc833a155f3f71333bc2/
+  // src/main/java/io/reactivex/exceptions/Exceptions.java#L66
+  static void throwIfFatal(Throwable t) {
+<span class="fc bfc" id="L501" title="All 2 branches covered.">    if (t instanceof VirtualMachineError) {</span>
+<span class="fc" id="L502">      throw (VirtualMachineError) t;</span>
+<span class="pc bpc" id="L503" title="1 of 2 branches missed.">    } else if (t instanceof ThreadDeath) {</span>
+<span class="nc" id="L504">      throw (ThreadDeath) t;</span>
+<span class="pc bpc" id="L505" title="1 of 2 branches missed.">    } else if (t instanceof LinkageError) {</span>
+<span class="nc" id="L506">      throw (LinkageError) t;</span>
+    }
+<span class="fc" id="L508">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

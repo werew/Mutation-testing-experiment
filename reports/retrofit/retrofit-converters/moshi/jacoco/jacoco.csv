@@ -1,0 +1,4 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+Converter: Moshi,retrofit2.converter.moshi,MoshiRequestBodyConverter,0,27,0,0,0,8,0,3,0,3
+Converter: Moshi,retrofit2.converter.moshi,MoshiResponseBodyConverter,0,46,0,4,0,13,0,5,0,3
+Converter: Moshi,retrofit2.converter.moshi,MoshiConverterFactory,11,158,2,20,1,33,3,17,1,8

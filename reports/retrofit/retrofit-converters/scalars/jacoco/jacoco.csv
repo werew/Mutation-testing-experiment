@@ -1,0 +1,12 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+Converter: Java Scalars,retrofit2.converter.scalars,ScalarResponseBodyConverters.BooleanResponseBodyConverter,0,12,0,0,0,3,0,3,0,3
+Converter: Java Scalars,retrofit2.converter.scalars,ScalarResponseBodyConverters.CharacterResponseBodyConverter,0,33,0,2,0,7,0,4,0,3
+Converter: Java Scalars,retrofit2.converter.scalars,ScalarResponseBodyConverters.ByteResponseBodyConverter,0,12,0,0,0,3,0,3,0,3
+Converter: Java Scalars,retrofit2.converter.scalars,ScalarResponseBodyConverters.DoubleResponseBodyConverter,0,12,0,0,0,3,0,3,0,3
+Converter: Java Scalars,retrofit2.converter.scalars,ScalarResponseBodyConverters.LongResponseBodyConverter,0,12,0,0,0,3,0,3,0,3
+Converter: Java Scalars,retrofit2.converter.scalars,ScalarResponseBodyConverters.ShortResponseBodyConverter,0,12,0,0,0,3,0,3,0,3
+Converter: Java Scalars,retrofit2.converter.scalars,ScalarRequestBodyConverter,0,13,0,0,0,3,0,2,0,2
+Converter: Java Scalars,retrofit2.converter.scalars,ScalarResponseBodyConverters.StringResponseBodyConverter,0,11,0,0,0,3,0,3,0,3
+Converter: Java Scalars,retrofit2.converter.scalars,ScalarResponseBodyConverters.FloatResponseBodyConverter,0,12,0,0,0,3,0,3,0,3
+Converter: Java Scalars,retrofit2.converter.scalars,ScalarsConverterFactory,0,130,0,68,0,23,0,37,0,3
+Converter: Java Scalars,retrofit2.converter.scalars,ScalarResponseBodyConverters.IntegerResponseBodyConverter,0,12,0,0,0,3,0,3,0,3

@@ -1,0 +1,4 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+Converter: Gson,retrofit2.converter.gson,GsonResponseBodyConverter,0,35,0,2,0,10,0,3,0,2
+Converter: Gson,retrofit2.converter.gson,GsonRequestBodyConverter,0,44,0,0,0,12,0,3,0,3
+Converter: Gson,retrofit2.converter.gson,GsonConverterFactory,10,39,1,1,1,9,2,4,1,4

@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>IsIterableContaining.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JavaHamcrest</a> &gt; <a href="index.source.html" class="el_package">org.hamcrest.core</a> &gt; <span class="el_source">IsIterableContaining.java</span></div><h1>IsIterableContaining.java</h1><pre class="source lang-java linenums">package org.hamcrest.core;
+
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeDiagnosingMatcher;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.hamcrest.core.AllOf.allOf;
+import static org.hamcrest.core.IsEqual.equalTo;
+
+public class IsIterableContaining&lt;T&gt; extends TypeSafeDiagnosingMatcher&lt;Iterable&lt;? super T&gt;&gt; {
+    private final Matcher&lt;? super T&gt; elementMatcher;
+
+<span class="fc" id="L16">    public IsIterableContaining(Matcher&lt;? super T&gt; elementMatcher) {</span>
+<span class="fc" id="L17">        this.elementMatcher = elementMatcher;</span>
+<span class="fc" id="L18">    }</span>
+
+    @Override
+    protected boolean matchesSafely(Iterable&lt;? super T&gt; collection, Description mismatchDescription) {
+<span class="fc bfc" id="L22" title="All 2 branches covered.">        if (isEmpty(collection)) {</span>
+<span class="fc" id="L23">          mismatchDescription.appendText(&quot;was empty&quot;);</span>
+<span class="fc" id="L24">          return false;</span>
+        }
+
+<span class="fc bfc" id="L27" title="All 2 branches covered.">        for (Object item : collection) {</span>
+<span class="fc bfc" id="L28" title="All 2 branches covered.">            if (elementMatcher.matches(item)) {</span>
+<span class="fc" id="L29">                return true;</span>
+            }
+<span class="fc" id="L31">        }</span>
+
+<span class="fc" id="L33">        mismatchDescription.appendText(&quot;mismatches were: [&quot;);</span>
+<span class="fc" id="L34">        boolean isPastFirst = false;</span>
+<span class="fc bfc" id="L35" title="All 2 branches covered.">        for (Object item : collection) {</span>
+<span class="fc bfc" id="L36" title="All 2 branches covered.">            if (isPastFirst) {</span>
+<span class="fc" id="L37">              mismatchDescription.appendText(&quot;, &quot;);</span>
+            }
+<span class="fc" id="L39">            elementMatcher.describeMismatch(item, mismatchDescription);</span>
+<span class="fc" id="L40">            isPastFirst = true;</span>
+<span class="fc" id="L41">        }</span>
+<span class="fc" id="L42">        mismatchDescription.appendText(&quot;]&quot;);</span>
+<span class="fc" id="L43">        return false;</span>
+    }
+
+    private boolean isEmpty(Iterable&lt;? super T&gt; iterable) {
+<span class="fc bfc" id="L47" title="All 2 branches covered.">      return ! iterable.iterator().hasNext();</span>
+    }
+
+    @Override
+    public void describeTo(Description description) {
+<span class="fc" id="L52">        description</span>
+<span class="fc" id="L53">            .appendText(&quot;a collection containing &quot;)</span>
+<span class="fc" id="L54">            .appendDescriptionOf(elementMatcher);</span>
+<span class="fc" id="L55">    }</span>
+
+    
+    /**
+     * Creates a matcher for {@link Iterable}s that only matches when a single pass over the
+     * examined {@link Iterable} yields at least one item that is matched by the specified
+     * &lt;code&gt;itemMatcher&lt;/code&gt;.  Whilst matching, the traversal of the examined {@link Iterable}
+     * will stop as soon as a matching item is found.
+     * For example:
+     * &lt;pre&gt;assertThat(Arrays.asList(&quot;foo&quot;, &quot;bar&quot;), hasItem(startsWith(&quot;ba&quot;)))&lt;/pre&gt;
+     * 
+     * @param itemMatcher
+     *     the matcher to apply to items provided by the examined {@link Iterable}
+     */
+    public static &lt;T&gt; Matcher&lt;Iterable&lt;? super T&gt;&gt; hasItem(Matcher&lt;? super T&gt; itemMatcher) {
+<span class="fc" id="L70">        return new IsIterableContaining&lt;&gt;(itemMatcher);</span>
+    }
+
+    /**
+     * Creates a matcher for {@link Iterable}s that only matches when a single pass over the
+     * examined {@link Iterable} yields at least one item that is equal to the specified
+     * &lt;code&gt;item&lt;/code&gt;.  Whilst matching, the traversal of the examined {@link Iterable}
+     * will stop as soon as a matching item is found.
+     * For example:
+     * &lt;pre&gt;assertThat(Arrays.asList(&quot;foo&quot;, &quot;bar&quot;), hasItem(&quot;bar&quot;))&lt;/pre&gt;
+     * 
+     * @param item
+     *     the item to compare against the items provided by the examined {@link Iterable}
+     */
+    public static &lt;T&gt; Matcher&lt;Iterable&lt;? super T&gt;&gt; hasItem(T item) {
+        // Doesn't forward to hasItem() method so compiler can sort out generics.
+<span class="fc" id="L86">        return new IsIterableContaining&lt;&gt;(equalTo(item));</span>
+    }
+
+    /**
+     * Creates a matcher for {@link Iterable}s that matches when consecutive passes over the
+     * examined {@link Iterable} yield at least one item that is matched by the corresponding
+     * matcher from the specified &lt;code&gt;itemMatchers&lt;/code&gt;.  Whilst matching, each traversal of
+     * the examined {@link Iterable} will stop as soon as a matching item is found.
+     * For example:
+     * &lt;pre&gt;assertThat(Arrays.asList(&quot;foo&quot;, &quot;bar&quot;, &quot;baz&quot;), hasItems(endsWith(&quot;z&quot;), endsWith(&quot;o&quot;)))&lt;/pre&gt;
+     * 
+     * @param itemMatchers
+     *     the matchers to apply to items provided by the examined {@link Iterable}
+     */
+    @SafeVarargs
+    public static &lt;T&gt; Matcher&lt;Iterable&lt;T&gt;&gt; hasItems(Matcher&lt;? super T&gt;... itemMatchers) {
+<span class="fc" id="L102">        List&lt;Matcher&lt;? super Iterable&lt;T&gt;&gt;&gt; all = new ArrayList&lt;&gt;(itemMatchers.length);</span>
+        
+<span class="fc bfc" id="L104" title="All 2 branches covered.">        for (Matcher&lt;? super T&gt; elementMatcher : itemMatchers) {</span>
+          // Doesn't forward to hasItem() method so compiler can sort out generics.
+<span class="fc" id="L106">          all.add(new IsIterableContaining&lt;&gt;(elementMatcher));</span>
+        }
+        
+<span class="fc" id="L109">        return allOf(all);</span>
+    }
+    
+    /**
+     * Creates a matcher for {@link Iterable}s that matches when consecutive passes over the
+     * examined {@link Iterable} yield at least one item that is equal to the corresponding
+     * item from the specified &lt;code&gt;items&lt;/code&gt;.  Whilst matching, each traversal of the
+     * examined {@link Iterable} will stop as soon as a matching item is found.
+     * For example:
+     * &lt;pre&gt;assertThat(Arrays.asList(&quot;foo&quot;, &quot;bar&quot;, &quot;baz&quot;), hasItems(&quot;baz&quot;, &quot;foo&quot;))&lt;/pre&gt;
+     * 
+     * @param items
+     *     the items to compare against the items provided by the examined {@link Iterable}
+     */
+    @SafeVarargs
+    public static &lt;T&gt; Matcher&lt;Iterable&lt;T&gt;&gt; hasItems(T... items) {
+<span class="fc" id="L125">        List&lt;Matcher&lt;? super Iterable&lt;T&gt;&gt;&gt; all = new ArrayList&lt;&gt;(items.length);</span>
+<span class="fc bfc" id="L126" title="All 2 branches covered.">        for (T item : items) {</span>
+<span class="fc" id="L127">            all.add(hasItem(item));</span>
+        }
+        
+<span class="fc" id="L130">        return allOf(all);</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TypeSafeDiagnosingMatcher.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JavaHamcrest</a> &gt; <a href="index.source.html" class="el_package">org.hamcrest</a> &gt; <span class="el_source">TypeSafeDiagnosingMatcher.java</span></div><h1>TypeSafeDiagnosingMatcher.java</h1><pre class="source lang-java linenums">package org.hamcrest;
+
+import org.hamcrest.internal.ReflectiveTypeFinder;
+
+
+/**
+ * Convenient base class for Matchers that require a non-null value of a specific type
+ * and that will report why the received value has been rejected.
+ * This implements the null check, checks the type and then casts. 
+ * To use, implement &lt;pre&gt;matchesSafely()&lt;/pre&gt;. 
+ *
+ * @param &lt;T&gt;
+ * @author Neil Dunn
+ * @author Nat Pryce
+ * @author Steve Freeman
+ */
+public abstract class TypeSafeDiagnosingMatcher&lt;T&gt; extends BaseMatcher&lt;T&gt; {
+<span class="fc" id="L18">    private static final ReflectiveTypeFinder TYPE_FINDER = new ReflectiveTypeFinder(&quot;matchesSafely&quot;, 2, 0); </span>
+    private final Class&lt;?&gt; expectedType;
+
+    /**
+     * Subclasses should implement this. The item will already have been checked
+     * for the specific type and will never be null.
+     */
+    protected abstract boolean matchesSafely(T item, Description mismatchDescription);
+
+    /**
+     * Use this constructor if the subclass that implements &lt;code&gt;matchesSafely&lt;/code&gt; 
+     * is &lt;em&gt;not&lt;/em&gt; the class that binds &amp;lt;T&amp;gt; to a type. 
+     * @param expectedType The expectedType of the actual value.
+     */
+<span class="fc" id="L32">    protected TypeSafeDiagnosingMatcher(Class&lt;?&gt; expectedType) {</span>
+<span class="fc" id="L33">      this.expectedType = expectedType;</span>
+<span class="fc" id="L34">    }</span>
+
+    /**
+     * Use this constructor if the subclass that implements &lt;code&gt;matchesSafely&lt;/code&gt; 
+     * is &lt;em&gt;not&lt;/em&gt; the class that binds &amp;lt;T&amp;gt; to a type. 
+     * @param typeFinder A type finder to extract the type
+     */
+<span class="fc" id="L41">    protected TypeSafeDiagnosingMatcher(ReflectiveTypeFinder typeFinder) {</span>
+<span class="fc" id="L42">      this.expectedType = typeFinder.findExpectedType(getClass()); </span>
+<span class="fc" id="L43">    }</span>
+
+    /**
+     * The default constructor for simple sub types
+     */
+    protected TypeSafeDiagnosingMatcher() {
+<span class="fc" id="L49">      this(TYPE_FINDER); </span>
+<span class="fc" id="L50">    }</span>
+
+    @Override
+    @SuppressWarnings(&quot;unchecked&quot;)
+    public final boolean matches(Object item) {
+<span class="fc bfc" id="L55" title="All 2 branches covered.">        return item != null</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">            &amp;&amp; expectedType.isInstance(item)</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">            &amp;&amp; matchesSafely((T) item, new Description.NullDescription());</span>
+    }
+
+    @SuppressWarnings(&quot;unchecked&quot;)
+    @Override
+    public final void describeMismatch(Object item, Description mismatchDescription) {
+<span class="fc bfc" id="L63" title="All 2 branches covered.">      if (item == null) {</span>
+<span class="fc" id="L64">        mismatchDescription.appendText(&quot;was null&quot;);</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">    } else if (!expectedType.isInstance(item)) {</span>
+<span class="fc" id="L66">      mismatchDescription.appendText(&quot;was &quot;)</span>
+<span class="fc" id="L67">            .appendText(item.getClass().getSimpleName())</span>
+<span class="fc" id="L68">            .appendText(&quot; &quot;)</span>
+<span class="fc" id="L69">            .appendValue(item);</span>
+    } else {
+<span class="fc" id="L71">        matchesSafely((T) item, mismatchDescription);</span>
+      }
+<span class="fc" id="L73">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

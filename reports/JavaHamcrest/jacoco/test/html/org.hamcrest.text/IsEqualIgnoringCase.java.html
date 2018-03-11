@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>IsEqualIgnoringCase.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JavaHamcrest</a> &gt; <a href="index.source.html" class="el_package">org.hamcrest.text</a> &gt; <span class="el_source">IsEqualIgnoringCase.java</span></div><h1>IsEqualIgnoringCase.java</h1><pre class="source lang-java linenums">package org.hamcrest.text;
+
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeMatcher;
+
+/**
+ * Tests if a string is equal to another string, regardless of the case.
+ */
+public class IsEqualIgnoringCase extends TypeSafeMatcher&lt;String&gt; {
+
+    // TODO: Replace String with CharSequence to allow for easy interoperability between
+    //       String, StringBuffer, StringBuilder, CharBuffer, etc (joe).
+
+    private final String string;
+
+<span class="fc" id="L17">    public IsEqualIgnoringCase(String string) {</span>
+<span class="fc bfc" id="L18" title="All 2 branches covered.">        if (string == null) {</span>
+<span class="fc" id="L19">            throw new IllegalArgumentException(&quot;Non-null value required&quot;);</span>
+        }
+<span class="fc" id="L21">        this.string = string;</span>
+<span class="fc" id="L22">    }</span>
+
+    @Override
+    public boolean matchesSafely(String item) {
+<span class="fc" id="L26">        return string.equalsIgnoreCase(item);</span>
+    }
+
+    @Override
+    public void describeMismatchSafely(String item, Description mismatchDescription) {
+<span class="fc" id="L31">      mismatchDescription.appendText(&quot;was &quot;).appendValue(item);</span>
+<span class="fc" id="L32">    }</span>
+    
+    @Override
+    public void describeTo(Description description) {
+<span class="fc" id="L36">        description.appendText(&quot;a string equal to &quot;)</span>
+<span class="fc" id="L37">                .appendValue(string)</span>
+<span class="fc" id="L38">                .appendText(&quot; ignoring case&quot;);</span>
+<span class="fc" id="L39">    }</span>
+
+    /**
+     * Creates a matcher of {@link String} that matches when the examined string is equal to
+     * the specified expectedString, ignoring case.
+     * For example:
+     * &lt;pre&gt;assertThat(&quot;Foo&quot;, equalToIgnoringCase(&quot;FOO&quot;))&lt;/pre&gt;
+     * 
+     * @param expectedString
+     *     the expected value of matched strings
+     */
+    public static Matcher&lt;String&gt; equalToIgnoringCase(String expectedString) {
+<span class="fc" id="L51">        return new IsEqualIgnoringCase(expectedString);</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

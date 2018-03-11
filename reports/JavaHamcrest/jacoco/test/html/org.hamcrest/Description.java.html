@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Description.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JavaHamcrest</a> &gt; <a href="index.source.html" class="el_package">org.hamcrest</a> &gt; <span class="el_source">Description.java</span></div><h1>Description.java</h1><pre class="source lang-java linenums">package org.hamcrest;
+
+/**
+ * A description of a Matcher. A Matcher will describe itself to a description
+ * which can later be used for reporting.
+ *
+ * @see Matcher#describeTo(Description)
+ */
+public interface Description {
+  /**
+   * A description that consumes input but does nothing.
+   */
+<span class="fc" id="L13">  static final Description NONE = new NullDescription();</span>
+  
+    /**
+     * Appends some plain text to the description.
+     */
+    Description appendText(String text);
+
+    /**
+     * Appends the description of a {@link SelfDescribing} value to this description.
+     */
+    Description appendDescriptionOf(SelfDescribing value);
+
+    /**
+     * Appends an arbitrary value to the description.
+     */
+    Description appendValue(Object value);
+
+    /**
+     * Appends a list of values to the description.
+     */
+    &lt;T&gt; Description appendValueList(String start, String separator, String end,
+                                    T... values);
+
+    /**
+     * Appends a list of values to the description.
+     */
+    &lt;T&gt; Description appendValueList(String start, String separator, String end,
+                                    Iterable&lt;T&gt; values);
+
+    /**
+     * Appends a list of {@link org.hamcrest.SelfDescribing} objects
+     * to the description.
+     */
+    Description appendList(String start, String separator, String end,
+                           Iterable&lt;? extends SelfDescribing&gt; values);
+
+
+<span class="fc" id="L50">    public static final class NullDescription implements Description {</span>
+      @Override
+      public Description appendDescriptionOf(SelfDescribing value) {
+<span class="fc" id="L53">        return this;</span>
+      }
+
+      @Override
+      public Description appendList(String start, String separator,
+          String end, Iterable&lt;? extends SelfDescribing&gt; values) {
+<span class="fc" id="L59">        return this;</span>
+      }
+
+      @Override
+      public Description appendText(String text) {
+<span class="fc" id="L64">        return this;</span>
+      }
+
+      @Override
+      public Description appendValue(Object value) {
+<span class="fc" id="L69">        return this;</span>
+      }
+
+      @Override
+      public &lt;T&gt; Description appendValueList(String start, String separator,
+          String end, T... values) {
+<span class="nc" id="L75">        return this;</span>
+      }
+
+      @Override
+      public &lt;T&gt; Description appendValueList(String start, String separator,
+          String end, Iterable&lt;T&gt; values) {
+<span class="fc" id="L81">        return this;</span>
+      }
+
+      @Override
+        public String toString() {
+<span class="fc" id="L86">          return &quot;&quot;;</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

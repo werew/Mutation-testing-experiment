@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ReflectiveTypeFinder.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JavaHamcrest</a> &gt; <a href="index.source.html" class="el_package">org.hamcrest.internal</a> &gt; <span class="el_source">ReflectiveTypeFinder.java</span></div><h1>ReflectiveTypeFinder.java</h1><pre class="source lang-java linenums">/**
+ * The TypeSafe classes, and their descendants, need a mechanism to find out what type has been used as a parameter 
+ * for the concrete matcher. Unfortunately, this type is lost during type erasure so we need to use reflection 
+ * to get it back, by picking out the type of a known parameter to a known method. 
+ * The catch is that, with bridging methods, this type is only visible in the class that actually implements 
+ * the expected method, so the ReflectiveTypeFinder needs to be applied to that class or a subtype.
+ * 
+ * For example, the abstract &lt;code&gt;TypeSafeDiagnosingMatcher&amp;lt;T&amp;gt;&lt;/code&gt; defines an abstract method
+ * &lt;pre&gt;protected abstract boolean matchesSafely(T item, Description mismatchDescription);&lt;/pre&gt;
+ * By default it uses &lt;code&gt;new ReflectiveTypeFinder(&quot;matchesSafely&quot;, 2, 0); &lt;/code&gt; to find the
+ * parameterised type. If we create a &lt;code&gt;TypeSafeDiagnosingMatcher&amp;lt;String&amp;gt;&lt;/code&gt;, the type
+ * finder will return &lt;code&gt;String.class&lt;/code&gt;.
+ * 
+ * A &lt;code&gt;FeatureMatcher&lt;/code&gt; is an abstract subclass of &lt;code&gt;TypeSafeDiagnosingMatcher&lt;/code&gt;. 
+ * Although it has a templated implementation of &lt;code&gt;matchesSafely(&amp;lt;T&amp;gt;, Description);&lt;/code&gt;, the
+ * actual run-time signature of this is &lt;code&gt;matchesSafely(Object, Description);&lt;/code&gt;. Instead,
+ * we must find the type by reflecting on the concrete implementation of 
+ * &lt;pre&gt;protected abstract U featureValueOf(T actual);&lt;/pre&gt;
+ * a method which is declared in &lt;code&gt;FeatureMatcher&lt;/code&gt;.
+ * 
+ * In short, use this to extract a type from a method in the leaf class of a templated class hierarchy. 
+ *  
+ * @author Steve Freeman
+ * @author Nat Pryce
+ */
+package org.hamcrest.internal;
+
+import java.lang.reflect.Method;
+
+public class ReflectiveTypeFinder {
+  private final String methodName;
+  private final int expectedNumberOfParameters;
+  private final int typedParameter;
+
+<span class="fc" id="L35">  public ReflectiveTypeFinder(String methodName, int expectedNumberOfParameters, int typedParameter) {</span>
+<span class="fc" id="L36">    this.methodName = methodName;</span>
+<span class="fc" id="L37">    this.expectedNumberOfParameters = expectedNumberOfParameters;</span>
+<span class="fc" id="L38">    this.typedParameter = typedParameter;</span>
+<span class="fc" id="L39">  }</span>
+  
+  public Class&lt;?&gt; findExpectedType(Class&lt;?&gt; fromClass) {
+<span class="pc bpc" id="L42" title="1 of 2 branches missed.">    for (Class&lt;?&gt; c = fromClass; c != Object.class; c = c.getSuperclass()) {</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">        for (Method method : c.getDeclaredMethods()) {</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">            if (canObtainExpectedTypeFrom(method)) {</span>
+<span class="fc" id="L45">                return expectedTypeFrom(method);</span>
+            }
+        }
+    }
+<span class="nc" id="L49">    throw new Error(&quot;Cannot determine correct type for &quot; + methodName + &quot;() method.&quot;);</span>
+  }
+
+  /**
+   * @param method The method to examine.
+   * @return true if this method references the relevant type
+   */
+  private boolean canObtainExpectedTypeFrom(Method method) {
+<span class="fc bfc" id="L57" title="All 2 branches covered.">      return method.getName().equals(methodName)</span>
+<span class="pc bpc" id="L58" title="1 of 2 branches missed.">              &amp;&amp; method.getParameterTypes().length == expectedNumberOfParameters</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">              &amp;&amp; !method.isSynthetic();</span>
+  }
+
+
+  /**
+   * @param method The method from which to extract
+   * @return The type we're looking for
+   */
+  private Class&lt;?&gt; expectedTypeFrom(Method method) {
+<span class="fc" id="L68">      return method.getParameterTypes()[typedParameter];</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

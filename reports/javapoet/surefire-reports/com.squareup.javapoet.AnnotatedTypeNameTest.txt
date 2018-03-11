@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.squareup.javapoet.AnnotatedTypeNameTest
+-------------------------------------------------------------------------------
+Tests run: 12, Failures: 0, Errors: 0, Skipped: 2, Time elapsed: 0.01 sec - in com.squareup.javapoet.AnnotatedTypeNameTest

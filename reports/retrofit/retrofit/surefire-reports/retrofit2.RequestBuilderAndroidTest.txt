@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: retrofit2.RequestBuilderAndroidTest
+-------------------------------------------------------------------------------
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 10.134 sec - in retrofit2.RequestBuilderAndroidTest

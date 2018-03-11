@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CustomMatcher.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JavaHamcrest</a> &gt; <a href="index.source.html" class="el_package">org.hamcrest</a> &gt; <span class="el_source">CustomMatcher.java</span></div><h1>CustomMatcher.java</h1><pre class="source lang-java linenums">package org.hamcrest;
+
+/**
+ * Utility class for writing one off matchers.
+ * For example:
+ * &lt;pre&gt;
+ * Matcher&amp;lt;String&amp;gt; aNonEmptyString = new CustomMatcher&amp;lt;String&amp;gt;(&quot;a non empty string&quot;) {
+ *   public boolean matches(Object object) {
+ *     return ((object instanceof String) &amp;amp;&amp;amp; !((String) object).isEmpty();
+ *   }
+ * };
+ * &lt;/pre&gt;
+ * &lt;p&gt;
+ * This class is designed for scenarios where an anonymous inner class
+ * matcher makes sense. It should not be used by API designers implementing
+ * matchers.
+ *
+ * @author Neil Dunn
+ * @see CustomTypeSafeMatcher for a type safe variant of this class that you probably
+ *  want to use.
+ * @param &lt;T&gt; The type of object being matched.
+ */
+public abstract class CustomMatcher&lt;T&gt; extends BaseMatcher&lt;T&gt; {
+    private final String fixedDescription;
+
+<span class="fc" id="L26">    public CustomMatcher(String description) {</span>
+<span class="pc bpc" id="L27" title="1 of 2 branches missed.">        if (description == null) {</span>
+<span class="nc" id="L28">            throw new IllegalArgumentException(&quot;Description should be non null!&quot;);</span>
+        }
+<span class="fc" id="L30">        this.fixedDescription = description;</span>
+<span class="fc" id="L31">    }</span>
+
+    @Override
+    public final void describeTo(Description description) {
+<span class="fc" id="L35">        description.appendText(fixedDescription);</span>
+<span class="fc" id="L36">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

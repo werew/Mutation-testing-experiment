@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RxJavaCallAdapter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Adapter: RxJava</a> &gt; <a href="index.source.html" class="el_package">retrofit2.adapter.rxjava</a> &gt; <span class="el_source">RxJavaCallAdapter.java</span></div><h1>RxJavaCallAdapter.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2016 Jake Wharton
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package retrofit2.adapter.rxjava;
+
+import java.lang.reflect.Type;
+import javax.annotation.Nullable;
+import retrofit2.Call;
+import retrofit2.CallAdapter;
+import retrofit2.Response;
+import rx.Observable;
+import rx.Observable.OnSubscribe;
+import rx.Scheduler;
+
+final class RxJavaCallAdapter&lt;R&gt; implements CallAdapter&lt;R, Object&gt; {
+  private final Type responseType;
+  private final @Nullable Scheduler scheduler;
+  private final boolean isAsync;
+  private final boolean isResult;
+  private final boolean isBody;
+  private final boolean isSingle;
+  private final boolean isCompletable;
+
+  RxJavaCallAdapter(Type responseType, @Nullable Scheduler scheduler, boolean isAsync,
+<span class="fc" id="L37">      boolean isResult, boolean isBody, boolean isSingle, boolean isCompletable) {</span>
+<span class="fc" id="L38">    this.responseType = responseType;</span>
+<span class="fc" id="L39">    this.scheduler = scheduler;</span>
+<span class="fc" id="L40">    this.isAsync = isAsync;</span>
+<span class="fc" id="L41">    this.isResult = isResult;</span>
+<span class="fc" id="L42">    this.isBody = isBody;</span>
+<span class="fc" id="L43">    this.isSingle = isSingle;</span>
+<span class="fc" id="L44">    this.isCompletable = isCompletable;</span>
+<span class="fc" id="L45">  }</span>
+
+  @Override public Type responseType() {
+<span class="fc" id="L48">    return responseType;</span>
+  }
+
+  @Override public Object adapt(Call&lt;R&gt; call) {
+<span class="fc bfc" id="L52" title="All 2 branches covered.">    OnSubscribe&lt;Response&lt;R&gt;&gt; callFunc = isAsync</span>
+<span class="fc" id="L53">        ? new CallEnqueueOnSubscribe&lt;&gt;(call)</span>
+<span class="fc" id="L54">        : new CallExecuteOnSubscribe&lt;&gt;(call);</span>
+
+    OnSubscribe&lt;?&gt; func;
+<span class="fc bfc" id="L57" title="All 2 branches covered.">    if (isResult) {</span>
+<span class="fc" id="L58">      func = new ResultOnSubscribe&lt;&gt;(callFunc);</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">    } else if (isBody) {</span>
+<span class="fc" id="L60">      func = new BodyOnSubscribe&lt;&gt;(callFunc);</span>
+    } else {
+<span class="fc" id="L62">      func = callFunc;</span>
+    }
+<span class="fc" id="L64">    Observable&lt;?&gt; observable = Observable.create(func);</span>
+
+<span class="fc bfc" id="L66" title="All 2 branches covered.">    if (scheduler != null) {</span>
+<span class="fc" id="L67">      observable = observable.subscribeOn(scheduler);</span>
+    }
+
+<span class="fc bfc" id="L70" title="All 2 branches covered.">    if (isSingle) {</span>
+<span class="fc" id="L71">      return observable.toSingle();</span>
+    }
+<span class="fc bfc" id="L73" title="All 2 branches covered.">    if (isCompletable) {</span>
+<span class="fc" id="L74">      return observable.toCompletable();</span>
+    }
+<span class="fc" id="L76">    return observable;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

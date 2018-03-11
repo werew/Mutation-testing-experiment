@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>IsEmptyCollection.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JavaHamcrest</a> &gt; <a href="index.source.html" class="el_package">org.hamcrest.collection</a> &gt; <span class="el_source">IsEmptyCollection.java</span></div><h1>IsEmptyCollection.java</h1><pre class="source lang-java linenums">package org.hamcrest.collection;
+
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeMatcher;
+
+import java.util.Collection;
+
+/**
+ * Tests if collection is empty.
+ */
+<span class="fc" id="L12">public class IsEmptyCollection&lt;E&gt; extends TypeSafeMatcher&lt;Collection&lt;? extends E&gt;&gt; {</span>
+
+    @Override
+    public boolean matchesSafely(Collection&lt;? extends E&gt; item) {
+<span class="fc" id="L16">        return item.isEmpty();</span>
+    }
+
+    @Override
+    public void describeMismatchSafely(Collection&lt;? extends E&gt; item, Description mismatchDescription) {
+<span class="fc" id="L21">      mismatchDescription.appendValue(item);</span>
+<span class="fc" id="L22">    }</span>
+
+    @Override
+    public void describeTo(Description description) {
+<span class="fc" id="L26">        description.appendText(&quot;an empty collection&quot;);</span>
+<span class="fc" id="L27">    }</span>
+
+    /**
+     * Creates a matcher for {@link java.util.Collection}s matching examined collections whose &lt;code&gt;isEmpty&lt;/code&gt;
+     * method returns &lt;code&gt;true&lt;/code&gt;.
+     * For example:
+     * &lt;pre&gt;assertThat(new ArrayList&amp;lt;String&amp;gt;(), is(empty()))&lt;/pre&gt;
+     * 
+     */
+    public static &lt;E&gt; Matcher&lt;Collection&lt;? extends E&gt;&gt; empty() {
+<span class="fc" id="L37">        return new IsEmptyCollection&lt;E&gt;();</span>
+    }
+
+    /**
+     * Creates a matcher for {@link java.util.Collection}s matching examined collections whose &lt;code&gt;isEmpty&lt;/code&gt;
+     * method returns &lt;code&gt;true&lt;/code&gt;.
+     * For example:
+     * &lt;pre&gt;assertThat(new ArrayList&amp;lt;String&amp;gt;(), is(emptyCollectionOf(String.class)))&lt;/pre&gt;
+     * 
+     * @param unusedToForceReturnType
+     *     the type of the collection's content
+     */
+    @SuppressWarnings({&quot;unchecked&quot;, &quot;UnusedParameters&quot;})
+    public static &lt;E&gt; Matcher&lt;Collection&lt;E&gt;&gt; emptyCollectionOf(Class&lt;E&gt; unusedToForceReturnType) {
+<span class="fc" id="L51">      return (Matcher)empty();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ArrayAsIterableMatcher.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JavaHamcrest</a> &gt; <a href="index.source.html" class="el_package">org.hamcrest.collection</a> &gt; <span class="el_source">ArrayAsIterableMatcher.java</span></div><h1>ArrayAsIterableMatcher.java</h1><pre class="source lang-java linenums">package org.hamcrest.collection;
+
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeDiagnosingMatcher;
+import org.hamcrest.TypeSafeMatcher;
+
+import java.util.Collection;
+
+import static java.util.Arrays.asList;
+
+/**
+ * @author Steve Freeman 2016 http://www.hamcrest.com
+ */
+public class ArrayAsIterableMatcher&lt;E&gt; extends TypeSafeMatcher&lt;E[]&gt; {
+  protected final TypeSafeDiagnosingMatcher&lt;Iterable&lt;? extends E&gt;&gt; iterableMatcher;
+  private final String message;
+  protected final Collection&lt;Matcher&lt;? super E&gt;&gt; matchers;
+
+  public ArrayAsIterableMatcher(
+        TypeSafeDiagnosingMatcher&lt;Iterable&lt;? extends E&gt;&gt; iterableMatcher,
+        Collection&lt;Matcher&lt;? super E&gt;&gt; matchers,
+        String message)
+<span class="fc" id="L24">  {</span>
+<span class="fc" id="L25">    this.matchers = matchers;</span>
+<span class="fc" id="L26">    this.iterableMatcher = iterableMatcher;</span>
+<span class="fc" id="L27">    this.message = message;</span>
+<span class="fc" id="L28">  }</span>
+
+  @Override
+  public boolean matchesSafely(E[] item) {
+<span class="fc" id="L32">      return iterableMatcher.matches(asList(item));</span>
+  }
+
+  @Override
+  public void describeMismatchSafely(E[] item, Description mismatchDescription) {
+<span class="fc" id="L37">    iterableMatcher.describeMismatch(asList(item), mismatchDescription);</span>
+<span class="fc" id="L38">  }</span>
+
+  @Override
+  public void describeTo(Description description) {
+<span class="fc" id="L42">      description.appendList(&quot;[&quot;, &quot;, &quot;, &quot;]&quot;, matchers)</span>
+<span class="fc" id="L43">          .appendText(&quot; &quot;).appendText(message);</span>
+<span class="fc" id="L44">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

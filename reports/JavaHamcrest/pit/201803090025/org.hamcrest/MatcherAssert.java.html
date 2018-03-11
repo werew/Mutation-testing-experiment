@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="../style.css">
+</head>
+<body>
+
+
+<h1>MatcherAssert.java</h1>
+
+<table class="src">
+
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3cb376a3_1'/>
+1
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3cb376a3_1'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>package org.hamcrest;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3cb376a3_2'/>
+2
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3cb376a3_2'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3cb376a3_3'/>
+3
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3cb376a3_3'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3cb376a3_4'/>
+4
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3cb376a3_4'></a>
+<span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>public class MatcherAssert {</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3cb376a3_5'/>
+5
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3cb376a3_5'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    public static &#60;T&#62; void assertThat(T actual, Matcher&#60;? super T&#62; matcher) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3cb376a3_6'/>
+6
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3cb376a3_6'>1</a>
+<span>
+1. assertThat : removed call to org/hamcrest/MatcherAssert::assertThat &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        assertThat(&#34;&#34;, actual, matcher);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3cb376a3_7'/>
+7
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3cb376a3_7'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3cb376a3_8'/>
+8
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3cb376a3_8'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    </span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3cb376a3_9'/>
+9
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3cb376a3_9'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    public static &#60;T&#62; void assertThat(String reason, T actual, Matcher&#60;? super T&#62; matcher) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3cb376a3_10'/>
+10
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3cb376a3_10'>1</a>
+<span>
+1. assertThat : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        if (!matcher.matches(actual)) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3cb376a3_11'/>
+11
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3cb376a3_11'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>            Description description = new StringDescription();</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3cb376a3_12'/>
+12
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3cb376a3_12'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>            description.appendText(reason)</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3cb376a3_13'/>
+13
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3cb376a3_13'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>                       .appendText(&#34;\nExpected: &#34;)</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3cb376a3_14'/>
+14
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3cb376a3_14'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>                       .appendDescriptionOf(matcher)</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3cb376a3_15'/>
+15
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3cb376a3_15'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>                       .appendText(&#34;\n     but: &#34;);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3cb376a3_16'/>
+16
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3cb376a3_16'>1</a>
+<span>
+1. assertThat : removed call to org/hamcrest/Matcher::describeMismatch &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>            matcher.describeMismatch(actual, description);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3cb376a3_17'/>
+17
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3cb376a3_17'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>            </span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3cb376a3_18'/>
+18
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3cb376a3_18'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>            throw new AssertionError(description.toString());</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3cb376a3_19'/>
+19
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3cb376a3_19'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3cb376a3_20'/>
+20
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3cb376a3_20'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3cb376a3_21'/>
+21
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3cb376a3_21'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    </span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3cb376a3_22'/>
+22
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3cb376a3_22'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    public static void assertThat(String reason, boolean assertion) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3cb376a3_23'/>
+23
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3cb376a3_23'>1</a>
+<span>
+1. assertThat : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        if (!assertion) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3cb376a3_24'/>
+24
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3cb376a3_24'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>            throw new AssertionError(reason);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3cb376a3_25'/>
+25
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3cb376a3_25'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3cb376a3_26'/>
+26
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3cb376a3_26'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3cb376a3_27'/>
+27
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3cb376a3_27'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>}</span></pre></td></tr>
+
+
+
+<tr><td></td><td></td><td><h2>Mutations</h2></td></tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@3cb376a3_6'>6</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@3cb376a3_6'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>assertThat<br/><b>Killed by : </b>org.hamcrest.MatcherAssertTest.includesMismatchDescription(org.hamcrest.MatcherAssertTest)</span></span> removed call to org/hamcrest/MatcherAssert::assertThat &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@3cb376a3_10'>10</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@3cb376a3_10'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>assertThat<br/><b>Killed by : </b>org.hamcrest.MatcherAssertTest.canAssertSubtypes(org.hamcrest.MatcherAssertTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@3cb376a3_16'>16</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@3cb376a3_16'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>assertThat<br/><b>Killed by : </b>org.hamcrest.MatcherAssertTest.includesMismatchDescription(org.hamcrest.MatcherAssertTest)</span></span> removed call to org/hamcrest/Matcher::describeMismatch &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@3cb376a3_23'>23</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@3cb376a3_23'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>assertThat<br/><b>Killed by : </b>org.hamcrest.MatcherAssertTest.canTestBooleanDirectly(org.hamcrest.MatcherAssertTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+
+</table>
+
+
+<h2>Active mutators</h2>
+<ul>
+<li class='mutator'>INCREMENTS_MUTATOR</li>
+<li class='mutator'>VOID_METHOD_CALL_MUTATOR</li>
+<li class='mutator'>RETURN_VALS_MUTATOR</li>
+<li class='mutator'>MATH_MUTATOR</li>
+<li class='mutator'>NEGATE_CONDITIONALS_MUTATOR</li>
+<li class='mutator'>INVERT_NEGS_MUTATOR</li>
+<li class='mutator'>CONDITIONALS_BOUNDARY_MUTATOR</li>
+
+</ul>
+
+<h2>Tests examined</h2>
+<ul>
+<li>org.hamcrest.MatcherAssertTest.canAssertSubtypes(org.hamcrest.MatcherAssertTest) (0 ms)</li><li>org.hamcrest.number.OrderingComparisonTest.testComparesObjectsForEquality(org.hamcrest.number.OrderingComparisonTest) (0 ms)</li><li>org.hamcrest.core.StringMatchingTest.containsFailsWithNullSubstring(org.hamcrest.core.StringMatchingTest) (4 ms)</li><li>org.hamcrest.beans.HasPropertyWithValueTest.testCanAccessAnAnonymousInnerClass(org.hamcrest.beans.HasPropertyWithValueTest) (5 ms)</li><li>org.hamcrest.core.IsAnythingTest.compilesWithoutTypeWarnings(org.hamcrest.core.IsAnythingTest) (0 ms)</li><li>org.hamcrest.object.MatchesPatternTest.matchesExactString(org.hamcrest.object.MatchesPatternTest) (0 ms)</li><li>org.hamcrest.MatcherAssertTest.includesDescriptionOfTestedValueInErrorMessage(org.hamcrest.MatcherAssertTest) (0 ms)</li><li>org.hamcrest.number.OrderingComparisonTest.testAllowsForInclusiveComparisons(org.hamcrest.number.OrderingComparisonTest) (0 ms)</li><li>org.hamcrest.object.IsEventFromTest.testEvaluatesToTrueIfArgumentIsAnEventObjectFiredByASpecifiedSource(org.hamcrest.object.IsEventFromTest) (1 ms)</li><li>org.hamcrest.comparator.ComparatorMatcherTest.testAllowsForInclusiveComparisons(org.hamcrest.comparator.ComparatorMatcherTest) (1 ms)</li><li>org.hamcrest.comparator.ComparatorMatcherBuilderTest.testComparesObjectsForLessThan(org.hamcrest.comparator.ComparatorMatcherBuilderTest) (0 ms)</li><li>org.hamcrest.comparator.ComparatorMatcherBuilderTest.testJavadocExamples(org.hamcrest.comparator.ComparatorMatcherBuilderTest) (1 ms)</li><li>org.hamcrest.object.IsCompatibleTypeTest.testMatchesExtendedInterface(org.hamcrest.object.IsCompatibleTypeTest) (1 ms)</li><li>org.hamcrest.MatcherAssertTest.canTestBooleanDirectly(org.hamcrest.MatcherAssertTest) (0 ms)</li><li>org.hamcrest.comparator.ComparatorMatcherBuilderTest.testComparesBigDecimalsWithDifferentScalesCorrectlyForIssue20(org.hamcrest.comparator.ComparatorMatcherBuilderTest) (1 ms)</li><li>org.hamcrest.object.IsCompatibleTypeTest.testMatchesSameClass(org.hamcrest.object.IsCompatibleTypeTest) (1 ms)</li><li>org.hamcrest.number.OrderingComparisonTest.testComparesCustomTypesWhoseCompareToReturnsValuesGreaterThatOne(org.hamcrest.number.OrderingComparisonTest) (1 ms)</li><li>org.hamcrest.MatcherAssertTest.includesMismatchDescription(org.hamcrest.MatcherAssertTest) (0 ms)</li><li>org.hamcrest.object.IsEventFromTest.testCanTestForSpecificEventClasses(org.hamcrest.object.IsEventFromTest) (1 ms)</li><li>org.hamcrest.comparator.ComparatorMatcherBuilderTest.testComparesCustomTypesWhoseCompareToReturnsValuesGreaterThatOne(org.hamcrest.comparator.ComparatorMatcherBuilderTest) (1 ms)</li><li>org.hamcrest.number.OrderingComparisonTest.testComparesObjectsForGreaterThan(org.hamcrest.number.OrderingComparisonTest) (0 ms)</li><li>org.hamcrest.number.OrderingComparisonTest.testComparesObjectsForLessThan(org.hamcrest.number.OrderingComparisonTest) (0 ms)</li><li>org.hamcrest.MatcherAssertTest.descriptionCanBeElided(org.hamcrest.MatcherAssertTest) (0 ms)</li><li>org.hamcrest.comparator.ComparatorMatcherTest.testComparesBigDecimalsWithDifferentScalesCorrectlyForIssue20(org.hamcrest.comparator.ComparatorMatcherTest) (0 ms)</li><li>org.hamcrest.core.StringMatchingTest.startsWithFailsWithNullSubstring(org.hamcrest.core.StringMatchingTest) (1 ms)</li><li>org.hamcrest.object.IsCompatibleTypeTest.testMatchesSameInterface(org.hamcrest.object.IsCompatibleTypeTest) (1 ms)</li><li>org.hamcrest.collection.IsMapContainingKeyTest.testMatchesMapContainingKeyWithNumberKeys(org.hamcrest.collection.IsMapContainingKeyTest) (1 ms)</li><li>org.hamcrest.comparator.ComparatorMatcherTest.testComparesObjectsForLessThan(org.hamcrest.comparator.ComparatorMatcherTest) (1 ms)</li><li>org.hamcrest.comparator.ComparatorMatcherBuilderTest.testAllowsForInclusiveComparisons(org.hamcrest.comparator.ComparatorMatcherBuilderTest) (1 ms)</li><li>org.hamcrest.object.IsCompatibleTypeTest.testMatchesExtendedClass(org.hamcrest.object.IsCompatibleTypeTest) (0 ms)</li><li>org.hamcrest.comparator.ComparatorMatcherBuilderTest.testComparesObjectsForEquality(org.hamcrest.comparator.ComparatorMatcherBuilderTest) (0 ms)</li><li>org.hamcrest.number.OrderingComparisonTest.testSupportsDifferentTypesOfComparableObjects(org.hamcrest.number.OrderingComparisonTest) (1 ms)</li><li>org.hamcrest.collection.IsMapContainingKeyTest.testMatchesMapContainingKeyWithIntegerKeys(org.hamcrest.collection.IsMapContainingKeyTest) (1 ms)</li><li>org.hamcrest.object.IsCompatibleTypeTest.testMatchesClassImplementingInterface(org.hamcrest.object.IsCompatibleTypeTest) (0 ms)</li><li>org.hamcrest.collection.IsMapWithSizeTest.testCompilesWithATypedMap(org.hamcrest.collection.IsMapWithSizeTest) (3 ms)</li><li>org.hamcrest.comparator.ComparatorMatcherTest.testSupportsDifferentTypesOfComparableObjects(org.hamcrest.comparator.ComparatorMatcherTest) (0 ms)</li><li>org.hamcrest.comparator.ComparatorMatcherTest.testComparesObjectsForEquality(org.hamcrest.comparator.ComparatorMatcherTest) (1 ms)</li><li>org.hamcrest.comparator.ComparatorMatcherTest.testComparesObjectsForGreaterThan(org.hamcrest.comparator.ComparatorMatcherTest) (0 ms)</li><li>org.hamcrest.comparator.ComparatorMatcherBuilderTest.testSupportsDifferentTypesOfComparableObjects(org.hamcrest.comparator.ComparatorMatcherBuilderTest) (1 ms)</li><li>org.hamcrest.core.StringMatchingTest.endWithFailsWithNullSubstring(org.hamcrest.core.StringMatchingTest) (1 ms)</li><li>org.hamcrest.collection.IsCollectionWithSizeTest.testCompilesWithATypedCollection(org.hamcrest.collection.IsCollectionWithSizeTest) (1 ms)</li><li>org.hamcrest.comparator.ComparatorMatcherTest.testComparesCustomTypesWhoseCompareToReturnsValuesGreaterThatOne(org.hamcrest.comparator.ComparatorMatcherTest) (1 ms)</li><li>org.hamcrest.number.OrderingComparisonTest.testComparesBigDecimalsWithDifferentScalesCorrectlyForIssue20(org.hamcrest.number.OrderingComparisonTest) (1 ms)</li><li>org.hamcrest.comparator.ComparatorMatcherBuilderTest.testComparesByCustomComparator(org.hamcrest.comparator.ComparatorMatcherBuilderTest) (2 ms)</li><li>org.hamcrest.comparator.ComparatorMatcherBuilderTest.testComparesObjectsForGreaterThan(org.hamcrest.comparator.ComparatorMatcherBuilderTest) (1 ms)</li>
+</ul>
+
+<br/>
+
+Report generated by <a href='http://pitest.org'>PIT</a> 1.3.1
+
+</body>
+</html>

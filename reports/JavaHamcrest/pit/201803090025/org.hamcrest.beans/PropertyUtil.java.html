@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="../style.css">
+</head>
+<body>
+
+
+<h1>PropertyUtil.java</h1>
+
+<table class="src">
+
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51a69e8f_1'/>
+1
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_1'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>package org.hamcrest.beans;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51a69e8f_2'/>
+2
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_2'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51a69e8f_3'/>
+3
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_3'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.beans.IntrospectionException;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51a69e8f_4'/>
+4
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_4'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.beans.Introspector;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51a69e8f_5'/>
+5
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_5'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.beans.PropertyDescriptor;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51a69e8f_6'/>
+6
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_6'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51a69e8f_7'/>
+7
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_7'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>/**</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51a69e8f_8'/>
+8
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_8'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * Utility class for accessing properties on JavaBean objects.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51a69e8f_9'/>
+9
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_9'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * See http://java.sun.com/products/javabeans/docs/index.html for</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51a69e8f_10'/>
+10
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_10'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * more information on JavaBeans.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51a69e8f_11'/>
+11
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_11'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51a69e8f_12'/>
+12
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_12'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * @author Iain McGinniss</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51a69e8f_13'/>
+13
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_13'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * @author Steve Freeman</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51a69e8f_14'/>
+14
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_14'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * @since 1.1.0</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51a69e8f_15'/>
+15
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_15'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> */</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51a69e8f_16'/>
+16
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_16'></a>
+<span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>public class PropertyUtil {</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51a69e8f_17'/>
+17
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_17'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    /**</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51a69e8f_18'/>
+18
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_18'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>     * Returns the description of the property with the provided</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51a69e8f_19'/>
+19
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_19'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>     * name on the provided object&#39;s interface.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51a69e8f_20'/>
+20
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_20'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>     *</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51a69e8f_21'/>
+21
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_21'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>     * @return the descriptor of the property, or null if the property does not exist.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51a69e8f_22'/>
+22
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_22'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>     * @throws IllegalArgumentException if there&#39;s a introspection failure</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51a69e8f_23'/>
+23
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_23'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>     */</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51a69e8f_24'/>
+24
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_24'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    public static PropertyDescriptor getPropertyDescriptor(String propertyName, Object fromObj) throws IllegalArgumentException {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51a69e8f_25'/>
+25
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_25'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>        for (PropertyDescriptor property : propertyDescriptorsFor(fromObj, null)) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51a69e8f_26'/>
+26
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_26'>1</a>
+<span>
+1. getPropertyDescriptor : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>            if (property.getName().equals(propertyName)) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51a69e8f_27'/>
+27
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_27'>1</a>
+<span>
+1. getPropertyDescriptor : mutated return of Object value for org/hamcrest/beans/PropertyUtil::getPropertyDescriptor to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>                return property;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51a69e8f_28'/>
+28
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_28'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>            }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51a69e8f_29'/>
+29
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_29'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51a69e8f_30'/>
+30
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_30'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51a69e8f_31'/>
+31
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_31'>1</a>
+<span>
+1. getPropertyDescriptor : mutated return of Object value for org/hamcrest/beans/PropertyUtil::getPropertyDescriptor to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return null;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51a69e8f_32'/>
+32
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_32'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51a69e8f_33'/>
+33
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_33'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51a69e8f_34'/>
+34
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_34'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    /**</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51a69e8f_35'/>
+35
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_35'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>     * Returns all the property descriptors for the class associated with the given object</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51a69e8f_36'/>
+36
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_36'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>     * </span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51a69e8f_37'/>
+37
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_37'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>     * @param fromObj Use the class of this object</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51a69e8f_38'/>
+38
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_38'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>     * @param stopClass Don&#39;t include any properties from this ancestor class upwards.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51a69e8f_39'/>
+39
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_39'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>     * @return Property descriptors</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51a69e8f_40'/>
+40
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_40'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>     * @throws IllegalArgumentException if there&#39;s a introspection failure</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51a69e8f_41'/>
+41
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_41'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>     */</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51a69e8f_42'/>
+42
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_42'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    public static PropertyDescriptor[] propertyDescriptorsFor(Object fromObj, Class&#60;Object&#62; stopClass) throws IllegalArgumentException {</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51a69e8f_43'/>
+43
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_43'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      try {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51a69e8f_44'/>
+44
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_44'>1</a>
+<span>
+1. propertyDescriptorsFor : mutated return of Object value for org/hamcrest/beans/PropertyUtil::propertyDescriptorsFor to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return Introspector.getBeanInfo(fromObj.getClass(), stopClass).getPropertyDescriptors();</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51a69e8f_45'/>
+45
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_45'></a>
+<span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>      } catch (IntrospectionException e) {</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51a69e8f_46'/>
+46
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_46'></a>
+<span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>        throw new IllegalArgumentException(&#34;Could not get property descriptors for &#34; + fromObj.getClass(), e);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51a69e8f_47'/>
+47
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_47'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51a69e8f_48'/>
+48
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_48'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51a69e8f_49'/>
+49
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_49'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51a69e8f_50'/>
+50
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_50'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    public static final Object[] NO_ARGUMENTS = new Object[0];</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51a69e8f_51'/>
+51
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_51'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>}</span></pre></td></tr>
+
+
+
+<tr><td></td><td></td><td><h2>Mutations</h2></td></tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@51a69e8f_26'>26</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_26'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>getPropertyDescriptor<br/><b>Killed by : </b>org.hamcrest.beans.HasPropertyTest.doesNotMatchIfPropertyDoesNotExist(org.hamcrest.beans.HasPropertyTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@51a69e8f_27'>27</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_27'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>getPropertyDescriptor<br/><b>Killed by : </b>org.hamcrest.beans.HasPropertyTest.matchesWhenThePropertyExists(org.hamcrest.beans.HasPropertyTest)</span></span> mutated return of Object value for org/hamcrest/beans/PropertyUtil::getPropertyDescriptor to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@51a69e8f_31'>31</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_31'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>getPropertyDescriptor<br/><b>Killed by : </b>org.hamcrest.beans.HasPropertyTest.doesNotMatchIfPropertyDoesNotExist(org.hamcrest.beans.HasPropertyTest)</span></span> mutated return of Object value for org/hamcrest/beans/PropertyUtil::getPropertyDescriptor to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@51a69e8f_44'>44</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@51a69e8f_44'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>propertyDescriptorsFor<br/><b>Killed by : </b>org.hamcrest.beans.HasPropertyTest.doesNotMatchIfPropertyDoesNotExist(org.hamcrest.beans.HasPropertyTest)</span></span> mutated return of Object value for org/hamcrest/beans/PropertyUtil::propertyDescriptorsFor to ( if (x != null) null else throw new RuntimeException ) &rarr; KILLED</p> 
+</td>
+</tr>
+
+</table>
+
+
+<h2>Active mutators</h2>
+<ul>
+<li class='mutator'>INCREMENTS_MUTATOR</li>
+<li class='mutator'>VOID_METHOD_CALL_MUTATOR</li>
+<li class='mutator'>RETURN_VALS_MUTATOR</li>
+<li class='mutator'>MATH_MUTATOR</li>
+<li class='mutator'>NEGATE_CONDITIONALS_MUTATOR</li>
+<li class='mutator'>INVERT_NEGS_MUTATOR</li>
+<li class='mutator'>CONDITIONALS_BOUNDARY_MUTATOR</li>
+
+</ul>
+
+<h2>Tests examined</h2>
+<ul>
+<li>org.hamcrest.beans.HasPropertyWithValueTest.testCanAccessAnAnonymousInnerClass(org.hamcrest.beans.HasPropertyWithValueTest) (5 ms)</li><li>org.hamcrest.beans.HasPropertyTest.describesAMismatch(org.hamcrest.beans.HasPropertyTest) (5 ms)</li><li>org.hamcrest.beans.HasPropertyWithValueTest.testDescribesMissingPropertyMismatch(org.hamcrest.beans.HasPropertyWithValueTest) (1 ms)</li><li>org.hamcrest.beans.HasPropertyWithValueTest.testDoesNotMatchWriteOnlyProperty(org.hamcrest.beans.HasPropertyWithValueTest) (2 ms)</li><li>org.hamcrest.beans.HasPropertyWithValueTest.testExceptionsInBeanMethodsShouldBeReportedCorrectly(org.hamcrest.beans.HasPropertyWithValueTest) (3 ms)</li><li>org.hamcrest.beans.HasPropertyWithValueTest.testMatchesBeanWithoutInfoWithMatchedNamedBooleanProperty(org.hamcrest.beans.HasPropertyWithValueTest) (2 ms)</li><li>org.hamcrest.beans.HasPropertyTest.matchesWhenThePropertyExists(org.hamcrest.beans.HasPropertyTest) (1 ms)</li><li>org.hamcrest.beans.HasPropertyWithValueTest.testDoesNotMatchBeanWithoutInfoOrMatchedNamedProperty(org.hamcrest.beans.HasPropertyWithValueTest) (2 ms)</li><li>org.hamcrest.beans.SamePropertyValuesAsTest.testDescribesItself(org.hamcrest.beans.SamePropertyValuesAsTest) (3 ms)</li><li>org.hamcrest.beans.HasPropertyTest.doesNotMatchIfPropertyDoesNotExist(org.hamcrest.beans.HasPropertyTest) (1 ms)</li><li>org.hamcrest.beans.HasPropertyWithValueTest.testMatchesBeanWithoutInfoWithMatchedNamedProperty(org.hamcrest.beans.HasPropertyWithValueTest) (2 ms)</li><li>org.hamcrest.beans.HasPropertyWithValueTest.testDoesNotWriteMismatchIfPropertyMatches(org.hamcrest.beans.HasPropertyWithValueTest) (3 ms)</li><li>org.hamcrest.beans.HasPropertyWithValueTest.testMatchesBeanWithInfoWithMatchedNamedProperty(org.hamcrest.beans.HasPropertyWithValueTest) (2 ms)</li><li>org.hamcrest.beans.SamePropertyValuesAsTest.test_reports_match_when_all_properties_match(org.hamcrest.beans.SamePropertyValuesAsTest) (4 ms)</li><li>org.hamcrest.beans.HasPropertyWithValueTest.testCopesWithUnknownTypes(org.hamcrest.beans.HasPropertyWithValueTest) (1 ms)</li><li>org.hamcrest.beans.HasPropertyWithValueTest.testMatchesPath(org.hamcrest.beans.HasPropertyWithValueTest) (4 ms)</li><li>org.hamcrest.beans.SamePropertyValuesAsTest.test_rejects_subtype_that_has_extra_properties(org.hamcrest.beans.SamePropertyValuesAsTest) (9 ms)</li><li>org.hamcrest.beans.SamePropertyValuesAsTest.testIsNullSafe(org.hamcrest.beans.SamePropertyValuesAsTest) (3 ms)</li><li>org.hamcrest.beans.HasPropertyWithValueTest.testMatchesPropertyAndValue(org.hamcrest.beans.HasPropertyWithValueTest) (1 ms)</li><li>org.hamcrest.beans.SamePropertyValuesAsTest.test_reports_mismatch_on_first_property_difference(org.hamcrest.beans.SamePropertyValuesAsTest) (42 ms)</li><li>org.hamcrest.beans.SamePropertyValuesAsTest.testCopesWithUnknownTypes(org.hamcrest.beans.SamePropertyValuesAsTest) (3 ms)</li><li>org.hamcrest.beans.HasPropertyTest.copesWithNullsAndUnknownTypes(org.hamcrest.beans.HasPropertyTest) (13 ms)</li><li>org.hamcrest.beans.SamePropertyValuesAsTest.test_reports_mismatch_when_actual_type_is_not_assignable_to_expected_type(org.hamcrest.beans.SamePropertyValuesAsTest) (2 ms)</li><li>org.hamcrest.beans.SamePropertyValuesAsTest.test_matches_beans_with_inheritance_but_no_extra_properties(org.hamcrest.beans.SamePropertyValuesAsTest) (5 ms)</li>
+</ul>
+
+<br/>
+
+Report generated by <a href='http://pitest.org'>PIT</a> 1.3.1
+
+</body>
+</html>

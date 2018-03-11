@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="../style.css">
+</head>
+<body>
+
+
+<h1>TypeSafeDiagnosingMatcher.java</h1>
+
+<table class="src">
+
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_1'/>
+1
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_1'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>package org.hamcrest;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_2'/>
+2
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_2'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_3'/>
+3
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_3'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import org.hamcrest.internal.ReflectiveTypeFinder;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_4'/>
+4
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_4'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_5'/>
+5
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_5'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_6'/>
+6
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_6'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>/**</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_7'/>
+7
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_7'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * Convenient base class for Matchers that require a non-null value of a specific type</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_8'/>
+8
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_8'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * and that will report why the received value has been rejected.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_9'/>
+9
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_9'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * This implements the null check, checks the type and then casts. </span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_10'/>
+10
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_10'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * To use, implement &#60;pre&#62;matchesSafely()&#60;/pre&#62;. </span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_11'/>
+11
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_11'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_12'/>
+12
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_12'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * @param &#60;T&#62;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_13'/>
+13
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_13'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * @author Neil Dunn</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_14'/>
+14
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_14'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * @author Nat Pryce</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_15'/>
+15
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_15'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * @author Steve Freeman</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_16'/>
+16
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_16'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''> */</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_17'/>
+17
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_17'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>public abstract class TypeSafeDiagnosingMatcher&#60;T&#62; extends BaseMatcher&#60;T&#62; {</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_18'/>
+18
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_18'></a>
+<span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>    private static final ReflectiveTypeFinder TYPE_FINDER = new ReflectiveTypeFinder(&#34;matchesSafely&#34;, 2, 0); </span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_19'/>
+19
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_19'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    private final Class&#60;?&#62; expectedType;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_20'/>
+20
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_20'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_21'/>
+21
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_21'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    /**</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_22'/>
+22
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_22'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>     * Subclasses should implement this. The item will already have been checked</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_23'/>
+23
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_23'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>     * for the specific type and will never be null.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_24'/>
+24
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_24'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>     */</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_25'/>
+25
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_25'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    protected abstract boolean matchesSafely(T item, Description mismatchDescription);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_26'/>
+26
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_26'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_27'/>
+27
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_27'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    /**</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_28'/>
+28
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_28'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>     * Use this constructor if the subclass that implements &#60;code&#62;matchesSafely&#60;/code&#62; </span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_29'/>
+29
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_29'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>     * is &#60;em&#62;not&#60;/em&#62; the class that binds &#38;lt;T&#38;gt; to a type. </span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_30'/>
+30
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_30'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>     * @param expectedType The expectedType of the actual value.</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_31'/>
+31
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_31'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>     */</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_32'/>
+32
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_32'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    protected TypeSafeDiagnosingMatcher(Class&#60;?&#62; expectedType) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_33'/>
+33
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_33'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      this.expectedType = expectedType;</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_34'/>
+34
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_34'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_35'/>
+35
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_35'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_36'/>
+36
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_36'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    /**</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_37'/>
+37
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_37'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>     * Use this constructor if the subclass that implements &#60;code&#62;matchesSafely&#60;/code&#62; </span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_38'/>
+38
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_38'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>     * is &#60;em&#62;not&#60;/em&#62; the class that binds &#38;lt;T&#38;gt; to a type. </span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_39'/>
+39
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_39'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>     * @param typeFinder A type finder to extract the type</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_40'/>
+40
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_40'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>     */</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_41'/>
+41
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_41'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    protected TypeSafeDiagnosingMatcher(ReflectiveTypeFinder typeFinder) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_42'/>
+42
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_42'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      this.expectedType = typeFinder.findExpectedType(getClass()); </span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_43'/>
+43
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_43'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_44'/>
+44
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_44'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_45'/>
+45
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_45'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    /**</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_46'/>
+46
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_46'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>     * The default constructor for simple sub types</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_47'/>
+47
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_47'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>     */</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_48'/>
+48
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_48'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    protected TypeSafeDiagnosingMatcher() {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_49'/>
+49
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_49'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      this(TYPE_FINDER); </span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_50'/>
+50
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_50'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_51'/>
+51
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_51'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_52'/>
+52
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_52'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    @Override</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_53'/>
+53
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_53'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    @SuppressWarnings(&#34;unchecked&#34;)</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_54'/>
+54
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_54'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    public final boolean matches(Object item) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_55'/>
+55
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_55'>2</a>
+<span>
+1. matches : negated conditional &rarr; KILLED<br/>
+2. matches : replaced return of integer sized value with (x == 0 ? 1 : 0) &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return item != null</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_56'/>
+56
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_56'>1</a>
+<span>
+1. matches : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>            &#38;&#38; expectedType.isInstance(item)</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_57'/>
+57
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_57'>1</a>
+<span>
+1. matches : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>            &#38;&#38; matchesSafely((T) item, new Description.NullDescription());</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_58'/>
+58
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_58'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_59'/>
+59
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_59'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_60'/>
+60
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_60'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    @SuppressWarnings(&#34;unchecked&#34;)</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_61'/>
+61
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_61'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    @Override</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_62'/>
+62
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_62'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    public final void describeMismatch(Object item, Description mismatchDescription) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_63'/>
+63
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_63'>1</a>
+<span>
+1. describeMismatch : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      if (item == null) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_64'/>
+64
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_64'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>        mismatchDescription.appendText(&#34;was null&#34;);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_65'/>
+65
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_65'>1</a>
+<span>
+1. describeMismatch : negated conditional &rarr; KILLED<br/>
+
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    } else if (!expectedType.isInstance(item)) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_66'/>
+66
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_66'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      mismatchDescription.appendText(&#34;was &#34;)</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_67'/>
+67
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_67'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>            .appendText(item.getClass().getSimpleName())</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_68'/>
+68
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_68'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>            .appendText(&#34; &#34;)</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_69'/>
+69
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_69'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>            .appendValue(item);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_70'/>
+70
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_70'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    } else {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_71'/>
+71
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_71'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>        matchesSafely((T) item, mismatchDescription);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_72'/>
+72
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_72'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_73'/>
+73
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_73'></a>
+<span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4add4dff_74'/>
+74
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_74'></a>
+<span>
+</span>
+</td>
+<td class=''><pre><span  class=''>}</span></pre></td></tr>
+
+
+
+<tr><td></td><td></td><td><h2>Mutations</h2></td></tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4add4dff_55'>55</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_55'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>matches<br/><b>Killed by : </b>org.hamcrest.TypeSafeDiagnosingMatcherTest.filters_type_for_subclassed_matcher_when_expected_type_passed_in(org.hamcrest.TypeSafeDiagnosingMatcherTest)</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>matches<br/><b>Killed by : </b>org.hamcrest.TypeSafeDiagnosingMatcherTest.filters_type_for_subclassed_matcher_when_expected_type_passed_in(org.hamcrest.TypeSafeDiagnosingMatcherTest)</span></span> replaced return of integer sized value with (x == 0 ? 1 : 0) &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4add4dff_56'>56</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_56'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>matches<br/><b>Killed by : </b>org.hamcrest.TypeSafeDiagnosingMatcherTest.filters_type_for_subclassed_matcher_when_expected_type_passed_in(org.hamcrest.TypeSafeDiagnosingMatcherTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4add4dff_57'>57</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_57'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>matches<br/><b>Killed by : </b>org.hamcrest.TypeSafeDiagnosingMatcherTest.filters_type_for_subclassed_matcher_when_expected_type_passed_in(org.hamcrest.TypeSafeDiagnosingMatcherTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4add4dff_63'>63</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_63'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>describeMismatch<br/><b>Killed by : </b>org.hamcrest.TypeSafeDiagnosingMatcherTest.describesMismatches(org.hamcrest.TypeSafeDiagnosingMatcherTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4add4dff_65'>65</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4add4dff_65'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>describeMismatch<br/><b>Killed by : </b>org.hamcrest.TypeSafeDiagnosingMatcherTest.describesMismatches(org.hamcrest.TypeSafeDiagnosingMatcherTest)</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+
+</table>
+
+
+<h2>Active mutators</h2>
+<ul>
+<li class='mutator'>INCREMENTS_MUTATOR</li>
+<li class='mutator'>VOID_METHOD_CALL_MUTATOR</li>
+<li class='mutator'>RETURN_VALS_MUTATOR</li>
+<li class='mutator'>MATH_MUTATOR</li>
+<li class='mutator'>NEGATE_CONDITIONALS_MUTATOR</li>
+<li class='mutator'>INVERT_NEGS_MUTATOR</li>
+<li class='mutator'>CONDITIONALS_BOUNDARY_MUTATOR</li>
+
+</ul>
+
+<h2>Tests examined</h2>
+<ul>
+<li>org.hamcrest.collection.IsIterableContainingInAnyOrderTest.testCopesWithUnknownTypes(org.hamcrest.collection.IsIterableContainingInAnyOrderTest) (1 ms)</li><li>org.hamcrest.xml.HasXPathTest.copesWithNullsAndUnknownTypes(org.hamcrest.xml.HasXPathTest) (3 ms)</li><li>org.hamcrest.object.HasEqualsValuesTest.testIsNullSafe(org.hamcrest.object.HasEqualsValuesTest) (0 ms)</li><li>org.hamcrest.collection.IsArrayContainingInOrderTest.testCanHandleNullValuesInAnArray(org.hamcrest.collection.IsArrayContainingInOrderTest) (6 ms)</li><li>org.hamcrest.collection.IsIterableContainingInAnyOrderTest.testMatchesIterableOutOfOrder(org.hamcrest.collection.IsIterableContainingInAnyOrderTest) (1 ms)</li><li>org.hamcrest.collection.IsIterableContainingInAnyOrderTest.testDoesNotMatchEmpty(org.hamcrest.collection.IsIterableContainingInAnyOrderTest) (8 ms)</li><li>org.hamcrest.object.IsEventFromTest.testEvaluatesToTrueIfArgumentIsAnEventObjectFiredByASpecifiedSource(org.hamcrest.object.IsEventFromTest) (1 ms)</li><li>org.hamcrest.core.StringRegularExpressionTest.testMatchingRegex(org.hamcrest.core.StringRegularExpressionTest) (0 ms)</li><li>org.hamcrest.FeatureMatcherTest.doesNotThrowClassCastException(org.hamcrest.FeatureMatcherTest) (1 ms)</li><li>org.hamcrest.object.HasEqualsValuesTest.test_matches_equivalent_object(org.hamcrest.object.HasEqualsValuesTest) (1 ms)</li><li>org.hamcrest.collection.IsIterableContainingInOrderTest.testDoesNotMatchWithMoreElementsThanExpected(org.hamcrest.collection.IsIterableContainingInOrderTest) (2 ms)</li><li>org.hamcrest.collection.IsArrayContainingInAnyOrderTest.testMatchesItemsInAnyOrder(org.hamcrest.collection.IsArrayContainingInAnyOrderTest) (1 ms)</li><li>org.hamcrest.collection.IsIterableContainingInOrderTest.testDoesNotMatchWithFewerElementsThanExpected(org.hamcrest.collection.IsIterableContainingInOrderTest) (1 ms)</li><li>org.hamcrest.collection.IsMapWithSizeTest.testMatchesListWhenSizeIsCorrectUsingStringElementType(org.hamcrest.collection.IsMapWithSizeTest) (2 ms)</li><li>org.hamcrest.object.IsEventFromTest.testCanTestForSpecificEventClasses(org.hamcrest.object.IsEventFromTest) (1 ms)</li><li>org.hamcrest.collection.IsIterableContainingInAnyOrderTest.testDoesNotMatchIfOneOfMultipleElementsMismatches(org.hamcrest.collection.IsIterableContainingInAnyOrderTest) (1 ms)</li><li>org.hamcrest.TypeSafeDiagnosingMatcherTest.describesMismatches(org.hamcrest.TypeSafeDiagnosingMatcherTest) (1 ms)</li><li>org.hamcrest.collection.IsIterableContainingInRelativeOrderTest.testMatchingSingleItemIterable(org.hamcrest.collection.IsIterableContainingInRelativeOrderTest) (1 ms)</li><li>org.hamcrest.TypeSafeDiagnosingMatcherTest.but_cannot_detect_generic_type_in_subclassed_matcher_using_reflection(org.hamcrest.TypeSafeDiagnosingMatcherTest) (1 ms)</li><li>org.hamcrest.collection.IsMapWithSizeTest.testIsNullSafe(org.hamcrest.collection.IsMapWithSizeTest) (1 ms)</li><li>org.hamcrest.collection.IsCollectionWithSizeTest.testMatchesCollectionWhenSizeIsCorrectUsingStringElementType(org.hamcrest.collection.IsCollectionWithSizeTest) (1 ms)</li><li>org.hamcrest.collection.IsMapWithSizeTest.testProvidesConvenientShortcutForHasSizeEqualTo(org.hamcrest.collection.IsMapWithSizeTest) (2 ms)</li><li>org.hamcrest.collection.IsCollectionWithSizeTest.testMatchesListWhenSizeIsCorrectUsingObjectElementType(org.hamcrest.collection.IsCollectionWithSizeTest) (1 ms)</li><li>org.hamcrest.collection.HasItemInArrayTest.testDoesNotMatchAnArrayThatDoesntContainAnElementMatchingTheGivenMatcher(org.hamcrest.collection.HasItemInArrayTest) (1 ms)</li><li>org.hamcrest.xml.HasXPathTest.matchesEmptyElementInNamespace(org.hamcrest.xml.HasXPathTest) (3 ms)</li><li>org.hamcrest.io.FileMatchersTest.testAFileWithSizeMatcherOfLong(org.hamcrest.io.FileMatchersTest) (1 ms)</li><li>org.hamcrest.collection.IsMapWithSizeTest.testMatchesMapWhenSizeIsCorrectUsingObjectElementType(org.hamcrest.collection.IsMapWithSizeTest) (1 ms)</li><li>org.hamcrest.object.IsEventFromTest.testIsNullSafe(org.hamcrest.object.IsEventFromTest) (0 ms)</li><li>org.hamcrest.collection.IsIterableContainingInOrderTest.testCanHandleNullMatchers(org.hamcrest.collection.IsIterableContainingInOrderTest) (1 ms)</li><li>org.hamcrest.object.HasToStringTest.matchesWhenUtilisingANestedMatcher(org.hamcrest.object.HasToStringTest) (0 ms)</li><li>org.hamcrest.collection.IsIterableContainingInRelativeOrderTest.testDoesNotMatchIfSingleItemNotFound(org.hamcrest.collection.IsIterableContainingInRelativeOrderTest) (5 ms)</li><li>org.hamcrest.collection.IsArrayWithSizeTest.testCopesWithUnknownTypes(org.hamcrest.collection.IsArrayWithSizeTest) (2 ms)</li><li>org.hamcrest.collection.IsMapWithSizeTest.testMatchesMapWhenSizeIsCorrectUsingStringElementType(org.hamcrest.collection.IsMapWithSizeTest) (1 ms)</li><li>org.hamcrest.collection.IsIterableWithSizeTest.testDoesNotMatchIncorrectSize(org.hamcrest.collection.IsIterableWithSizeTest) (1 ms)</li><li>org.hamcrest.io.FileMatchersTest.testAWritableFile(org.hamcrest.io.FileMatchersTest) (1 ms)</li><li>org.hamcrest.collection.IsArrayWithSizeTest.testProvidesConvenientShortcutForArrayWithSizeEqualTo(org.hamcrest.collection.IsArrayWithSizeTest) (1 ms)</li><li>org.hamcrest.core.IsIterableContainingTest.canMatchItemWhenCollectionHoldsSuperclass(org.hamcrest.core.IsIterableContainingTest) (1 ms)</li><li>org.hamcrest.core.IsIterableContainingTest.matchesMultipleItemsInCollection(org.hamcrest.core.IsIterableContainingTest) (0 ms)</li><li>org.hamcrest.beans.HasPropertyWithValueTest.testCanAccessAnAnonymousInnerClass(org.hamcrest.beans.HasPropertyWithValueTest) (5 ms)</li><li>org.hamcrest.beans.HasPropertyWithValueTest.testDescribesMissingPropertyMismatch(org.hamcrest.beans.HasPropertyWithValueTest) (1 ms)</li><li>org.hamcrest.beans.HasPropertyWithValueTest.testMatchesBeanWithoutInfoWithMatchedNamedBooleanProperty(org.hamcrest.beans.HasPropertyWithValueTest) (2 ms)</li><li>org.hamcrest.beans.HasPropertyWithValueTest.testDoesNotMatchBeanWithoutInfoOrMatchedNamedProperty(org.hamcrest.beans.HasPropertyWithValueTest) (2 ms)</li><li>org.hamcrest.FeatureMatcherTest.mismatchesPartOfAnObject(org.hamcrest.FeatureMatcherTest) (0 ms)</li><li>org.hamcrest.beans.HasPropertyWithValueTest.testDoesNotWriteMismatchIfPropertyMatches(org.hamcrest.beans.HasPropertyWithValueTest) (3 ms)</li><li>org.hamcrest.beans.HasPropertyWithValueTest.testMatchesPath(org.hamcrest.beans.HasPropertyWithValueTest) (4 ms)</li><li>org.hamcrest.collection.IsIterableWithSizeTest.testCopesWithUnknownTypes(org.hamcrest.collection.IsIterableWithSizeTest) (1 ms)</li><li>org.hamcrest.beans.HasPropertyWithValueTest.testCopesWithUnknownTypes(org.hamcrest.beans.HasPropertyWithValueTest) (1 ms)</li><li>org.hamcrest.collection.IsIterableContainingInOrderTest.testDoesNotMatchIfSingleItemMismatches(org.hamcrest.collection.IsIterableContainingInOrderTest) (1 ms)</li><li>org.hamcrest.core.CombinableTest.eitherDescribesItself(org.hamcrest.core.CombinableTest) (1 ms)</li><li>org.hamcrest.collection.IsCollectionWithSizeTest.testMatchesWhenSizeIsCorrect(org.hamcrest.collection.IsCollectionWithSizeTest) (1 ms)</li><li>org.hamcrest.TypeSafeDiagnosingMatcherTest.filters_type_for_subclassed_matcher_when_expected_type_passed_in(org.hamcrest.TypeSafeDiagnosingMatcherTest) (0 ms)</li><li>org.hamcrest.io.FileMatchersTest.testAnExistingDirectory(org.hamcrest.io.FileMatchersTest) (0 ms)</li><li>org.hamcrest.collection.IsIterableContainingInAnyOrderTest.testIsNullSafe(org.hamcrest.collection.IsIterableContainingInAnyOrderTest) (1 ms)</li><li>org.hamcrest.object.HasEqualsValuesTest.test_mismatches_on_first_field_inequality(org.hamcrest.object.HasEqualsValuesTest) (1 ms)</li><li>org.hamcrest.xml.HasXPathTest.failsIfNodeIsMissing(org.hamcrest.xml.HasXPathTest) (5 ms)</li><li>org.hamcrest.collection.IsCollectionWithSizeTest.testMatchesCollectionWhenSizeIsCorrectUsingObjectElementType(org.hamcrest.collection.IsCollectionWithSizeTest) (1 ms)</li><li>org.hamcrest.collection.IsIterableWithSizeTest.testIsNullSafe(org.hamcrest.collection.IsIterableWithSizeTest) (1 ms)</li><li>org.hamcrest.collection.IsMapWithSizeTest.testMatchesListWhenSizeIsCorrectUsingObjectElementType(org.hamcrest.collection.IsMapWithSizeTest) (2 ms)</li><li>org.hamcrest.core.CombinableTest.acceptsAndRejectsThreeAnds(org.hamcrest.core.CombinableTest) (1 ms)</li><li>org.hamcrest.core.CombinableTest.bothDescribesItself(org.hamcrest.core.CombinableTest) (2 ms)</li><li>org.hamcrest.object.HasEqualsValuesTest.testCopesWithUnknownTypes(org.hamcrest.object.HasEqualsValuesTest) (1 ms)</li><li>org.hamcrest.io.FileMatchersTest.testAReadableFile(org.hamcrest.io.FileMatchersTest) (1 ms)</li><li>org.hamcrest.beans.HasPropertyWithValueTest.testDoesNotMatchWriteOnlyProperty(org.hamcrest.beans.HasPropertyWithValueTest) (2 ms)</li><li>org.hamcrest.collection.IsIterableWithSizeTest.testMatchesEmptyIterable(org.hamcrest.collection.IsIterableWithSizeTest) (0 ms)</li><li>org.hamcrest.io.FileMatchersTest.testIsNullSafe(org.hamcrest.io.FileMatchersTest) (1 ms)</li><li>org.hamcrest.collection.IsIterableContainingInRelativeOrderTest.testMatchingMultipleItemIterable(org.hamcrest.collection.IsIterableContainingInRelativeOrderTest) (1 ms)</li><li>org.hamcrest.collection.IsCollectionWithSizeTest.testMatchesListWhenSizeIsCorrectUsingWildcardElementType(org.hamcrest.collection.IsCollectionWithSizeTest) (1 ms)</li><li>org.hamcrest.collection.IsArrayWithSizeTest.testIsNullSafe(org.hamcrest.collection.IsArrayWithSizeTest) (1 ms)</li><li>org.hamcrest.collection.IsArrayContainingInOrderTest.testMatchesItemsInOrder(org.hamcrest.collection.IsArrayContainingInOrderTest) (3 ms)</li><li>org.hamcrest.collection.IsIterableContainingInOrderTest.testDoesNotMatchIfOneOfMultipleItemsMismatch(org.hamcrest.collection.IsIterableContainingInOrderTest) (1 ms)</li><li>org.hamcrest.core.EveryTest.matchesEmptyLists(org.hamcrest.core.EveryTest) (0 ms)</li><li>org.hamcrest.collection.IsCollectionWithSizeTest.testCompilesWithATypedCollection(org.hamcrest.collection.IsCollectionWithSizeTest) (1 ms)</li><li>org.hamcrest.collection.IsIterableContainingInRelativeOrderTest.testMatchingSubSectionWithManyGaps(org.hamcrest.collection.IsIterableContainingInRelativeOrderTest) (4 ms)</li><li>org.hamcrest.collection.IsIterableContainingInOrderTest.testMatchingMultipleItemIterable(org.hamcrest.collection.IsIterableContainingInOrderTest) (1 ms)</li><li>org.hamcrest.io.FileMatchersTest.testAFileWithAbsolutePath(org.hamcrest.io.FileMatchersTest) (2 ms)</li><li>org.hamcrest.collection.IsIterableContainingInRelativeOrderTest.testMatchesSubSection(org.hamcrest.collection.IsIterableContainingInRelativeOrderTest) (2 ms)</li><li>org.hamcrest.xml.HasXPathTest.describesMissingNodeMismatch(org.hamcrest.xml.HasXPathTest) (4 ms)</li><li>org.hamcrest.beans.HasPropertyWithValueTest.testMatchesBeanWithoutInfoWithMatchedNamedProperty(org.hamcrest.beans.HasPropertyWithValueTest) (2 ms)</li><li>org.hamcrest.object.IsEventFromTest.testCopesWithUnknownTypes(org.hamcrest.object.IsEventFromTest) (4 ms)</li><li>org.hamcrest.collection.IsIterableContainingInRelativeOrderTest.testDoesNotMatchWithFewerElementsThanExpected(org.hamcrest.collection.IsIterableContainingInRelativeOrderTest) (1 ms)</li><li>org.hamcrest.xml.HasXPathTest.describesIncorrectNodeValueMismatch(org.hamcrest.xml.HasXPathTest) (4 ms)</li><li>org.hamcrest.collection.IsIterableWithSizeTest.testMatchingMultipleItemIterable(org.hamcrest.collection.IsIterableWithSizeTest) (1 ms)</li><li>org.hamcrest.collection.IsCollectionWithSizeTest.testMatchesCollectionWhenSizeIsCorrectUsingWildcardElementType(org.hamcrest.collection.IsCollectionWithSizeTest) (1 ms)</li><li>org.hamcrest.collection.IsIterableContainingInRelativeOrderTest.testDoesNotMatchIfOneOfMultipleItemsNotFound(org.hamcrest.collection.IsIterableContainingInRelativeOrderTest) (1 ms)</li><li>org.hamcrest.io.FileMatchersTest.testAnExistingFile(org.hamcrest.io.FileMatchersTest) (0 ms)</li><li>org.hamcrest.collection.IsIterableContainingInRelativeOrderTest.testMatchesWithMoreElementsThanExpectedAtBeginning(org.hamcrest.collection.IsIterableContainingInRelativeOrderTest) (1 ms)</li><li>org.hamcrest.core.StringRegularExpressionTest.testIsNullSafe(org.hamcrest.core.StringRegularExpressionTest) (7 ms)</li><li>org.hamcrest.core.EveryTest.copesWithNullsAndUnknownTypes(org.hamcrest.core.EveryTest) (1 ms)</li><li>org.hamcrest.collection.IsArrayWithSizeTest.testEmptyArray(org.hamcrest.collection.IsArrayWithSizeTest) (2 ms)</li><li>org.hamcrest.core.IsIterableContainingTest.matchesACollectionThatContainsAnElementForTheGivenMatcher(org.hamcrest.core.IsIterableContainingTest) (1 ms)</li><li>org.hamcrest.collection.IsMapWithSizeTest.testMatchesWhenSizeIsCorrect(org.hamcrest.collection.IsMapWithSizeTest) (1 ms)</li><li>org.hamcrest.FeatureMatcherTest.doesNotThrowNullPointerException(org.hamcrest.FeatureMatcherTest) (0 ms)</li><li>org.hamcrest.collection.IsIterableContainingInOrderTest.testIsNullSafe(org.hamcrest.collection.IsIterableContainingInOrderTest) (1 ms)</li><li>org.hamcrest.collection.IsCollectionWithSizeTest.testMatchesListWhenSizeIsCorrectUsingStringElementType(org.hamcrest.collection.IsCollectionWithSizeTest) (1 ms)</li><li>org.hamcrest.io.FileMatchersTest.testAnExistingFileOrDirectory(org.hamcrest.io.FileMatchersTest) (1 ms)</li><li>org.hamcrest.collection.IsIterableContainingInRelativeOrderTest.testIsNullSafe(org.hamcrest.collection.IsIterableContainingInRelativeOrderTest) (3 ms)</li><li>org.hamcrest.xml.HasXPathTest.appliesMatcherToXPathInDocument(org.hamcrest.xml.HasXPathTest) (89 ms)</li><li>org.hamcrest.collection.IsCollectionWithSizeTest.testIsNullSafe(org.hamcrest.collection.IsCollectionWithSizeTest) (1 ms)</li><li>org.hamcrest.collection.IsArrayContainingInAnyOrderTest.testAppliesMatchersInAnyOrder(org.hamcrest.collection.IsArrayContainingInAnyOrderTest) (6 ms)</li><li>org.hamcrest.xml.HasXPathTest.matchesEmptyElement(org.hamcrest.xml.HasXPathTest) (3 ms)</li><li>org.hamcrest.io.FileMatchersTest.testAFileNamed(org.hamcrest.io.FileMatchersTest) (16 ms)</li><li>org.hamcrest.collection.IsIterableContainingInRelativeOrderTest.testMatchesWithSingleGapAndNotFirstOrLast(org.hamcrest.collection.IsIterableContainingInRelativeOrderTest) (1 ms)</li><li>org.hamcrest.core.EveryTest.matchesOnlyWhenEveryItemMatches(org.hamcrest.core.EveryTest) (1 ms)</li><li>org.hamcrest.core.IsIterableContainingTest.doesNotMatchNull(org.hamcrest.core.IsIterableContainingTest) (0 ms)</li><li>org.hamcrest.object.HasEqualsValuesTest.test_mismatches_on_inherited_field(org.hamcrest.object.HasEqualsValuesTest) (0 ms)</li><li>org.hamcrest.collection.IsMapWithSizeTest.testCompilesWithATypedMap(org.hamcrest.collection.IsMapWithSizeTest) (3 ms)</li><li>org.hamcrest.object.HasToStringTest.copesWithNullsAndUnknownTypes(org.hamcrest.object.HasToStringTest) (0 ms)</li><li>org.hamcrest.object.HasToStringTest.describesAMismatch(org.hamcrest.object.HasToStringTest) (0 ms)</li><li>org.hamcrest.core.CombinableTest.bothAcceptsAndRejects(org.hamcrest.core.CombinableTest) (0 ms)</li><li>org.hamcrest.beans.HasPropertyWithValueTest.testMatchesPropertyAndValue(org.hamcrest.beans.HasPropertyWithValueTest) (1 ms)</li><li>org.hamcrest.collection.IsArrayContainingInOrderTest.testMismatchesItemsInOrder(org.hamcrest.collection.IsArrayContainingInOrderTest) (3 ms)</li><li>org.hamcrest.io.FileMatchersTest.testCopesWithUnknownTypes(org.hamcrest.io.FileMatchersTest) (1 ms)</li><li>org.hamcrest.collection.IsIterableContainingInRelativeOrderTest.testDoesNotMatchEmptyIterable(org.hamcrest.collection.IsIterableContainingInRelativeOrderTest) (1 ms)</li><li>org.hamcrest.core.CombinableTest.acceptsAndRejectsThreeOrs(org.hamcrest.core.CombinableTest) (1 ms)</li><li>org.hamcrest.beans.HasPropertyWithValueTest.testIsNullSafe(org.hamcrest.beans.HasPropertyWithValueTest) (1 ms)</li><li>org.hamcrest.core.EveryTest.describesAMismatch(org.hamcrest.core.EveryTest) (0 ms)</li><li>org.hamcrest.collection.IsCollectionWithSizeTest.testProvidesConvenientShortcutForHasSizeEqualTo(org.hamcrest.collection.IsCollectionWithSizeTest) (1 ms)</li><li>org.hamcrest.FeatureMatcherTest.matchesPartOfAnObject(org.hamcrest.FeatureMatcherTest) (0 ms)</li><li>org.hamcrest.io.FileMatchersTest.testAFileWithSizeLong(org.hamcrest.io.FileMatchersTest) (2 ms)</li><li>org.hamcrest.collection.IsIterableContainingInOrderTest.testDoesNotMatchEmptyIterable(org.hamcrest.collection.IsIterableContainingInOrderTest) (2 ms)</li><li>org.hamcrest.collection.IsIterableContainingInAnyOrderTest.testMatchesSingleItemIterable(org.hamcrest.collection.IsIterableContainingInAnyOrderTest) (1 ms)</li><li>org.hamcrest.collection.IsIterableContainingInAnyOrderTest.testMatchesIterableInOrder(org.hamcrest.collection.IsIterableContainingInAnyOrderTest) (1 ms)</li><li>org.hamcrest.io.FileMatchersTest.testAFileWithCanonicalPath(org.hamcrest.io.FileMatchersTest) (1 ms)</li><li>org.hamcrest.core.StringRegularExpressionTest.testCopesWithUnknownTypes(org.hamcrest.core.StringRegularExpressionTest) (0 ms)</li><li>org.hamcrest.collection.IsIterableContainingInRelativeOrderTest.testMatchesWithMoreElementsThanExpectedInBetween(org.hamcrest.collection.IsIterableContainingInRelativeOrderTest) (1 ms)</li><li>org.hamcrest.beans.HasPropertyWithValueTest.testMatchesBeanWithInfoWithMatchedNamedProperty(org.hamcrest.beans.HasPropertyWithValueTest) (2 ms)</li><li>org.hamcrest.collection.IsArrayContainingInAnyOrderTest.testMismatchesItemsInAnyOrder(org.hamcrest.collection.IsArrayContainingInAnyOrderTest) (1 ms)</li><li>org.hamcrest.xml.HasXPathTest.matchesWithNamespace(org.hamcrest.xml.HasXPathTest) (11 ms)</li><li>org.hamcrest.object.HasToStringTest.matchesWhenUsingShortcutForHasToStringEqualTo(org.hamcrest.object.HasToStringTest) (1 ms)</li><li>org.hamcrest.collection.IsIterableContainingInOrderTest.testCopesWithUnknownTypes(org.hamcrest.collection.IsIterableContainingInOrderTest) (1 ms)</li><li>org.hamcrest.core.IsIterableContainingTest.copesWithNullsAndUnknownTypes(org.hamcrest.core.IsIterableContainingTest) (1 ms)</li><li>org.hamcrest.collection.IsIterableContainingInAnyOrderTest.testDoesNotMatchIfThereAreMoreMatchersThanElements(org.hamcrest.collection.IsIterableContainingInAnyOrderTest) (0 ms)</li><li>org.hamcrest.collection.IsIterableContainingInAnyOrderTest.testDoesNotMatchIfThereAreMoreElementsThanMatchers(org.hamcrest.collection.IsIterableContainingInAnyOrderTest) (0 ms)</li><li>org.hamcrest.collection.IsCollectionWithSizeTest.testCopesWithUnknownTypes(org.hamcrest.collection.IsCollectionWithSizeTest) (1 ms)</li><li>org.hamcrest.core.IsIterableContainingTest.doesNotMatchCollectionWithoutAnElementForGivenMatcher(org.hamcrest.core.IsIterableContainingTest) (1 ms)</li><li>org.hamcrest.core.CombinableTest.copesWithNullsAndUnknownTypes(org.hamcrest.core.CombinableTest) (0 ms)</li><li>org.hamcrest.beans.HasPropertyWithValueTest.testExceptionsInBeanMethodsShouldBeReportedCorrectly(org.hamcrest.beans.HasPropertyWithValueTest) (3 ms)</li><li>org.hamcrest.collection.IsIterableContainingInRelativeOrderTest.testMatchesWithMoreElementsThanExpectedAtEnd(org.hamcrest.collection.IsIterableContainingInRelativeOrderTest) (1 ms)</li><li>org.hamcrest.core.CombinableTest.eitherAcceptsAndRejects(org.hamcrest.core.CombinableTest) (0 ms)</li><li>org.hamcrest.collection.HasItemInArrayTest.testMatchesAnArrayThatContainsAnElementMatchingTheGivenMatcher(org.hamcrest.collection.HasItemInArrayTest) (1 ms)</li><li>org.hamcrest.collection.IsIterableContainingInRelativeOrderTest.testCopesWithUnknownTypes(org.hamcrest.collection.IsIterableContainingInRelativeOrderTest) (2 ms)</li><li>org.hamcrest.TypeSafeDiagnosingMatcherTest.detects_non_builtin_types(org.hamcrest.TypeSafeDiagnosingMatcherTest) (0 ms)</li><li>org.hamcrest.xml.HasXPathTest.failsIfNodeIsMissingInNamespace(org.hamcrest.xml.HasXPathTest) (6 ms)</li><li>org.hamcrest.collection.IsArrayWithSizeTest.testMatchesWhenSizeIsCorrect(org.hamcrest.collection.IsArrayWithSizeTest) (0 ms)</li><li>org.hamcrest.collection.IsIterableWithSizeTest.testMatchingSingleItemIterable(org.hamcrest.collection.IsIterableWithSizeTest) (3 ms)</li><li>org.hamcrest.collection.IsMapWithSizeTest.testMatchesListWhenSizeIsCorrectUsingWildcardElementType(org.hamcrest.collection.IsMapWithSizeTest) (1 ms)</li><li>org.hamcrest.collection.IsMapWithSizeTest.testMatchesMapWhenSizeIsCorrectUsingWildcardElementType(org.hamcrest.collection.IsMapWithSizeTest) (1 ms)</li><li>org.hamcrest.core.IsIterableContainingTest.reportsMismatchWithAReadableDescriptionForMultipleItems(org.hamcrest.core.IsIterableContainingTest) (0 ms)</li><li>org.hamcrest.collection.IsMapWithSizeTest.testCopesWithUnknownTypes(org.hamcrest.collection.IsMapWithSizeTest) (1 ms)</li><li>org.hamcrest.collection.IsArrayContainingInOrderTest.testAppliesMatchersInOrder(org.hamcrest.collection.IsArrayContainingInOrderTest) (1 ms)</li><li>org.hamcrest.collection.IsIterableContainingInOrderTest.testMatchingSingleItemIterable(org.hamcrest.collection.IsIterableContainingInOrderTest) (1 ms)</li>
+</ul>
+
+<br/>
+
+Report generated by <a href='http://pitest.org'>PIT</a> 1.3.1
+
+</body>
+</html>

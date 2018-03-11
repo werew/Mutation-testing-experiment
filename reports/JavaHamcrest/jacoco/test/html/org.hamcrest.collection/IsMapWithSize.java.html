@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>IsMapWithSize.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JavaHamcrest</a> &gt; <a href="index.source.html" class="el_package">org.hamcrest.collection</a> &gt; <span class="el_source">IsMapWithSize.java</span></div><h1>IsMapWithSize.java</h1><pre class="source lang-java linenums">package org.hamcrest.collection;
+
+import org.hamcrest.FeatureMatcher;
+import org.hamcrest.Matcher;
+
+import java.util.Map;
+
+import static org.hamcrest.core.IsEqual.equalTo;
+
+/**
+ * Matches if map size satisfies a nested matcher.
+ */
+public final class IsMapWithSize&lt;K, V&gt; extends FeatureMatcher&lt;Map&lt;? extends K, ? extends V&gt;, Integer&gt; {
+    public IsMapWithSize(Matcher&lt;? super Integer&gt; sizeMatcher) {
+<span class="fc" id="L15">      super(sizeMatcher, &quot;a map with size&quot;, &quot;map size&quot;);</span>
+<span class="fc" id="L16">    }</span>
+
+    @Override
+    protected Integer featureValueOf(Map&lt;? extends K, ? extends V&gt; actual) {
+<span class="fc" id="L20">      return actual.size();</span>
+    }
+
+    /**
+     * Creates a matcher for {@link java.util.Map}s that matches when the &lt;code&gt;size()&lt;/code&gt; method returns
+     * a value that satisfies the specified matcher.
+     * For example:
+     * &lt;pre&gt;assertThat(myMap, is(aMapWithSize(equalTo(2))))&lt;/pre&gt;
+     * 
+     * @param sizeMatcher
+     *     a matcher for the size of an examined {@link java.util.Map}
+     */
+    public static &lt;K, V&gt; Matcher&lt;Map&lt;? extends K, ? extends V&gt;&gt; aMapWithSize(Matcher&lt;? super Integer&gt; sizeMatcher) {
+<span class="fc" id="L33">        return new IsMapWithSize&lt;K, V&gt;(sizeMatcher);</span>
+    }
+
+    /**
+     * Creates a matcher for {@link java.util.Map}s that matches when the &lt;code&gt;size()&lt;/code&gt; method returns
+     * a value equal to the specified &lt;code&gt;size&lt;/code&gt;.
+     * For example:
+     * &lt;pre&gt;assertThat(myMap, is(aMapWithSize(2)))&lt;/pre&gt;
+     * 
+     * @param size
+     *     the expected size of an examined {@link java.util.Map}
+     */
+    public static &lt;K, V&gt; Matcher&lt;Map&lt;? extends K, ? extends V&gt;&gt; aMapWithSize(int size) {
+<span class="fc" id="L46">        Matcher&lt;? super Integer&gt; matcher = equalTo(size);</span>
+<span class="fc" id="L47">        return IsMapWithSize.aMapWithSize(matcher);</span>
+    }
+    
+    /**
+     * Creates a matcher for {@link java.util.Map}s that matches when the &lt;code&gt;size()&lt;/code&gt; method returns
+     * zero.
+     * For example:
+     * &lt;pre&gt;assertThat(myMap, is(anEmptyMap()))&lt;/pre&gt;
+     * 
+     */
+    public static &lt;K, V&gt; Matcher&lt;Map&lt;? extends K, ? extends V&gt;&gt; anEmptyMap() {
+<span class="nc" id="L58">        return IsMapWithSize.aMapWithSize(equalTo(0));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ScalaCallAdapterFactory.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Adapter: Scala</a> &gt; <a href="index.source.html" class="el_package">retrofit2.adapter.scala</a> &gt; <span class="el_source">ScalaCallAdapterFactory.java</span></div><h1>ScalaCallAdapterFactory.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2017 Square, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package retrofit2.adapter.scala;
+
+import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import javax.annotation.Nonnull;
+import retrofit2.CallAdapter;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import scala.concurrent.Future;
+
+/**
+ * A {@linkplain CallAdapter.Factory call adapter} which creates Scala futures.
+ * &lt;p&gt;
+ * Adding this class to {@link Retrofit} allows you to return {@link Future} from
+ * service methods.
+ * &lt;pre&gt;&lt;code&gt;
+ * interface MyService {
+ *   &amp;#64;GET(&quot;user/me&quot;)
+ *   Future&amp;lt;User&amp;gt; getUser()
+ * }
+ * &lt;/code&gt;&lt;/pre&gt;
+ * There are two configurations supported for the {@code Future} type parameter:
+ * &lt;ul&gt;
+ * &lt;li&gt;Direct body (e.g., {@code Future&lt;User&gt;}) returns the deserialized body for 2XX
+ * responses, sets {@link retrofit2.HttpException HttpException} errors for non-2XX responses, and
+ * sets {@link IOException} for network errors.&lt;/li&gt;
+ * &lt;li&gt;Response wrapped body (e.g., {@code Future&lt;Response&lt;User&gt;&gt;}) returns a
+ * {@link Response} object for all HTTP responses and sets {@link IOException} for network
+ * errors&lt;/li&gt;
+ * &lt;/ul&gt;
+ */
+public final class ScalaCallAdapterFactory extends CallAdapter.Factory {
+  public static ScalaCallAdapterFactory create() {
+<span class="fc" id="L51">    return new ScalaCallAdapterFactory();</span>
+  }
+
+  private ScalaCallAdapterFactory() {
+  }
+
+  @Override
+  public CallAdapter&lt;?, ?&gt; get(@Nonnull Type returnType, @Nonnull Annotation[] annotations,
+      @Nonnull Retrofit retrofit) {
+<span class="fc bfc" id="L60" title="All 2 branches covered.">    if (getRawType(returnType) != Future.class) {</span>
+<span class="fc" id="L61">      return null;</span>
+    }
+<span class="fc bfc" id="L63" title="All 2 branches covered.">    if (!(returnType instanceof ParameterizedType)) {</span>
+<span class="fc" id="L64">      throw new IllegalStateException(</span>
+          &quot;Future return type must be parameterized as Future&lt;Foo&gt; or Future&lt;? extends Foo&gt;&quot;);
+    }
+<span class="fc" id="L67">    Type innerType = getParameterUpperBound(0, (ParameterizedType) returnType);</span>
+
+<span class="fc bfc" id="L69" title="All 2 branches covered.">    if (getRawType(innerType) != Response.class) {</span>
+      // Generic type is not Response&lt;T&gt;. Use it for body-only adapter.
+<span class="fc" id="L71">      return new BodyCallAdapter&lt;&gt;(innerType);</span>
+    }
+
+<span class="fc bfc" id="L74" title="All 2 branches covered.">    if (!(innerType instanceof ParameterizedType)) {</span>
+<span class="fc" id="L75">      throw new IllegalStateException(</span>
+          &quot;Response must be parameterized as Response&lt;Foo&gt; or Response&lt;? extends Foo&gt;&quot;);
+    }
+
+<span class="fc" id="L79">    Type responseType = getParameterUpperBound(0, (ParameterizedType) innerType);</span>
+<span class="fc" id="L80">    return new ResponseCallAdapter&lt;&gt;(responseType);</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

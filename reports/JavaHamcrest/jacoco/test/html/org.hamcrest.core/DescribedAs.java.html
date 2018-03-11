@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DescribedAs.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JavaHamcrest</a> &gt; <a href="index.source.html" class="el_package">org.hamcrest.core</a> &gt; <span class="el_source">DescribedAs.java</span></div><h1>DescribedAs.java</h1><pre class="source lang-java linenums">package org.hamcrest.core;
+
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+
+import java.util.regex.Pattern;
+
+import static java.lang.Integer.parseInt;
+
+/**
+ * Provides a custom description to another matcher.
+ */
+public class DescribedAs&lt;T&gt; extends BaseMatcher&lt;T&gt; {
+    private final String descriptionTemplate;
+    private final Matcher&lt;T&gt; matcher;
+    private final Object[] values;
+    
+<span class="fc" id="L19">    private final static Pattern ARG_PATTERN = Pattern.compile(&quot;%([0-9]+)&quot;); </span>
+    
+<span class="fc" id="L21">    public DescribedAs(String descriptionTemplate, Matcher&lt;T&gt; matcher, Object[] values) {</span>
+<span class="fc" id="L22">        this.descriptionTemplate = descriptionTemplate;</span>
+<span class="fc" id="L23">        this.matcher = matcher;</span>
+<span class="fc" id="L24">        this.values = values.clone();</span>
+<span class="fc" id="L25">    }</span>
+    
+    @Override
+    public boolean matches(Object o) {
+<span class="fc" id="L29">        return matcher.matches(o);</span>
+    }
+
+    @Override
+    public void describeTo(Description description) {
+<span class="fc" id="L34">        java.util.regex.Matcher arg = ARG_PATTERN.matcher(descriptionTemplate);</span>
+        
+<span class="fc" id="L36">        int textStart = 0;</span>
+<span class="fc bfc" id="L37" title="All 2 branches covered.">        while (arg.find()) {</span>
+<span class="fc" id="L38">            description.appendText(descriptionTemplate.substring(textStart, arg.start()));</span>
+<span class="fc" id="L39">            description.appendValue(values[parseInt(arg.group(1))]);</span>
+<span class="fc" id="L40">            textStart = arg.end();</span>
+        }
+        
+<span class="fc bfc" id="L43" title="All 2 branches covered.">        if (textStart &lt; descriptionTemplate.length()) {</span>
+<span class="fc" id="L44">            description.appendText(descriptionTemplate.substring(textStart));</span>
+        }
+<span class="fc" id="L46">    }</span>
+    
+    @Override
+    public void describeMismatch(Object item, Description description) {
+<span class="fc" id="L50">        matcher.describeMismatch(item, description);</span>
+<span class="fc" id="L51">    }</span>
+
+    /**
+     * Wraps an existing matcher, overriding its description with that specified.  All other functions are
+     * delegated to the decorated matcher, including its mismatch description.
+     * For example:
+     * &lt;pre&gt;describedAs(&quot;a big decimal equal to %0&quot;, equalTo(myBigDecimal), myBigDecimal.toPlainString())&lt;/pre&gt; 
+     * 
+     * @param description
+     *     the new description for the wrapped matcher
+     * @param matcher
+     *     the matcher to wrap
+     * @param values
+     *     optional values to insert into the tokenised description
+     */
+    public static &lt;T&gt; Matcher&lt;T&gt; describedAs(String description, Matcher&lt;T&gt; matcher, Object... values) {
+<span class="fc" id="L67">        return new DescribedAs&lt;T&gt;(description, matcher, values);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

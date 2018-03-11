@@ -1,0 +1,722 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>VectAlignViewer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">vectalign</a> &gt; <a href="index.source.html" class="el_package">com.bonnyfone.vectalign.viewer</a> &gt; <span class="el_source">VectAlignViewer.java</span></div><h1>VectAlignViewer.java</h1><pre class="source lang-java linenums">package com.bonnyfone.vectalign.viewer;
+
+import com.bonnyfone.vectalign.*;
+import com.sun.java.swing.plaf.windows.WindowsBorders;
+
+import javax.swing.*;
+import javax.swing.border.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.filechooser.FileFilter;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.File;
+
+public class VectAlignViewer extends javax.swing.JFrame implements WindowListener, SVGDrawingPanelListener {
+    public static final long serialVersionUID = 273462773l;
+
+<span class="nc" id="L18">    private VectAlign.Mode currentAlignMode = VectAlign.Mode.BASE;</span>
+<span class="nc" id="L19">    private int hgap = 0;</span>
+<span class="nc" id="L20">    private int vgap = 0;</span>
+<span class="nc" id="L21">    private int btnIconSize = 23;</span>
+<span class="nc" id="L22">    private Color svgPanelBackgroundColor = Color.WHITE;</span>
+<span class="nc" id="L23">    private String currentSvgStrokeColor = &quot;#000000&quot;;</span>
+<span class="nc" id="L24">    private String currentSvgFillColor = &quot;#0099CC&quot;; //SVGDrawingPanel.TRANSPARENT_COLOR;</span>
+
+<span class="nc" id="L26">    private float strokeSize = 2.0f;</span>
+
+    private SVGDrawingPanel[] svgs;
+
+    //Morphing
+    private JPanel panelMorphing;
+    private JSlider sliderMorphing;
+    private JButton btnMorphAnimation;
+    private ImageIcon icnPlay;
+    private ImageIcon icnPause;
+    private ImageIcon icnCopy;
+    private ImageIcon icnExport;
+    private SVGDrawingPanel svgMorphing;
+
+    //Input SVGs
+    private JPanel panelInput;
+    private JPanel panelConfig;
+    private JButton btnEditFrom;
+    private JButton btnEditTo;
+    private JButton btnSvgFrom;
+    private JButton btnSvgTo;
+    private File fileFrom;
+    private File fileTo;
+
+    //Controls
+    private JPanel panelControls;
+    private JRadioButton radioStrategyBase;
+    private JRadioButton radioStrategyLinear;
+    private JRadioButton radioStrategySubBase;
+    private JRadioButton radioStrategySubLinear;
+    private JCheckBox checkStrokeColor;
+    private JCheckBox checkFillColor;
+    private JPanel panelStrokeColor;
+    private JPanel panelFillColor;
+    private JSpinner spinnerStroke;
+
+
+    //Output
+    private JPanel panelOutput;
+    private JTextArea svgFromOutput;
+    private JTextArea svgToOutput;
+    private JButton btnCopyFrom;
+    private JButton btnCopyTo;
+    private JButton btnExport;
+    private File outDir;
+    private String lastUsedPrefix;
+
+    private SVGDrawingPanel svgFrom;
+    private SVGDrawingPanel svgTo;
+    private BorderLayout mainLayout;
+
+    private String[] result;
+
+<span class="nc" id="L79">    public VectAlignViewer() {</span>
+<span class="nc" id="L80">        initIcons();</span>
+<span class="nc" id="L81">        initComponents();</span>
+<span class="nc" id="L82">        addListeners();</span>
+<span class="nc" id="L83">        pack();</span>
+<span class="nc" id="L84">        center();</span>
+
+        //FIXME show demo
+<span class="nc" id="L87">        demo();</span>
+<span class="nc" id="L88">    }</span>
+
+    private void initIcons() {
+<span class="nc" id="L91">        icnPlay = new ImageIcon((new ImageIcon(this.getClass().getResource(&quot;/icn_play.png&quot;)).getImage().getScaledInstance(btnIconSize, btnIconSize, java.awt.Image.SCALE_SMOOTH)));</span>
+<span class="nc" id="L92">        icnPause = new ImageIcon((new ImageIcon(this.getClass().getResource(&quot;/icn_pause.png&quot;)).getImage().getScaledInstance(btnIconSize, btnIconSize, java.awt.Image.SCALE_SMOOTH)));</span>
+<span class="nc" id="L93">        icnCopy = new ImageIcon((new ImageIcon(this.getClass().getResource(&quot;/icn_copy.png&quot;)).getImage().getScaledInstance(btnIconSize, btnIconSize, java.awt.Image.SCALE_SMOOTH)));</span>
+<span class="nc" id="L94">        icnExport = new ImageIcon((new ImageIcon(this.getClass().getResource(&quot;/export-icon.png&quot;)).getImage().getScaledInstance(btnIconSize, btnIconSize, java.awt.Image.SCALE_SMOOTH)));</span>
+<span class="nc" id="L95">    }</span>
+
+    private void center(){
+<span class="nc" id="L98">        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();</span>
+<span class="nc" id="L99">        this.setLocation(dim.width / 2 - this.getSize().width / 2, dim.height / 2 - this.getSize().height / 2);</span>
+<span class="nc" id="L100">    }</span>
+
+    private void demo() {
+<span class="nc" id="L103">        String sampleA = &quot;M 366.64407,65.08474 L 295.25723,225.79703 L 469.14417,252.02396 L 294.26984,270.55728 L 358.5001,434.26126 L 255.0126,292.0823 L 145.35594,429.55933 L 216.74277,268.84705 L 42.855843,242.62012 L 217.73016,224.08678 L 153.49991,60.38282 L 256.9874,202.56177 L 366.64407,65.08474&quot;;</span>
+<span class="nc" id="L104">        String sampleB = &quot;M 91.095527,384.35546 L 254.23312,110.62095 L 405.71803,386.1926 z&quot;;</span>
+
+<span class="nc" id="L106">        svgFrom.setPath(sampleA);</span>
+<span class="nc" id="L107">        svgTo.setPath(sampleB);</span>
+
+<span class="nc" id="L109">        reloadSvgWithProperties();</span>
+<span class="nc" id="L110">        reloadMorphing(true);</span>
+<span class="nc bnc" id="L111" title="All 2 branches missed.">        for (SVGDrawingPanel svgp : svgs) {</span>
+<span class="nc" id="L112">            svgp.renderStep(0.0f);</span>
+        }
+<span class="nc" id="L114">    }</span>
+
+    private File showOpenFile(String title, File lastFile){
+<span class="nc" id="L117">        final JFileChooser fc = new JFileChooser();</span>
+<span class="nc" id="L118">        fc.setDialogTitle(title);</span>
+<span class="nc bnc" id="L119" title="All 2 branches missed.">        if(lastFile != null)</span>
+<span class="nc" id="L120">            fc.setSelectedFile(lastFile);</span>
+
+<span class="nc" id="L122">        fc.setFileFilter(new FileFilter() {</span>
+            @Override
+            public boolean accept(File f) {
+<span class="nc bnc" id="L125" title="All 2 branches missed.">                if (f.isDirectory())</span>
+<span class="nc" id="L126">                    return true;</span>
+
+<span class="nc" id="L128">                String extension = Utils.getExtension(f);</span>
+<span class="nc bnc" id="L129" title="All 2 branches missed.">                if (extension != null) {</span>
+<span class="nc bnc" id="L130" title="All 2 branches missed.">                    if (extension.equals(&quot;svg&quot;))</span>
+<span class="nc" id="L131">                        return true;</span>
+                    else
+<span class="nc" id="L133">                        return false;</span>
+                }
+
+<span class="nc" id="L136">                return false;</span>
+            }
+
+            @Override
+            public String getDescription() {
+<span class="nc" id="L141">                return &quot;SVG images&quot;;</span>
+            }
+
+        });
+
+<span class="nc" id="L146">        int returnVal = fc.showOpenDialog(null);</span>
+<span class="nc" id="L147">        File file = null;</span>
+<span class="nc bnc" id="L148" title="All 2 branches missed.">        if(returnVal == JFileChooser.APPROVE_OPTION)</span>
+<span class="nc" id="L149">            file = fc.getSelectedFile();</span>
+
+<span class="nc" id="L151">        return file;</span>
+    }
+
+    private Color showColorChooser(String title, Color current){
+<span class="nc" id="L155">        return JColorChooser.showDialog(this, title, current); //TODO simplify chooser</span>
+    }
+
+    private String showInputDialog(String title, String defaultText){
+<span class="nc" id="L159">        JTextArea msg = new JTextArea(defaultText);</span>
+<span class="nc" id="L160">        msg.setLineWrap(true);</span>
+<span class="nc" id="L161">        msg.setWrapStyleWord(true);</span>
+<span class="nc" id="L162">        JScrollPane scrollPane = new JScrollPane(msg);</span>
+<span class="nc" id="L163">        scrollPane.setPreferredSize(new Dimension(600, 250));</span>
+<span class="nc" id="L164">        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);</span>
+<span class="nc" id="L165">        int ris = JOptionPane.showConfirmDialog(null, scrollPane, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);</span>
+<span class="nc bnc" id="L166" title="All 2 branches missed.">        if(ris == JOptionPane.OK_OPTION)</span>
+<span class="nc" id="L167">            return msg.getText();</span>
+        else
+<span class="nc" id="L169">            return defaultText;</span>
+    }
+
+    private void reloadMorphing(boolean recalculateMorphing){
+        try{
+<span class="nc" id="L174">            svgMorphing.stopAnimation();</span>
+
+<span class="nc bnc" id="L176" title="All 2 branches missed.">            String strokeColorToApply = checkStrokeColor.isSelected() ? currentSvgStrokeColor : SVGDrawingPanel.TRANSPARENT_COLOR;</span>
+<span class="nc bnc" id="L177" title="All 2 branches missed.">            String fillColorToApply =  checkFillColor.isSelected() ? currentSvgFillColor : SVGDrawingPanel.TRANSPARENT_COLOR;</span>
+<span class="nc" id="L178">            svgMorphing.setStrokeColor(strokeColorToApply);</span>
+<span class="nc" id="L179">            svgMorphing.setFillColor(fillColorToApply);</span>
+<span class="nc" id="L180">            svgMorphing.setStrokeSize(strokeSize);</span>
+
+<span class="nc bnc" id="L182" title="All 2 branches missed.">            if(recalculateMorphing){</span>
+<span class="nc" id="L183">                result = VectAlign.align(svgFrom.getPath(), svgTo.getPath(), currentAlignMode);</span>
+<span class="nc" id="L184">                svgFromOutput.setText(result[0]);</span>
+<span class="nc" id="L185">                svgToOutput.setText(result[1]);</span>
+<span class="nc" id="L186">                svgMorphing.setPaths(result[0], result[1]);</span>
+<span class="nc" id="L187">                svgMorphing.reset();</span>
+<span class="nc" id="L188">                updateMorphingControls();</span>
+<span class="nc" id="L189">                recalculateMorphing = false;</span>
+            }else
+<span class="nc" id="L191">                svgMorphing.redraw();</span>
+
+        }
+<span class="nc" id="L194">        catch(Exception e){</span>
+<span class="nc" id="L195">            e.printStackTrace();</span>
+<span class="nc" id="L196">        }</span>
+<span class="nc" id="L197">    }</span>
+
+    private void reloadSvgWithProperties(){
+<span class="nc bnc" id="L200" title="All 2 branches missed.">        String strokeColorToApply =  checkStrokeColor.isSelected() ? currentSvgStrokeColor : SVGDrawingPanel.TRANSPARENT_COLOR;</span>
+<span class="nc bnc" id="L201" title="All 2 branches missed.">        String fillColorToApply =  checkFillColor.isSelected() ? currentSvgFillColor : SVGDrawingPanel.TRANSPARENT_COLOR;</span>
+<span class="nc" id="L202">        svgFrom.setStrokeColor(strokeColorToApply);</span>
+<span class="nc" id="L203">        svgTo.setStrokeColor(strokeColorToApply);</span>
+<span class="nc" id="L204">        svgFrom.setFillColor(fillColorToApply);</span>
+<span class="nc" id="L205">        svgTo.setFillColor(fillColorToApply);</span>
+<span class="nc" id="L206">        svgFrom.setStrokeSize(strokeSize);</span>
+<span class="nc" id="L207">        svgTo.setStrokeSize(strokeSize);</span>
+<span class="nc" id="L208">        svgFrom.redraw();</span>
+<span class="nc" id="L209">        svgTo.redraw();</span>
+<span class="nc" id="L210">    }</span>
+
+    private void initComponents() {
+<span class="nc" id="L213">        ToolTipManager.sharedInstance().setInitialDelay(400);</span>
+
+        //Title
+<span class="nc" id="L216">        setTitle(Main.NAME + &quot; &quot; + Main.VERSION);</span>
+
+        //Input SVG
+<span class="nc" id="L219">        panelInput = new JPanel(new GridLayout(1, 2, 10, 0));</span>
+<span class="nc" id="L220">        JPanel panelFrom = new JPanel(new BorderLayout());</span>
+<span class="nc" id="L221">        JPanel panelTo = new JPanel(new BorderLayout());</span>
+<span class="nc" id="L222">        svgFrom = new SVGDrawingPanel();</span>
+<span class="nc" id="L223">        svgFrom.setPreferredSize(new Dimension(190, 200));</span>
+<span class="nc" id="L224">        svgTo = new SVGDrawingPanel();</span>
+<span class="nc" id="L225">        svgTo.setPreferredSize(new Dimension(190, 200));</span>
+
+<span class="nc" id="L227">        btnEditFrom = new JButton(&quot;Edit Path&quot;);</span>
+<span class="nc" id="L228">        btnEditTo = new JButton(&quot;Edit Path&quot;);</span>
+<span class="nc" id="L229">        btnSvgFrom = new JButton(&quot;Load SVG&quot;);</span>
+<span class="nc" id="L230">        btnSvgTo = new JButton(&quot;Load SVG&quot;);</span>
+
+<span class="nc" id="L232">        JPanel panelBtnFrom = new JPanel();</span>
+<span class="nc" id="L233">        JPanel panelBtnTo = new JPanel();</span>
+<span class="nc" id="L234">        panelBtnFrom.setLayout(new GridLayout(1, 2));</span>
+<span class="nc" id="L235">        panelBtnTo.setLayout(new GridLayout(1, 2));</span>
+<span class="nc" id="L236">        panelBtnFrom.add(btnEditFrom);</span>
+<span class="nc" id="L237">        panelBtnFrom.add(btnSvgFrom);</span>
+<span class="nc" id="L238">        panelBtnTo.add(btnEditTo);</span>
+<span class="nc" id="L239">        panelBtnTo.add(btnSvgTo);</span>
+
+<span class="nc" id="L241">        panelFrom.add(svgFrom, BorderLayout.CENTER);</span>
+<span class="nc" id="L242">        panelFrom.add(panelBtnFrom, BorderLayout.SOUTH);</span>
+<span class="nc" id="L243">        panelFrom.setBorder(getCommonBorder(&quot;Starting SVG/VD&quot;, true));</span>
+
+<span class="nc" id="L245">        panelTo.add(svgTo, BorderLayout.CENTER);</span>
+<span class="nc" id="L246">        panelTo.add(panelBtnTo, BorderLayout.SOUTH);</span>
+<span class="nc" id="L247">        panelTo.setBorder(getCommonBorder(&quot;Ending SVG/VD&quot;, true));</span>
+
+        //Controls
+<span class="nc" id="L250">        panelControls = new JPanel(new BorderLayout(hgap, vgap));</span>
+<span class="nc" id="L251">        panelControls.setPreferredSize(new Dimension(400, 200));</span>
+<span class="nc" id="L252">        panelControls.setBorder(getCommonBorder(&quot;Configure morphing&quot;, true));</span>
+<span class="nc" id="L253">        panelControls.setLayout(new GridLayout(1, 2));</span>
+<span class="nc" id="L254">        JPanel panelTec = new JPanel();</span>
+<span class="nc" id="L255">        panelTec.setBorder(getCommonBorder(&quot;Aligment strategy&quot;, false));</span>
+<span class="nc" id="L256">        panelTec.setLayout(new GridLayout(5, 1));</span>
+<span class="nc" id="L257">        ButtonGroup btngrop = new ButtonGroup();</span>
+<span class="nc" id="L258">        radioStrategyBase = new JRadioButton(&quot;Base&quot;);</span>
+<span class="nc" id="L259">        radioStrategyBase.setSelected(true);</span>
+<span class="nc" id="L260">        radioStrategyLinear = new JRadioButton(&quot;Linear&quot;);</span>
+<span class="nc" id="L261">        radioStrategySubBase = new JRadioButton(&quot;Subalign Base&quot;);</span>
+<span class="nc" id="L262">        radioStrategySubLinear = new JRadioButton(&quot;Subalign Linear&quot;);</span>
+<span class="nc" id="L263">        btngrop.add(radioStrategyBase);</span>
+<span class="nc" id="L264">        btngrop.add(radioStrategyLinear);</span>
+<span class="nc" id="L265">        btngrop.add(radioStrategySubBase);</span>
+<span class="nc" id="L266">        btngrop.add(radioStrategySubLinear);</span>
+<span class="nc" id="L267">        panelTec.add(radioStrategyBase);</span>
+<span class="nc" id="L268">        panelTec.add(radioStrategyLinear);</span>
+<span class="nc" id="L269">        panelTec.add(radioStrategySubBase);</span>
+<span class="nc" id="L270">        panelTec.add(radioStrategySubLinear);</span>
+
+<span class="nc" id="L272">        JPanel panelPreviewOpt = new JPanel();</span>
+<span class="nc" id="L273">        panelPreviewOpt.setBorder(getCommonBorder(&quot;Preview options&quot;, false));</span>
+<span class="nc" id="L274">        panelPreviewOpt.setLayout(new GridLayout(5, 1));</span>
+<span class="nc" id="L275">        checkStrokeColor = new JCheckBox(&quot;Stroke (color)&quot;, true);</span>
+<span class="nc" id="L276">        checkFillColor = new JCheckBox(&quot;Fill (color)&quot;, false);</span>
+<span class="nc" id="L277">        panelStrokeColor = new JPanel();</span>
+<span class="nc" id="L278">        panelStrokeColor.setBackground(getCurrentStrokeColor());</span>
+<span class="nc" id="L279">        panelStrokeColor.setPreferredSize(new Dimension(30, 20));</span>
+<span class="nc" id="L280">        panelStrokeColor.setBorder(new WindowsBorders.DashedBorder(Color.darkGray));</span>
+<span class="nc" id="L281">        JPanel innerPanel1 = new JPanel(new FlowLayout());</span>
+<span class="nc" id="L282">        innerPanel1.add(panelStrokeColor);</span>
+<span class="nc" id="L283">        JPanel panelStroke = new JPanel(new BorderLayout());</span>
+<span class="nc" id="L284">        panelStroke.add(checkStrokeColor, BorderLayout.CENTER);</span>
+<span class="nc" id="L285">        panelStroke.add(innerPanel1, BorderLayout.EAST);</span>
+<span class="nc" id="L286">        panelFillColor = new JPanel();</span>
+<span class="nc" id="L287">        panelFillColor.setBackground(getCurrentFillColor());</span>
+<span class="nc" id="L288">        panelFillColor.setPreferredSize(new Dimension(30, 20));</span>
+<span class="nc" id="L289">        panelFillColor.setBorder(new WindowsBorders.DashedBorder(Color.darkGray));</span>
+<span class="nc" id="L290">        JPanel innerPanel2 = new JPanel(new FlowLayout());</span>
+<span class="nc" id="L291">        innerPanel2.add(panelFillColor);</span>
+<span class="nc" id="L292">        JPanel panelFill = new JPanel(new BorderLayout());</span>
+<span class="nc" id="L293">        panelFill.add(checkFillColor, BorderLayout.CENTER);</span>
+<span class="nc" id="L294">        panelFill.add(innerPanel2, BorderLayout.EAST);</span>
+
+<span class="nc" id="L296">        JPanel panelStrokeSize = new JPanel(new BorderLayout());</span>
+<span class="nc" id="L297">        panelStrokeSize.add(new JLabel(&quot;Stroke size: &quot;), BorderLayout.WEST);</span>
+<span class="nc" id="L298">        SpinnerModel spinnerModel =</span>
+                new SpinnerNumberModel(2, //initial value
+                        0, //min
+                        100, //max
+                        0.1);//step
+<span class="nc" id="L303">        spinnerStroke = new JSpinner(spinnerModel);</span>
+<span class="nc" id="L304">        spinnerStroke.addChangeListener(new ChangeListener() {</span>
+            public void stateChanged(ChangeEvent e) {
+                try {
+<span class="nc" id="L307">                    double newValue = (double) ((JSpinner) e.getSource()).getValue();</span>
+<span class="nc" id="L308">                    strokeSize = (float) newValue;</span>
+<span class="nc" id="L309">                    reloadSvgWithProperties();</span>
+<span class="nc" id="L310">                    reloadMorphing(false);</span>
+<span class="nc" id="L311">                } catch (Exception ex) {</span>
+<span class="nc" id="L312">                    ex.printStackTrace();</span>
+<span class="nc" id="L313">                }</span>
+<span class="nc" id="L314">            }</span>
+        });
+<span class="nc" id="L316">        panelStrokeSize.add(spinnerStroke, BorderLayout.CENTER);</span>
+
+<span class="nc" id="L318">        panelPreviewOpt.add(panelFill);</span>
+<span class="nc" id="L319">        panelPreviewOpt.add(panelStroke);</span>
+<span class="nc" id="L320">        panelPreviewOpt.add(panelStrokeSize);</span>
+
+
+<span class="nc" id="L323">        panelControls.add(panelTec);</span>
+<span class="nc" id="L324">        panelControls.add(panelPreviewOpt);</span>
+
+<span class="nc" id="L326">        panelInput.add(panelFrom);</span>
+<span class="nc" id="L327">        panelInput.add(panelTo);</span>
+
+<span class="nc" id="L329">        panelConfig = new JPanel(new GridLayout(2, 1, 0, 10));</span>
+<span class="nc" id="L330">        panelConfig.add(panelInput);</span>
+<span class="nc" id="L331">        panelConfig.add(panelControls);</span>
+
+        //Morphing
+<span class="nc" id="L334">        svgMorphing = new SVGDrawingPanel();</span>
+<span class="nc" id="L335">        svgMorphing.setListener(this);</span>
+<span class="nc" id="L336">        svgMorphing.setPreferredSize(new Dimension(400, 400));</span>
+<span class="nc" id="L337">        sliderMorphing = new JSlider(JSlider.HORIZONTAL, 0, 1000, 0);</span>
+<span class="nc" id="L338">        sliderMorphing.setPreferredSize(new Dimension(350, 25));</span>
+<span class="nc" id="L339">        btnMorphAnimation = new JButton(icnPlay);</span>
+<span class="nc" id="L340">        btnMorphAnimation.setPreferredSize(new Dimension(35, 35));</span>
+<span class="nc" id="L341">        btnMorphAnimation.setBorderPainted(false);</span>
+<span class="nc" id="L342">        btnMorphAnimation.setBorder(null);</span>
+<span class="nc" id="L343">        btnMorphAnimation.setMargin(new Insets(0, 0, 0, 0));</span>
+<span class="nc" id="L344">        btnMorphAnimation.setContentAreaFilled(false);</span>
+
+<span class="nc" id="L346">        JPanel bottomMorphing = new JPanel(new FlowLayout());</span>
+<span class="nc" id="L347">        bottomMorphing.add(btnMorphAnimation);</span>
+<span class="nc" id="L348">        bottomMorphing.add(sliderMorphing);</span>
+<span class="nc" id="L349">        panelMorphing = new JPanel(new BorderLayout(hgap, vgap));</span>
+<span class="nc" id="L350">        panelMorphing.add(svgMorphing, BorderLayout.CENTER);</span>
+<span class="nc" id="L351">        panelMorphing.add(bottomMorphing, BorderLayout.SOUTH);</span>
+<span class="nc" id="L352">        panelMorphing.setBorder(getCommonBorder(&quot;AnimatedVectorDrawable (preview)&quot;, true));</span>
+
+        //Output
+<span class="nc" id="L355">        panelOutput = new JPanel();</span>
+<span class="nc" id="L356">        panelOutput.setBorder(getCommonBorder(&quot;Results (aligned path sequences)&quot;, true));</span>
+<span class="nc" id="L357">        panelOutput.setLayout(new GridBagLayout());</span>
+<span class="nc" id="L358">        GridBagConstraints gc1 = new GridBagConstraints();</span>
+<span class="nc" id="L359">        gc1.fill = GridBagConstraints.BOTH;</span>
+<span class="nc" id="L360">        gc1.gridx = 0;</span>
+<span class="nc" id="L361">        gc1.gridy = 0;</span>
+<span class="nc" id="L362">        gc1.weightx = 0.975f;</span>
+<span class="nc" id="L363">        gc1.weighty = 0.5f;</span>
+<span class="nc" id="L364">        GridBagConstraints gcBtn1 = new GridBagConstraints();</span>
+<span class="nc" id="L365">        gcBtn1.fill = GridBagConstraints.BOTH;</span>
+<span class="nc" id="L366">        gcBtn1.gridx = 1;</span>
+<span class="nc" id="L367">        gcBtn1.gridy = 0;</span>
+<span class="nc" id="L368">        gcBtn1.weightx = 0.025f;</span>
+<span class="nc" id="L369">        gcBtn1.weighty = 0.5f;</span>
+<span class="nc" id="L370">        GridBagConstraints gc2 = new GridBagConstraints();</span>
+<span class="nc" id="L371">        gc2.fill = GridBagConstraints.BOTH;</span>
+<span class="nc" id="L372">        gc2.gridx = 0;</span>
+<span class="nc" id="L373">        gc2.gridy = 1;</span>
+<span class="nc" id="L374">        gc2.weightx = 0.975f;</span>
+<span class="nc" id="L375">        gc2.weighty = 0.5f;</span>
+<span class="nc" id="L376">        GridBagConstraints gcBtn2 = new GridBagConstraints();</span>
+<span class="nc" id="L377">        gcBtn2.fill = GridBagConstraints.BOTH;</span>
+<span class="nc" id="L378">        gcBtn2.gridx = 1;</span>
+<span class="nc" id="L379">        gcBtn2.gridy = 1;</span>
+<span class="nc" id="L380">        gcBtn2.weightx = 0.025f;</span>
+<span class="nc" id="L381">        gcBtn2.weighty = 0.5f;</span>
+<span class="nc" id="L382">        GridBagConstraints export = new GridBagConstraints();</span>
+<span class="nc" id="L383">        export.fill = GridBagConstraints.BOTH;</span>
+<span class="nc" id="L384">        export.gridheight = 2;</span>
+        //export.weightx = 0.025f;
+        //export.weighty = 1.0f;
+
+<span class="nc" id="L388">        svgFromOutput = new JTextArea();</span>
+<span class="nc" id="L389">        svgFromOutput.setEditable(false);</span>
+<span class="nc" id="L390">        svgToOutput = new JTextArea();</span>
+<span class="nc" id="L391">        svgToOutput.setEditable(false);</span>
+<span class="nc" id="L392">        JScrollPane scroll1 = new JScrollPane(svgFromOutput);</span>
+<span class="nc" id="L393">        scroll1.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);</span>
+<span class="nc" id="L394">        JScrollPane scroll2 = new JScrollPane(svgToOutput);</span>
+<span class="nc" id="L395">        scroll2.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);</span>
+<span class="nc" id="L396">        btnCopyFrom = new JButton(icnCopy);</span>
+<span class="nc" id="L397">        btnCopyFrom.setToolTipText(&quot;Copy aligned STARTING path to clipboard&quot;);</span>
+<span class="nc" id="L398">        btnCopyTo = new JButton(icnCopy);</span>
+<span class="nc" id="L399">        btnCopyTo.setToolTipText(&quot;Copy aligned ENDING path to clipboard&quot;);</span>
+<span class="nc" id="L400">        btnExport = new JButton(&quot;Export&quot;, icnExport);</span>
+<span class="nc" id="L401">        btnExport.setToolTipText(&quot;Export Android XML files&quot;);</span>
+<span class="nc" id="L402">        panelOutput.add(scroll1, gc1);</span>
+<span class="nc" id="L403">        panelOutput.add(btnCopyFrom, gcBtn1);</span>
+<span class="nc" id="L404">        panelOutput.add(scroll2, gc2);</span>
+<span class="nc" id="L405">        panelOutput.add(btnCopyTo, gcBtn2);</span>
+<span class="nc" id="L406">        panelOutput.add(btnExport, export);</span>
+
+<span class="nc" id="L408">        mainLayout = new BorderLayout(hgap, vgap);</span>
+<span class="nc" id="L409">        setLayout(mainLayout);</span>
+<span class="nc" id="L410">        getContentPane().add(panelConfig, BorderLayout.WEST);</span>
+<span class="nc" id="L411">        getContentPane().add(panelMorphing, BorderLayout.EAST);</span>
+<span class="nc" id="L412">        getContentPane().add(panelOutput, BorderLayout.SOUTH);</span>
+<span class="nc" id="L413">        setPreferredSize(new Dimension(900, 650));</span>
+<span class="nc" id="L414">        setBackground(Color.white);</span>
+
+<span class="nc" id="L416">        svgs = new SVGDrawingPanel[]{svgFrom, svgTo, svgMorphing};</span>
+
+<span class="nc bnc" id="L418" title="All 2 branches missed.">        for (SVGDrawingPanel svgp : svgs) {</span>
+<span class="nc" id="L419">            svgp.setBackground(svgPanelBackgroundColor);</span>
+        }
+<span class="nc" id="L421">    }</span>
+
+    private Color getCurrentStrokeColor(){
+<span class="nc bnc" id="L424" title="All 2 branches missed.">        return (SVGDrawingPanel.TRANSPARENT_COLOR.equals(currentSvgStrokeColor) ? Color.getColor(&quot;#00FFFFFF&quot;) : Color.decode(currentSvgStrokeColor));</span>
+    }
+
+    private Color getCurrentFillColor(){
+<span class="nc bnc" id="L428" title="All 2 branches missed.">        return (SVGDrawingPanel.TRANSPARENT_COLOR.equals(currentSvgFillColor) ? Color.getColor(&quot;#00FFFFFF&quot;) : Color.decode(currentSvgFillColor));</span>
+    }
+
+
+    private String getHexColor(Color color){
+<span class="nc" id="L433">        return String.format(&quot;#%02x%02x%02x&quot;, color.getRed(), color.getGreen(), color.getBlue());</span>
+    }
+
+    private Border getCommonBorder(String title, boolean borderLine){
+<span class="nc bnc" id="L437" title="All 2 branches missed.">        return new TitledBorder((borderLine ? new TitledBorder(&quot;&quot;).getBorder() : new EmptyBorder(0,0,0,0)), title, TitledBorder.LEFT, TitledBorder.ABOVE_TOP, getFont(), Color.DARK_GRAY);</span>
+    }
+
+    private void handleSVGLoad(File f, SVGDrawingPanel svg){
+<span class="nc bnc" id="L441" title="All 2 branches missed.">        if(SVGParser.isSVGImage(f)) {</span>
+<span class="nc" id="L442">            svg.setPath(SVGParser.getPathDataFromSVGFile(f));</span>
+<span class="nc" id="L443">            svg.redraw();</span>
+<span class="nc" id="L444">            reloadMorphing(true);</span>
+        } else
+<span class="nc" id="L446">            System.out.println(&quot;Error: not a valid SVG&quot;);</span>
+<span class="nc" id="L447">    }</span>
+
+    private void addListeners() {
+
+<span class="nc" id="L451">        ActionListener colorAction = new ActionListener() {</span>
+            @Override
+            public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L454">                reloadMorphing(false);</span>
+<span class="nc" id="L455">                reloadSvgWithProperties();</span>
+<span class="nc" id="L456">            }</span>
+        };
+
+<span class="nc" id="L459">        checkStrokeColor.addActionListener(colorAction);</span>
+<span class="nc" id="L460">        checkFillColor.addActionListener(colorAction);</span>
+
+<span class="nc" id="L462">        panelFillColor.addMouseListener(new MouseListener() {</span>
+            @Override
+            public void mouseClicked(MouseEvent e) {
+<span class="nc" id="L465">                panelFillColor.setBackground(showColorChooser(&quot;Select fill color&quot;, getCurrentFillColor()));</span>
+<span class="nc" id="L466">                currentSvgFillColor = getHexColor(panelFillColor.getBackground());</span>
+<span class="nc" id="L467">                reloadSvgWithProperties();</span>
+<span class="nc" id="L468">                reloadMorphing(false);</span>
+<span class="nc" id="L469">            }</span>
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+<span class="nc" id="L473">            }</span>
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+<span class="nc" id="L477">            }</span>
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+<span class="nc" id="L481">            }</span>
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+<span class="nc" id="L485">            }</span>
+        });
+
+<span class="nc" id="L488">        panelStrokeColor.addMouseListener(new MouseListener() {</span>
+            @Override
+            public void mouseClicked(MouseEvent e) {
+<span class="nc" id="L491">                panelStrokeColor.setBackground(showColorChooser(&quot;Select stroke color&quot;, getCurrentStrokeColor()));</span>
+<span class="nc" id="L492">                currentSvgStrokeColor = getHexColor(panelStrokeColor.getBackground());</span>
+<span class="nc" id="L493">                reloadSvgWithProperties();</span>
+<span class="nc" id="L494">                reloadMorphing(false);</span>
+<span class="nc" id="L495">            }</span>
+            @Override
+<span class="nc" id="L497">            public void mousePressed(MouseEvent e) {}</span>
+            @Override
+<span class="nc" id="L499">            public void mouseReleased(MouseEvent e) {}</span>
+            @Override
+<span class="nc" id="L501">            public void mouseEntered(MouseEvent e) {}</span>
+            @Override
+<span class="nc" id="L503">            public void mouseExited(MouseEvent e) {}</span>
+        });
+
+<span class="nc" id="L506">        radioStrategyBase.addActionListener(new ActionListener() {</span>
+            @Override
+            public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L509">                currentAlignMode = VectAlign.Mode.BASE;</span>
+<span class="nc" id="L510">                reloadMorphing(true);</span>
+<span class="nc" id="L511">            }</span>
+        });
+
+<span class="nc" id="L514">        radioStrategyLinear.addActionListener(new ActionListener() {</span>
+            @Override
+            public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L517">                currentAlignMode = VectAlign.Mode.LINEAR;</span>
+<span class="nc" id="L518">                reloadMorphing(true);</span>
+<span class="nc" id="L519">            }</span>
+        });
+
+<span class="nc" id="L522">        radioStrategySubBase.addActionListener(new ActionListener() {</span>
+            @Override
+            public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L525">                currentAlignMode = VectAlign.Mode.SUB_BASE;</span>
+<span class="nc" id="L526">                reloadMorphing(true);</span>
+<span class="nc" id="L527">            }</span>
+        });
+
+<span class="nc" id="L530">        radioStrategySubLinear.addActionListener(new ActionListener() {</span>
+            @Override
+            public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L533">                currentAlignMode = VectAlign.Mode.SUB_LINEAR;</span>
+<span class="nc" id="L534">                reloadMorphing(true);</span>
+<span class="nc" id="L535">            }</span>
+        });
+
+<span class="nc" id="L538">        btnCopyFrom.addActionListener(new ActionListener() {</span>
+            @Override
+            public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L541">                Utils.copyToClipboard(svgFromOutput.getText());</span>
+<span class="nc" id="L542">                svgFromOutput.select(0, svgFromOutput.getText().length());</span>
+<span class="nc" id="L543">            }</span>
+        });
+
+<span class="nc" id="L546">        btnCopyTo.addActionListener(new ActionListener() {</span>
+            @Override
+            public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L549">                Utils.copyToClipboard(svgToOutput.getText());</span>
+<span class="nc" id="L550">                svgToOutput.select(0, svgToOutput.getText().length());</span>
+<span class="nc" id="L551">            }</span>
+        });
+
+<span class="nc" id="L554">        btnExport.addActionListener(new ActionListener() {</span>
+            @Override
+            public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L557">                VectAlignExportDialog exportPanel = new VectAlignExportDialog(result, currentSvgStrokeColor, currentSvgFillColor,</span>
+<span class="nc" id="L558">                        (int)Math.max(1.0f, Math.round(strokeSize)), checkStrokeColor.isSelected(), checkFillColor.isSelected(),</span>
+<span class="nc" id="L559">                        svgMorphing.getSVGViewBoxWidth(), svgMorphing.getSVGViewBoxHeight());</span>
+<span class="nc" id="L560">                exportPanel.setModal(true);</span>
+<span class="nc" id="L561">                exportPanel.setVisible(true);</span>
+<span class="nc" id="L562">            }</span>
+        });
+
+<span class="nc" id="L565">        sliderMorphing.addChangeListener(new ChangeListener() {</span>
+            @Override
+            public void stateChanged(ChangeEvent e) {
+<span class="nc bnc" id="L568" title="All 2 branches missed.">                if(sliderMorphing.isEnabled()){</span>
+<span class="nc" id="L569">                    svgMorphing.renderStep(((float)sliderMorphing.getValue())/1000.f);</span>
+                }
+<span class="nc" id="L571">            }</span>
+        });
+
+<span class="nc" id="L574">        btnMorphAnimation.addActionListener(new ActionListener() {</span>
+            @Override
+            public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L577">                handleToggleAnimation();</span>
+<span class="nc" id="L578">            }</span>
+        });
+
+<span class="nc" id="L581">        btnSvgFrom.addActionListener(new ActionListener() {</span>
+            @Override
+            public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L584">                fileFrom = showOpenFile(&quot;Load SVG&quot;, fileFrom);</span>
+<span class="nc" id="L585">                handleSVGLoad(fileFrom, svgFrom);</span>
+<span class="nc" id="L586">            }</span>
+        });
+
+<span class="nc" id="L589">        btnSvgTo.addActionListener(new ActionListener() {</span>
+            @Override
+            public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L592">                fileTo = showOpenFile(&quot;Load SVG&quot;, fileTo);</span>
+<span class="nc" id="L593">                handleSVGLoad(fileTo, svgTo);</span>
+<span class="nc" id="L594">            }</span>
+        });
+
+<span class="nc" id="L597">        btnEditFrom.addActionListener(new ActionListener() {</span>
+            @Override
+            public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L600">                svgFrom.setPath(showInputDialog(&quot;Edit STARTING path&quot;, svgFrom.getPath()));</span>
+<span class="nc" id="L601">                svgFrom.redraw();</span>
+<span class="nc" id="L602">                reloadMorphing(true);</span>
+<span class="nc" id="L603">            }</span>
+        });
+
+<span class="nc" id="L606">        btnEditTo.addActionListener(new ActionListener() {</span>
+            @Override
+            public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L609">                svgTo.setPath(showInputDialog(&quot;Edit ENDING path&quot;, svgTo.getPath()));</span>
+<span class="nc" id="L610">                svgTo.redraw();</span>
+<span class="nc" id="L611">                reloadMorphing(true);</span>
+<span class="nc" id="L612">            }</span>
+        });
+
+<span class="nc" id="L615">        svgMorphing.addMouseListener(new MouseListener() {</span>
+            @Override
+            public void mouseClicked(MouseEvent e) {
+<span class="nc" id="L618">                handleToggleAnimation();</span>
+<span class="nc" id="L619">            }</span>
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+
+<span class="nc" id="L624">            }</span>
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+<span class="nc" id="L628">            }</span>
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+<span class="nc" id="L632">            }</span>
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+<span class="nc" id="L636">            }</span>
+        });
+
+        //Window
+<span class="nc" id="L640">        addWindowListener(this);</span>
+<span class="nc" id="L641">    }</span>
+
+    private void handleToggleAnimation(){
+<span class="nc" id="L644">        svgMorphing.toggleAnimation();</span>
+<span class="nc" id="L645">        updateMorphingControls();</span>
+<span class="nc" id="L646">    }</span>
+
+    private void updateMorphingControls(){
+<span class="nc bnc" id="L649" title="All 2 branches missed.">        if(svgMorphing.isAnimating()){</span>
+<span class="nc" id="L650">            btnMorphAnimation.setIcon(icnPause);</span>
+<span class="nc" id="L651">            sliderMorphing.setValue((int) (svgMorphing.getCurrentStep() * sliderMorphing.getMaximum()));</span>
+<span class="nc" id="L652">            sliderMorphing.setEnabled(false);</span>
+        }
+        else{
+<span class="nc" id="L655">            btnMorphAnimation.setIcon(icnPlay);</span>
+<span class="nc" id="L656">            sliderMorphing.setValue((int) (svgMorphing.getCurrentStep() * sliderMorphing.getMaximum()));</span>
+<span class="nc" id="L657">            sliderMorphing.setEnabled(true);</span>
+        }
+<span class="nc" id="L659">    }</span>
+
+    @Override
+    public void onMorphingChanges(float step) {
+<span class="nc" id="L663">        updateMorphingControls();</span>
+<span class="nc" id="L664">    }</span>
+
+    @Override
+    public void windowOpened(WindowEvent e) {
+
+<span class="nc" id="L669">    }</span>
+
+    @Override
+    public void windowClosing(WindowEvent e) {
+<span class="nc" id="L673">        svgMorphing.close();</span>
+<span class="nc" id="L674">        dispose();</span>
+<span class="nc" id="L675">        System.out.println(&quot;Exiting...&quot;);</span>
+<span class="nc" id="L676">    }</span>
+
+    @Override
+    public void windowClosed(WindowEvent e) {
+<span class="nc" id="L680">        System.out.println(&quot;[finish]&quot;);</span>
+<span class="nc" id="L681">    }</span>
+
+    @Override
+    public void windowIconified(WindowEvent e) {
+
+<span class="nc" id="L686">    }</span>
+
+    @Override
+    public void windowDeiconified(WindowEvent e) {
+
+<span class="nc" id="L691">    }</span>
+
+    @Override
+    public void windowActivated(WindowEvent e) {
+
+<span class="nc" id="L696">    }</span>
+
+    @Override
+    public void windowDeactivated(WindowEvent e) {
+
+<span class="nc" id="L701">    }</span>
+
+    public static void startVectAlignGUI(){
+        //Apply Nimbus LaF if possible
+        try {
+<span class="nc" id="L706">            UIManager.setLookAndFeel(&quot;com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel&quot;);</span>
+        }
+<span class="nc" id="L708">        catch(Exception e){}</span>
+
+<span class="nc" id="L710">        java.awt.EventQueue.invokeLater(new Runnable() {</span>
+            public void run() {
+<span class="nc" id="L712">                new VectAlignViewer().setVisible(true);</span>
+<span class="nc" id="L713">            }</span>
+        });
+<span class="nc" id="L715">    }</span>
+
+    //MAIN
+    public static void main(String args[]) {
+<span class="nc" id="L719">        startVectAlignGUI();</span>
+<span class="nc" id="L720">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

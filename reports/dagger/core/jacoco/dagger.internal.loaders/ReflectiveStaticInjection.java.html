@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ReflectiveStaticInjection.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Dagger</a> &gt; <a href="index.source.html" class="el_package">dagger.internal.loaders</a> &gt; <span class="el_source">ReflectiveStaticInjection.java</span></div><h1>ReflectiveStaticInjection.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2012 Square, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package dagger.internal.loaders;
+
+import dagger.internal.Binding;
+import dagger.internal.Keys;
+import dagger.internal.Linker;
+import dagger.internal.StaticInjection;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
+import javax.inject.Inject;
+
+/**
+ * Uses reflection to inject the static fields of a class.
+ */
+public final class ReflectiveStaticInjection extends StaticInjection {
+  private final ClassLoader loader;
+  private final Field[] fields;
+  private Binding&lt;?&gt;[] bindings;
+
+<span class="fc" id="L36">  private ReflectiveStaticInjection(ClassLoader loader, Field[] fields) {</span>
+<span class="fc" id="L37">    this.fields = fields;</span>
+<span class="fc" id="L38">    this.loader = loader;</span>
+<span class="fc" id="L39">  }</span>
+
+  @Override public void attach(Linker linker) {
+<span class="fc" id="L42">    bindings = new Binding&lt;?&gt;[fields.length];</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">    for (int i = 0; i &lt; fields.length; i++) {</span>
+<span class="fc" id="L44">      Field field = fields[i];</span>
+<span class="fc" id="L45">      String key = Keys.get(field.getGenericType(), field.getAnnotations(), field);</span>
+<span class="fc" id="L46">      bindings[i] = linker.requestBinding(key, field, loader);</span>
+    }
+<span class="fc" id="L48">  }</span>
+
+  @Override public void inject() {
+    try {
+<span class="fc bfc" id="L52" title="All 2 branches covered.">      for (int f = 0; f &lt; fields.length; f++) {</span>
+<span class="fc" id="L53">        fields[f].set(null, bindings[f].get());</span>
+      }
+<span class="nc" id="L55">    } catch (IllegalAccessException e) {</span>
+<span class="nc" id="L56">      throw new AssertionError(e);</span>
+<span class="fc" id="L57">    }</span>
+<span class="fc" id="L58">  }</span>
+
+  public static StaticInjection create(Class&lt;?&gt; injectedClass) {
+<span class="fc" id="L61">    List&lt;Field&gt; fields = new ArrayList&lt;Field&gt;();</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">    for (Field field : injectedClass.getDeclaredFields()) {</span>
+<span class="fc bfc" id="L63" title="All 4 branches covered.">      if (Modifier.isStatic(field.getModifiers()) &amp;&amp; field.isAnnotationPresent(Inject.class)) {</span>
+<span class="fc" id="L64">        field.setAccessible(true);</span>
+<span class="fc" id="L65">        fields.add(field);</span>
+      }
+    }
+<span class="pc bpc" id="L68" title="1 of 2 branches missed.">    if (fields.isEmpty()) {</span>
+<span class="nc" id="L69">      throw new IllegalArgumentException(&quot;No static injections: &quot; + injectedClass.getName());</span>
+    }
+<span class="fc" id="L71">    return new ReflectiveStaticInjection(injectedClass.getClassLoader(),</span>
+<span class="fc" id="L72">        fields.toArray(new Field[fields.size()]));</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

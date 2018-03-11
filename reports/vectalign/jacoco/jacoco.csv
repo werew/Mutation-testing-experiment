@@ -1,0 +1,49 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+vectalign,com.bonnyfone.vectalign.viewer,SVGDrawingPanel.new Runnable() {...},10,0,0,0,3,0,2,0,2,0
+vectalign,com.bonnyfone.vectalign.viewer,VectAlignViewer.new ActionListener() {...},16,0,0,0,4,0,2,0,2,0
+vectalign,com.bonnyfone.vectalign.viewer,VectAlignViewer.new MouseListener() {...},40,0,0,0,10,0,6,0,6,0
+vectalign,com.bonnyfone.vectalign.viewer,VectAlignViewer.new MouseListener() {...},40,0,0,0,10,0,6,0,6,0
+vectalign,com.bonnyfone.vectalign.viewer,VectAlignViewer.new ActionListener() {...},14,0,0,0,4,0,2,0,2,0
+vectalign,com.bonnyfone.vectalign.viewer,SVGDrawingPanel.new Thread() {...},81,0,14,0,18,0,9,0,2,0
+vectalign,com.bonnyfone.vectalign.viewer,VectAlignViewer.new ChangeListener() {...},31,0,0,0,9,0,2,0,2,0
+vectalign,com.bonnyfone.vectalign.viewer,VectAlignViewer.new FileFilter() {...},28,0,6,0,10,0,6,0,3,0
+vectalign,com.bonnyfone.vectalign.viewer,VectAlignViewer.new ActionListener() {...},22,0,0,0,4,0,2,0,2,0
+vectalign,com.bonnyfone.vectalign.viewer,VectAlignViewer.new ActionListener() {...},22,0,0,0,4,0,2,0,2,0
+vectalign,com.bonnyfone.vectalign.viewer,VectAlignExportDialog.new ActionListener() {...},14,0,2,0,4,0,3,0,2,0
+vectalign,com.bonnyfone.vectalign.viewer,VectAlignViewer.new ActionListener() {...},16,0,0,0,4,0,2,0,2,0
+vectalign,com.bonnyfone.vectalign.viewer,VectAlignExportDialog.new ActionListener() {...},22,0,2,0,5,0,3,0,2,0
+vectalign,com.bonnyfone.vectalign.viewer,VectAlignViewer.new ActionListener() {...},16,0,0,0,4,0,2,0,2,0
+vectalign,com.bonnyfone.vectalign.viewer,VectAlignExportDialog.new FileFilter() {...},15,0,2,0,5,0,4,0,3,0
+vectalign,com.bonnyfone.vectalign.viewer,VectAlignViewer.new ActionListener() {...},16,0,0,0,4,0,2,0,2,0
+vectalign,com.bonnyfone.vectalign.viewer,VectAlignViewer.new MouseListener() {...},14,0,0,0,7,0,6,0,6,0
+vectalign,com.bonnyfone.vectalign.viewer,VectAlignViewer.new ActionListener() {...},27,0,0,0,5,0,2,0,2,0
+vectalign,com.bonnyfone.vectalign.viewer,VectAlignViewer.new ActionListener() {...},27,0,0,0,5,0,2,0,2,0
+vectalign,com.bonnyfone.vectalign.viewer,VectAlignViewer.new ActionListener() {...},27,0,0,0,4,0,2,0,2,0
+vectalign,com.bonnyfone.vectalign.viewer,VectAlignViewer.new ActionListener() {...},27,0,0,0,4,0,2,0,2,0
+vectalign,com.bonnyfone.vectalign.viewer,VectAlignViewer.new ActionListener() {...},10,0,0,0,3,0,2,0,2,0
+vectalign,com.bonnyfone.vectalign.viewer,VectAlignViewer,1608,0,30,0,310,0,43,0,28,0
+vectalign,com.bonnyfone.vectalign.viewer,VectAlignViewer.new ChangeListener() {...},23,0,2,0,4,0,3,0,2,0
+vectalign,com.bonnyfone.vectalign.viewer,VectAlignViewer.new ActionListener() {...},50,0,0,0,7,0,2,0,2,0
+vectalign,com.bonnyfone.vectalign.viewer,SVGDrawingPanel,578,0,34,0,140,0,55,0,38,0
+vectalign,com.bonnyfone.vectalign.viewer,VectAlignExportDialog,596,0,14,0,143,0,21,0,14,0
+vectalign,com.bonnyfone.vectalign.viewer,VectAlignViewer.new Runnable() {...},9,0,0,0,3,0,2,0,2,0
+vectalign,com.bonnyfone.vectalign.viewer,RoundedJPanel,175,0,4,0,36,0,8,0,6,0
+vectalign,android.support.v7.graphics.drawable,PathParser.PathDataNode,0,71,1,7,0,14,1,7,0,4
+vectalign,android.support.v7.graphics.drawable,PathParser,108,310,22,51,22,78,21,27,3,7
+vectalign,android.support.v7.graphics.drawable,PathParser.ExtractFloatResult,0,3,0,0,0,1,0,1,0,1
+vectalign,com.bonnyfone.vectalign.techniques,SubAlignMode,0,162,0,4,0,25,0,4,0,2
+vectalign,com.bonnyfone.vectalign.techniques,BaseFillMode,55,523,5,33,9,78,5,17,0,3
+vectalign,com.bonnyfone.vectalign.techniques,AbstractAlignMode,0,3,0,0,0,1,0,1,0,1
+vectalign,com.bonnyfone.vectalign.techniques,AbstractFillMode,0,3,0,0,0,1,0,1,0,1
+vectalign,com.bonnyfone.vectalign.techniques,NWAlignment,46,400,5,27,7,68,4,21,1,8
+vectalign,com.bonnyfone.vectalign.techniques,RawAlignMode,3,101,5,7,1,20,5,4,0,3
+vectalign,com.bonnyfone.vectalign.techniques,LinearInterpolateFillMode,2,177,5,25,2,46,5,15,0,5
+vectalign,com.bonnyfone.vectalign,PathNodeUtils,174,682,33,100,28,128,29,52,3,9
+vectalign,com.bonnyfone.vectalign,Main.new Comparator() {...},15,0,4,0,6,0,4,0,2,0
+vectalign,com.bonnyfone.vectalign,VectAlign.new Object() {...},4,29,0,0,0,1,0,1,0,1
+vectalign,com.bonnyfone.vectalign,VectAlign.Mode,0,56,0,0,0,8,0,2,0,2
+vectalign,com.bonnyfone.vectalign,SVGParser,119,0,10,0,29,0,9,0,4,0
+vectalign,com.bonnyfone.vectalign,VectAlign,96,133,8,6,14,23,9,4,3,2
+vectalign,com.bonnyfone.vectalign,AnimatedVectorDrawableUtils,449,0,30,0,46,0,18,0,3,0
+vectalign,com.bonnyfone.vectalign,Utils,83,0,4,0,25,0,7,0,5,0
+vectalign,com.bonnyfone.vectalign,Main,314,0,36,0,92,0,22,0,4,0

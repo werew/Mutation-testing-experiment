@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JsonWriter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Moshi</a> &gt; <a href="index.source.html" class="el_package">com.squareup.moshi</a> &gt; <span class="el_source">JsonWriter.java</span></div><h1>JsonWriter.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2010 Google Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.squareup.moshi;
+
+import java.io.Closeable;
+import java.io.Flushable;
+import java.io.IOException;
+import java.util.Arrays;
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
+import okio.BufferedSink;
+
+import static com.squareup.moshi.JsonScope.EMPTY_OBJECT;
+import static com.squareup.moshi.JsonScope.NONEMPTY_OBJECT;
+
+/**
+ * Writes a JSON (&lt;a href=&quot;http://www.ietf.org/rfc/rfc7159.txt&quot;&gt;RFC 7159&lt;/a&gt;)
+ * encoded value to a stream, one token at a time. The stream includes both
+ * literal values (strings, numbers, booleans and nulls) as well as the begin
+ * and end delimiters of objects and arrays.
+ *
+ * &lt;h3&gt;Encoding JSON&lt;/h3&gt;
+ * To encode your data as JSON, create a new {@code JsonWriter}. Each JSON
+ * document must contain one top-level array or object. Call methods on the
+ * writer as you walk the structure's contents, nesting arrays and objects as
+ * necessary:
+ * &lt;ul&gt;
+ *   &lt;li&gt;To write &lt;strong&gt;arrays&lt;/strong&gt;, first call {@link #beginArray()}.
+ *       Write each of the array's elements with the appropriate {@link #value}
+ *       methods or by nesting other arrays and objects. Finally close the array
+ *       using {@link #endArray()}.
+ *   &lt;li&gt;To write &lt;strong&gt;objects&lt;/strong&gt;, first call {@link #beginObject()}.
+ *       Write each of the object's properties by alternating calls to
+ *       {@link #name} with the property's value. Write property values with the
+ *       appropriate {@link #value} method or by nesting other objects or arrays.
+ *       Finally close the object using {@link #endObject()}.
+ * &lt;/ul&gt;
+ *
+ * &lt;h3&gt;Example&lt;/h3&gt;
+ * Suppose we'd like to encode a stream of messages such as the following: &lt;pre&gt; {@code
+ * [
+ *   {
+ *     &quot;id&quot;: 912345678901,
+ *     &quot;text&quot;: &quot;How do I stream JSON in Java?&quot;,
+ *     &quot;geo&quot;: null,
+ *     &quot;user&quot;: {
+ *       &quot;name&quot;: &quot;json_newb&quot;,
+ *       &quot;followers_count&quot;: 41
+ *      }
+ *   },
+ *   {
+ *     &quot;id&quot;: 912345678902,
+ *     &quot;text&quot;: &quot;@json_newb just use JsonWriter!&quot;,
+ *     &quot;geo&quot;: [50.454722, -104.606667],
+ *     &quot;user&quot;: {
+ *       &quot;name&quot;: &quot;jesse&quot;,
+ *       &quot;followers_count&quot;: 2
+ *     }
+ *   }
+ * ]}&lt;/pre&gt;
+ * This code encodes the above structure: &lt;pre&gt;   {@code
+ *   public void writeJsonStream(BufferedSink sink, List&lt;Message&gt; messages) throws IOException {
+ *     JsonWriter writer = JsonWriter.of(sink);
+ *     writer.setIndent(&quot;  &quot;);
+ *     writeMessagesArray(writer, messages);
+ *     writer.close();
+ *   }
+ *
+ *   public void writeMessagesArray(JsonWriter writer, List&lt;Message&gt; messages) throws IOException {
+ *     writer.beginArray();
+ *     for (Message message : messages) {
+ *       writeMessage(writer, message);
+ *     }
+ *     writer.endArray();
+ *   }
+ *
+ *   public void writeMessage(JsonWriter writer, Message message) throws IOException {
+ *     writer.beginObject();
+ *     writer.name(&quot;id&quot;).value(message.getId());
+ *     writer.name(&quot;text&quot;).value(message.getText());
+ *     if (message.getGeo() != null) {
+ *       writer.name(&quot;geo&quot;);
+ *       writeDoublesArray(writer, message.getGeo());
+ *     } else {
+ *       writer.name(&quot;geo&quot;).nullValue();
+ *     }
+ *     writer.name(&quot;user&quot;);
+ *     writeUser(writer, message.getUser());
+ *     writer.endObject();
+ *   }
+ *
+ *   public void writeUser(JsonWriter writer, User user) throws IOException {
+ *     writer.beginObject();
+ *     writer.name(&quot;name&quot;).value(user.getName());
+ *     writer.name(&quot;followers_count&quot;).value(user.getFollowersCount());
+ *     writer.endObject();
+ *   }
+ *
+ *   public void writeDoublesArray(JsonWriter writer, List&lt;Double&gt; doubles) throws IOException {
+ *     writer.beginArray();
+ *     for (Double value : doubles) {
+ *       writer.value(value);
+ *     }
+ *     writer.endArray();
+ *   }}&lt;/pre&gt;
+ *
+ * &lt;p&gt;Each {@code JsonWriter} may be used to write a single JSON stream.
+ * Instances of this class are not thread safe. Calls that would result in a
+ * malformed JSON string will fail with an {@link IllegalStateException}.
+ */
+public abstract class JsonWriter implements Closeable, Flushable {
+  // The nesting stack. Using a manual array rather than an ArrayList saves 20%. This stack will
+  // grow itself up to 256 levels of nesting including the top-level document. Deeper nesting is
+  // prone to trigger StackOverflowErrors.
+<span class="fc" id="L128">  int stackSize = 0;</span>
+<span class="fc" id="L129">  int[] scopes = new int[32];</span>
+<span class="fc" id="L130">  String[] pathNames = new String[32];</span>
+<span class="fc" id="L131">  int[] pathIndices = new int[32];</span>
+
+  /**
+   * A string containing a full set of spaces for a single level of indentation, or null for no
+   * pretty printing.
+   */
+  String indent;
+  boolean lenient;
+  boolean serializeNulls;
+  boolean promoteValueToName;
+
+  /** Returns a new instance that writes UTF-8 encoded JSON to {@code sink}. */
+  @CheckReturnValue public static JsonWriter of(BufferedSink sink) {
+<span class="fc" id="L144">    return new JsonUtf8Writer(sink);</span>
+  }
+
+<span class="fc" id="L147">  JsonWriter() {</span>
+    // Package-private to control subclasses.
+<span class="fc" id="L149">  }</span>
+
+  /** Returns the scope on the top of the stack. */
+  final int peekScope() {
+<span class="fc bfc" id="L153" title="All 2 branches covered.">    if (stackSize == 0) {</span>
+<span class="fc" id="L154">      throw new IllegalStateException(&quot;JsonWriter is closed.&quot;);</span>
+    }
+<span class="fc" id="L156">    return scopes[stackSize - 1];</span>
+  }
+
+  /** Before pushing a value on the stack this confirms that the stack has capacity. */
+  final boolean checkStack() {
+<span class="fc bfc" id="L161" title="All 2 branches covered.">    if (stackSize != scopes.length) return false;</span>
+
+<span class="fc bfc" id="L163" title="All 2 branches covered.">    if (stackSize == 256) {</span>
+<span class="fc" id="L164">      throw new JsonDataException(&quot;Nesting too deep at &quot; + getPath() + &quot;: circular reference?&quot;);</span>
+    }
+
+<span class="fc" id="L167">    scopes = Arrays.copyOf(scopes, scopes.length * 2);</span>
+<span class="fc" id="L168">    pathNames = Arrays.copyOf(pathNames, pathNames.length * 2);</span>
+<span class="fc" id="L169">    pathIndices = Arrays.copyOf(pathIndices, pathIndices.length * 2);</span>
+<span class="fc bfc" id="L170" title="All 2 branches covered.">    if (this instanceof JsonValueWriter) {</span>
+<span class="fc" id="L171">      ((JsonValueWriter) this).stack =</span>
+<span class="fc" id="L172">          Arrays.copyOf(((JsonValueWriter) this).stack, ((JsonValueWriter) this).stack.length * 2);</span>
+    }
+
+<span class="fc" id="L175">    return true;</span>
+  }
+
+  final void pushScope(int newTop) {
+<span class="fc" id="L179">    scopes[stackSize++] = newTop;</span>
+<span class="fc" id="L180">  }</span>
+
+  /** Replace the value on the top of the stack with the given value. */
+  final void replaceTop(int topOfStack) {
+<span class="fc" id="L184">    scopes[stackSize - 1] = topOfStack;</span>
+<span class="fc" id="L185">  }</span>
+
+  /**
+   * Sets the indentation string to be repeated for each level of indentation
+   * in the encoded document. If {@code indent.isEmpty()} the encoded document
+   * will be compact. Otherwise the encoded document will be more
+   * human-readable.
+   *
+   * @param indent a string containing only whitespace.
+   */
+  public void setIndent(String indent) {
+<span class="fc bfc" id="L196" title="All 2 branches covered.">    this.indent = !indent.isEmpty() ? indent : null;</span>
+<span class="fc" id="L197">  }</span>
+
+  /**
+   * Returns a string containing only whitespace, used for each level of
+   * indentation. If empty, the encoded document will be compact.
+   */
+  @CheckReturnValue public final String getIndent() {
+<span class="fc bfc" id="L204" title="All 2 branches covered.">    return indent != null ? indent : &quot;&quot;;</span>
+  }
+
+  /**
+   * Configure this writer to relax its syntax rules. By default, this writer
+   * only emits well-formed JSON as specified by &lt;a
+   * href=&quot;http://www.ietf.org/rfc/rfc7159.txt&quot;&gt;RFC 7159&lt;/a&gt;. Setting the writer
+   * to lenient permits the following:
+   * &lt;ul&gt;
+   *   &lt;li&gt;Top-level values of any type. With strict writing, the top-level
+   *       value must be an object or an array.
+   *   &lt;li&gt;Numbers may be {@linkplain Double#isNaN() NaNs} or {@linkplain
+   *       Double#isInfinite() infinities}.
+   * &lt;/ul&gt;
+   */
+  public final void setLenient(boolean lenient) {
+<span class="fc" id="L220">    this.lenient = lenient;</span>
+<span class="fc" id="L221">  }</span>
+
+  /**
+   * Returns true if this writer has relaxed syntax rules.
+   */
+  @CheckReturnValue public final boolean isLenient() {
+<span class="fc" id="L227">    return lenient;</span>
+  }
+
+  /**
+   * Sets whether object members are serialized when their value is null.
+   * This has no impact on array elements. The default is false.
+   */
+  public final void setSerializeNulls(boolean serializeNulls) {
+<span class="fc" id="L235">    this.serializeNulls = serializeNulls;</span>
+<span class="fc" id="L236">  }</span>
+
+  /**
+   * Returns true if object members are serialized when their value is null.
+   * This has no impact on array elements. The default is false.
+   */
+  @CheckReturnValue public final boolean getSerializeNulls() {
+<span class="fc" id="L243">    return serializeNulls;</span>
+  }
+
+  /**
+   * Begins encoding a new array. Each call to this method must be paired with
+   * a call to {@link #endArray}.
+   *
+   * @return this writer.
+   */
+  public abstract JsonWriter beginArray() throws IOException;
+
+  /**
+   * Ends encoding the current array.
+   *
+   * @return this writer.
+   */
+  public abstract JsonWriter endArray() throws IOException;
+
+  /**
+   * Begins encoding a new object. Each call to this method must be paired
+   * with a call to {@link #endObject}.
+   *
+   * @return this writer.
+   */
+  public abstract JsonWriter beginObject() throws IOException;
+
+  /**
+   * Ends encoding the current object.
+   *
+   * @return this writer.
+   */
+  public abstract JsonWriter endObject() throws IOException;
+
+  /**
+   * Encodes the property name.
+   *
+   * @param name the name of the forthcoming value. Must not be null.
+   * @return this writer.
+   */
+  public abstract JsonWriter name(String name) throws IOException;
+
+  /**
+   * Encodes {@code value}.
+   *
+   * @param value the literal string value, or null to encode a null literal.
+   * @return this writer.
+   */
+  public abstract JsonWriter value(@Nullable String value) throws IOException;
+
+  /**
+   * Encodes {@code null}.
+   *
+   * @return this writer.
+   */
+  public abstract JsonWriter nullValue() throws IOException;
+
+  /**
+   * Encodes {@code value}.
+   *
+   * @return this writer.
+   */
+  public abstract JsonWriter value(boolean value) throws IOException;
+
+  /**
+   * Encodes {@code value}.
+   *
+   * @return this writer.
+   */
+  public abstract JsonWriter value(@Nullable Boolean value) throws IOException;
+
+  /**
+   * Encodes {@code value}.
+   *
+   * @param value a finite value. May not be {@linkplain Double#isNaN() NaNs} or
+   *     {@linkplain Double#isInfinite() infinities}.
+   * @return this writer.
+   */
+  public abstract JsonWriter value(double value) throws IOException;
+
+  /**
+   * Encodes {@code value}.
+   *
+   * @return this writer.
+   */
+  public abstract JsonWriter value(long value) throws IOException;
+
+  /**
+   * Encodes {@code value}.
+   *
+   * @param value a finite value. May not be {@linkplain Double#isNaN() NaNs} or
+   *     {@linkplain Double#isInfinite() infinities}.
+   * @return this writer.
+   */
+  public abstract JsonWriter value(@Nullable Number value) throws IOException;
+
+  /**
+   * Changes the writer to treat the next value as a string name. This is useful for map adapters so
+   * that arbitrary type adapters can use {@link #value} to write a name value.
+   */
+  final void promoteValueToName() throws IOException {
+<span class="fc" id="L343">    int context = peekScope();</span>
+<span class="pc bpc" id="L344" title="1 of 4 branches missed.">    if (context != NONEMPTY_OBJECT &amp;&amp; context != EMPTY_OBJECT) {</span>
+<span class="nc" id="L345">      throw new IllegalStateException(&quot;Nesting problem.&quot;);</span>
+    }
+<span class="fc" id="L347">    promoteValueToName = true;</span>
+<span class="fc" id="L348">  }</span>
+
+  /**
+   * Returns a &lt;a href=&quot;http://goessner.net/articles/JsonPath/&quot;&gt;JsonPath&lt;/a&gt; to
+   * the current location in the JSON value.
+   */
+  @CheckReturnValue public final String getPath() {
+<span class="fc" id="L355">    return JsonScope.getPath(stackSize, scopes, pathNames, pathIndices);</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HasPropertyWithValue.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JavaHamcrest</a> &gt; <a href="index.source.html" class="el_package">org.hamcrest.beans</a> &gt; <span class="el_source">HasPropertyWithValue.java</span></div><h1>HasPropertyWithValue.java</h1><pre class="source lang-java linenums">package org.hamcrest.beans;
+
+import org.hamcrest.Condition;
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeDiagnosingMatcher;
+
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.List;
+import java.util.ListIterator;
+
+import static org.hamcrest.Condition.matched;
+import static org.hamcrest.Condition.notMatched;
+import static org.hamcrest.beans.PropertyUtil.NO_ARGUMENTS;
+
+/**
+ * &lt;p&gt;Matcher that asserts that a JavaBean property on an argument passed to the
+ * mock object meets the provided matcher. This is useful for when objects
+ * are created within code under test and passed to a mock object, and you wish
+ * to assert that the created object has certain properties.
+ * &lt;/p&gt;
+ *
+ * &lt;h2&gt;Example Usage&lt;/h2&gt;
+ * Consider the situation where we have a class representing a person, which
+ * follows the basic JavaBean convention of having get() and possibly set()
+ * methods for it's properties:
+ * &lt;pre&gt;
+ * public class Person {
+ *   private String name;
+ *   public Person(String person) {
+ *     this.person = person;
+ *   }
+ *   public String getName() {
+ *     return name;
+ *   }
+ * }&lt;/pre&gt;
+ * 
+ * And that these person objects are generated within a piece of code under test
+ * (a class named PersonGenerator). This object is sent to one of our mock objects
+ * which overrides the PersonGenerationListener interface:
+ * &lt;pre&gt;
+ * public interface PersonGenerationListener {
+ *   public void personGenerated(Person person);
+ * }&lt;/pre&gt;
+ * 
+ * In order to check that the code under test generates a person with name
+ * &quot;Iain&quot; we would do the following:
+ * &lt;pre&gt;
+ * Mock personGenListenerMock = mock(PersonGenerationListener.class);
+ * personGenListenerMock.expects(once()).method(&quot;personGenerated&quot;).with(and(isA(Person.class), hasProperty(&quot;Name&quot;, eq(&quot;Iain&quot;)));
+ * PersonGenerationListener listener = (PersonGenerationListener)personGenListenerMock.proxy();&lt;/pre&gt;
+ * 
+ * &lt;p&gt;If an exception is thrown by the getter method for a property, the property
+ * does not exist, is not readable, or a reflection related exception is thrown
+ * when trying to invoke it then this is treated as an evaluation failure and
+ * the matches method will return false.
+ * &lt;/p&gt;
+ * &lt;p&gt;This matcher class will also work with JavaBean objects that have explicit
+ * bean descriptions via an associated BeanInfo description class. See the
+ * JavaBeans specification for more information:
+ * http://java.sun.com/products/javabeans/docs/index.html
+ * &lt;/p&gt;
+ *
+ * @author Iain McGinniss
+ * @author Nat Pryce
+ * @author Steve Freeman
+ * @author cristcost at github
+ */
+public class HasPropertyWithValue&lt;T&gt; extends TypeSafeDiagnosingMatcher&lt;T&gt; {
+<span class="fc" id="L73">    private static final Condition.Step&lt;PropertyDescriptor,Method&gt; WITH_READ_METHOD = withReadMethod();</span>
+    private final String propertyName;
+    private final Matcher&lt;Object&gt; valueMatcher;
+    private final String messageFormat;
+
+    public HasPropertyWithValue(String propertyName, Matcher&lt;?&gt; valueMatcher) {
+<span class="fc" id="L79">        this(propertyName, valueMatcher, &quot; property '%s' &quot;);</span>
+<span class="fc" id="L80">    }</span>
+
+<span class="fc" id="L82">    public HasPropertyWithValue(String propertyName, Matcher&lt;?&gt; valueMatcher, String messageFormat) {</span>
+<span class="fc" id="L83">        this.propertyName = propertyName;</span>
+<span class="fc" id="L84">        this.valueMatcher = nastyGenericsWorkaround(valueMatcher);</span>
+<span class="fc" id="L85">        this.messageFormat = messageFormat;</span>
+<span class="fc" id="L86">    }</span>
+
+    @Override
+    public boolean matchesSafely(T bean, Description mismatch) {
+<span class="fc" id="L90">        return propertyOn(bean, mismatch)</span>
+<span class="fc" id="L91">                  .and(WITH_READ_METHOD)</span>
+<span class="fc" id="L92">                  .and(withPropertyValue(bean))</span>
+<span class="fc" id="L93">                  .matching(valueMatcher, String.format(messageFormat, propertyName));</span>
+    }
+
+    @Override
+    public void describeTo(Description description) {
+<span class="fc" id="L98">        description.appendText(&quot;hasProperty(&quot;).appendValue(propertyName).appendText(&quot;, &quot;)</span>
+<span class="fc" id="L99">                   .appendDescriptionOf(valueMatcher).appendText(&quot;)&quot;);</span>
+<span class="fc" id="L100">    }</span>
+
+    private Condition&lt;PropertyDescriptor&gt; propertyOn(T bean, Description mismatch) {
+<span class="fc" id="L103">        PropertyDescriptor property = PropertyUtil.getPropertyDescriptor(propertyName, bean);</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">        if (property == null) {</span>
+<span class="fc" id="L105">            mismatch.appendText(&quot;No property \&quot;&quot; + propertyName + &quot;\&quot;&quot;);</span>
+<span class="fc" id="L106">            return notMatched();</span>
+        }
+
+<span class="fc" id="L109">        return matched(property, mismatch);</span>
+    }
+
+    private Condition.Step&lt;Method, Object&gt; withPropertyValue(final T bean) {
+<span class="fc" id="L113">        return new Condition.Step&lt;Method, Object&gt;() {</span>
+            @Override
+            public Condition&lt;Object&gt; apply(Method readMethod, Description mismatch) {
+                try {
+<span class="fc" id="L117">                    return matched(readMethod.invoke(bean, NO_ARGUMENTS), mismatch);</span>
+<span class="fc" id="L118">                } catch (InvocationTargetException e) {</span>
+<span class="fc" id="L119">                    mismatch</span>
+<span class="fc" id="L120">                      .appendText(&quot;Calling '&quot;)</span>
+<span class="fc" id="L121">                      .appendText(readMethod.toString())</span>
+<span class="fc" id="L122">                      .appendText(&quot;': &quot;)</span>
+<span class="fc" id="L123">                      .appendValue(e.getTargetException().getMessage());</span>
+<span class="fc" id="L124">                    return notMatched();</span>
+<span class="nc" id="L125">                } catch (Exception e) {</span>
+<span class="nc" id="L126">                    throw new IllegalStateException(</span>
+                      &quot;Calling: '&quot; + readMethod + &quot;' should not have thrown &quot; + e);
+                }
+            }
+        };
+    }
+
+    @SuppressWarnings(&quot;unchecked&quot;)
+    private static Matcher&lt;Object&gt; nastyGenericsWorkaround(Matcher&lt;?&gt; valueMatcher) {
+<span class="fc" id="L135">        return (Matcher&lt;Object&gt;) valueMatcher;</span>
+    }
+
+    private static Condition.Step&lt;PropertyDescriptor,Method&gt; withReadMethod() {
+<span class="fc" id="L139">        return new Condition.Step&lt;PropertyDescriptor, java.lang.reflect.Method&gt;() {</span>
+            @Override
+            public Condition&lt;Method&gt; apply(PropertyDescriptor property, Description mismatch) {
+<span class="fc" id="L142">                final Method readMethod = property.getReadMethod();</span>
+<span class="fc bfc" id="L143" title="All 2 branches covered.">                if (null == readMethod) {</span>
+<span class="fc" id="L144">                    mismatch.appendText(&quot;property \&quot;&quot; + property.getName() + &quot;\&quot; is not readable&quot;);</span>
+<span class="fc" id="L145">                    return notMatched();</span>
+                }
+<span class="fc" id="L147">                return matched(readMethod, mismatch);</span>
+            }
+        };
+    }
+
+    /**
+     * Creates a matcher that matches when the examined object has a JavaBean property
+     * with the specified name whose value satisfies the specified matcher.
+     * For example:
+     * &lt;pre&gt;assertThat(myBean, hasProperty(&quot;foo&quot;, equalTo(&quot;bar&quot;))&lt;/pre&gt;
+     * 
+     * @param propertyName
+     *     the name of the JavaBean property that examined beans should possess
+     * @param valueMatcher
+     *     a matcher for the value of the specified property of the examined bean
+     */
+    public static &lt;T&gt; Matcher&lt;T&gt; hasProperty(String propertyName, Matcher&lt;?&gt; valueMatcher) {
+<span class="fc" id="L164">        return new HasPropertyWithValue&lt;&gt;(propertyName, valueMatcher);</span>
+    }
+
+    /**
+     * Creates a matcher that matches when the examined object is a graph of
+     * JavaBean objects that can be navigated along the declared dot-separated path
+     * and the final element of that path is a JavaBean property whose value satisfies the
+     * specified matcher.
+     * For example:
+     * &lt;pre&gt;assertThat(myBean, hasProperty(&quot;foo.bar.baz&quot;, equalTo(&quot;a property value&quot;))&lt;/pre&gt;
+     *
+     * @param path
+     *     the dot-separated path from the examined object to the JavaBean property
+     * @param valueMatcher
+     *     a matcher for the value of the specified property of the examined bean
+     */
+    public static &lt;T&gt; Matcher&lt;T&gt; hasPropertyAtPath(String path, Matcher&lt;T&gt; valueMatcher) {
+<span class="fc" id="L181">        List&lt;String&gt; properties = Arrays.asList(path.split(&quot;\\.&quot;));</span>
+<span class="fc" id="L182">            ListIterator&lt;String&gt; iterator =</span>
+<span class="fc" id="L183">                properties.listIterator(properties.size());</span>
+
+<span class="fc" id="L185">            Matcher&lt;T&gt; ret = valueMatcher;</span>
+<span class="fc bfc" id="L186" title="All 2 branches covered.">            while (iterator.hasPrevious()) {</span>
+<span class="fc" id="L187">                ret = new HasPropertyWithValue&lt;&gt;(iterator.previous(), ret, &quot;%s.&quot;);</span>
+            }
+<span class="fc" id="L189">            return ret;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

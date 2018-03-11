@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>WildcardTypeName.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JavaPoet</a> &gt; <a href="index.source.html" class="el_package">com.squareup.javapoet</a> &gt; <span class="el_source">WildcardTypeName.java</span></div><h1>WildcardTypeName.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2015 Square, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.squareup.javapoet;
+
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.lang.reflect.WildcardType;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import javax.lang.model.element.TypeParameterElement;
+import javax.lang.model.type.TypeMirror;
+
+import static com.squareup.javapoet.Util.checkArgument;
+
+public final class WildcardTypeName extends TypeName {
+  public final List&lt;TypeName&gt; upperBounds;
+  public final List&lt;TypeName&gt; lowerBounds;
+
+  private WildcardTypeName(List&lt;TypeName&gt; upperBounds, List&lt;TypeName&gt; lowerBounds) {
+<span class="fc" id="L36">    this(upperBounds, lowerBounds, new ArrayList&lt;&gt;());</span>
+<span class="fc" id="L37">  }</span>
+
+  private WildcardTypeName(List&lt;TypeName&gt; upperBounds, List&lt;TypeName&gt; lowerBounds,
+      List&lt;AnnotationSpec&gt; annotations) {
+<span class="fc" id="L41">    super(annotations);</span>
+<span class="fc" id="L42">    this.upperBounds = Util.immutableList(upperBounds);</span>
+<span class="fc" id="L43">    this.lowerBounds = Util.immutableList(lowerBounds);</span>
+
+<span class="pc bpc" id="L45" title="1 of 2 branches missed.">    checkArgument(this.upperBounds.size() == 1, &quot;unexpected extends bounds: %s&quot;, upperBounds);</span>
+<span class="fc bfc" id="L46" title="All 2 branches covered.">    for (TypeName upperBound : this.upperBounds) {</span>
+<span class="pc bpc" id="L47" title="2 of 4 branches missed.">      checkArgument(!upperBound.isPrimitive() &amp;&amp; upperBound != VOID,</span>
+          &quot;invalid upper bound: %s&quot;, upperBound);
+<span class="fc" id="L49">    }</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">    for (TypeName lowerBound : this.lowerBounds) {</span>
+<span class="pc bpc" id="L51" title="2 of 4 branches missed.">      checkArgument(!lowerBound.isPrimitive() &amp;&amp; lowerBound != VOID,</span>
+          &quot;invalid lower bound: %s&quot;, lowerBound);
+<span class="fc" id="L53">    }</span>
+<span class="fc" id="L54">  }</span>
+
+  @Override public WildcardTypeName annotated(List&lt;AnnotationSpec&gt; annotations) {
+<span class="nc" id="L57">    return new WildcardTypeName(upperBounds, lowerBounds, concatAnnotations(annotations));</span>
+  }
+
+  @Override public TypeName withoutAnnotations() {
+<span class="nc" id="L61">    return new WildcardTypeName(upperBounds, lowerBounds);</span>
+  }
+
+  @Override CodeWriter emit(CodeWriter out) throws IOException {
+<span class="fc bfc" id="L65" title="All 2 branches covered.">    if (lowerBounds.size() == 1) {</span>
+<span class="fc" id="L66">      return out.emit(&quot;? super $T&quot;, lowerBounds.get(0));</span>
+    }
+<span class="fc bfc" id="L68" title="All 2 branches covered.">    return upperBounds.get(0).equals(TypeName.OBJECT)</span>
+<span class="fc" id="L69">        ? out.emit(&quot;?&quot;)</span>
+<span class="fc" id="L70">        : out.emit(&quot;? extends $T&quot;, upperBounds.get(0));</span>
+  }
+
+  /**
+   * Returns a type that represents an unknown type that extends {@code bound}. For example, if
+   * {@code bound} is {@code CharSequence.class}, this returns {@code ? extends CharSequence}. If
+   * {@code bound} is {@code Object.class}, this returns {@code ?}, which is shorthand for {@code
+   * ? extends Object}.
+   */
+  public static WildcardTypeName subtypeOf(TypeName upperBound) {
+<span class="fc" id="L80">    return new WildcardTypeName(Collections.singletonList(upperBound), Collections.emptyList());</span>
+  }
+
+  public static WildcardTypeName subtypeOf(Type upperBound) {
+<span class="fc" id="L84">    return subtypeOf(TypeName.get(upperBound));</span>
+  }
+
+  /**
+   * Returns a type that represents an unknown supertype of {@code bound}. For example, if {@code
+   * bound} is {@code String.class}, this returns {@code ? super String}.
+   */
+  public static WildcardTypeName supertypeOf(TypeName lowerBound) {
+<span class="fc" id="L92">    return new WildcardTypeName(Collections.singletonList(OBJECT),</span>
+<span class="fc" id="L93">        Collections.singletonList(lowerBound));</span>
+  }
+
+  public static WildcardTypeName supertypeOf(Type lowerBound) {
+<span class="fc" id="L97">    return supertypeOf(TypeName.get(lowerBound));</span>
+  }
+
+  public static TypeName get(javax.lang.model.type.WildcardType mirror) {
+<span class="nc" id="L101">    return get(mirror, new LinkedHashMap&lt;&gt;());</span>
+  }
+
+  static TypeName get(
+      javax.lang.model.type.WildcardType mirror,
+      Map&lt;TypeParameterElement, TypeVariableName&gt; typeVariables) {
+<span class="fc" id="L107">    TypeMirror extendsBound = mirror.getExtendsBound();</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">    if (extendsBound == null) {</span>
+<span class="fc" id="L109">      TypeMirror superBound = mirror.getSuperBound();</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">      if (superBound == null) {</span>
+<span class="fc" id="L111">        return subtypeOf(Object.class);</span>
+      } else {
+<span class="fc" id="L113">        return supertypeOf(TypeName.get(superBound, typeVariables));</span>
+      }
+    } else {
+<span class="fc" id="L116">      return subtypeOf(TypeName.get(extendsBound, typeVariables));</span>
+    }
+  }
+
+  public static TypeName get(WildcardType wildcardName) {
+<span class="nc" id="L121">    return get(wildcardName, new LinkedHashMap&lt;&gt;());</span>
+  }
+
+  static TypeName get(WildcardType wildcardName, Map&lt;Type, TypeVariableName&gt; map) {
+<span class="nc" id="L125">    return new WildcardTypeName(</span>
+<span class="nc" id="L126">        list(wildcardName.getUpperBounds(), map),</span>
+<span class="nc" id="L127">        list(wildcardName.getLowerBounds(), map));</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

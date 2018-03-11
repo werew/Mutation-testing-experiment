@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Moshi.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Moshi</a> &gt; <a href="index.source.html" class="el_package">com.squareup.moshi</a> &gt; <span class="el_source">Moshi.java</span></div><h1>Moshi.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2014 Square, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.squareup.moshi;
+
+import com.squareup.moshi.internal.Util;
+import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
+
+/**
+ * Coordinates binding between JSON values and Java objects.
+ */
+public final class Moshi {
+<span class="fc" id="L36">  static final List&lt;JsonAdapter.Factory&gt; BUILT_IN_FACTORIES = new ArrayList&lt;&gt;(5);</span>
+
+  static {
+<span class="fc" id="L39">    BUILT_IN_FACTORIES.add(StandardJsonAdapters.FACTORY);</span>
+<span class="fc" id="L40">    BUILT_IN_FACTORIES.add(CollectionJsonAdapter.FACTORY);</span>
+<span class="fc" id="L41">    BUILT_IN_FACTORIES.add(MapJsonAdapter.FACTORY);</span>
+<span class="fc" id="L42">    BUILT_IN_FACTORIES.add(ArrayJsonAdapter.FACTORY);</span>
+<span class="fc" id="L43">    BUILT_IN_FACTORIES.add(ClassJsonAdapter.FACTORY);</span>
+<span class="fc" id="L44">  }</span>
+
+  private final List&lt;JsonAdapter.Factory&gt; factories;
+<span class="fc" id="L47">  private final ThreadLocal&lt;List&lt;DeferredAdapter&lt;?&gt;&gt;&gt; reentrantCalls = new ThreadLocal&lt;&gt;();</span>
+<span class="fc" id="L48">  private final Map&lt;Object, JsonAdapter&lt;?&gt;&gt; adapterCache = new LinkedHashMap&lt;&gt;();</span>
+
+<span class="fc" id="L50">  Moshi(Builder builder) {</span>
+<span class="fc" id="L51">    List&lt;JsonAdapter.Factory&gt; factories = new ArrayList&lt;&gt;(</span>
+<span class="fc" id="L52">        builder.factories.size() + BUILT_IN_FACTORIES.size());</span>
+<span class="fc" id="L53">    factories.addAll(builder.factories);</span>
+<span class="fc" id="L54">    factories.addAll(BUILT_IN_FACTORIES);</span>
+<span class="fc" id="L55">    this.factories = Collections.unmodifiableList(factories);</span>
+<span class="fc" id="L56">  }</span>
+
+  /** Returns a JSON adapter for {@code type}, creating it if necessary. */
+  @CheckReturnValue public &lt;T&gt; JsonAdapter&lt;T&gt; adapter(Type type) {
+<span class="fc" id="L60">    return adapter(type, Util.NO_ANNOTATIONS);</span>
+  }
+
+  @CheckReturnValue public &lt;T&gt; JsonAdapter&lt;T&gt; adapter(Class&lt;T&gt; type) {
+<span class="fc" id="L64">    return adapter(type, Util.NO_ANNOTATIONS);</span>
+  }
+
+  @CheckReturnValue
+  public &lt;T&gt; JsonAdapter&lt;T&gt; adapter(Type type, Class&lt;? extends Annotation&gt; annotationType) {
+<span class="fc" id="L69">    return adapter(type,</span>
+<span class="fc" id="L70">        Collections.singleton(Types.createJsonQualifierImplementation(annotationType)));</span>
+  }
+
+  @CheckReturnValue
+  @SuppressWarnings(&quot;unchecked&quot;) // Factories are required to return only matching JsonAdapters.
+  public &lt;T&gt; JsonAdapter&lt;T&gt; adapter(Type type, Set&lt;? extends Annotation&gt; annotations) {
+<span class="fc" id="L76">    type = Types.canonicalize(type);</span>
+
+    // If there's an equivalent adapter in the cache, we're done!
+<span class="fc" id="L79">    Object cacheKey = cacheKey(type, annotations);</span>
+<span class="fc" id="L80">    synchronized (adapterCache) {</span>
+<span class="fc" id="L81">      JsonAdapter&lt;?&gt; result = adapterCache.get(cacheKey);</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">      if (result != null) return (JsonAdapter&lt;T&gt;) result;</span>
+<span class="fc" id="L83">    }</span>
+
+    // Short-circuit if this is a reentrant call.
+<span class="fc" id="L86">    List&lt;DeferredAdapter&lt;?&gt;&gt; deferredAdapters = reentrantCalls.get();</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">    if (deferredAdapters != null) {</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">      for (int i = 0, size = deferredAdapters.size(); i &lt; size; i++) {</span>
+<span class="fc" id="L89">        DeferredAdapter&lt;?&gt; deferredAdapter = deferredAdapters.get(i);</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">        if (deferredAdapter.cacheKey.equals(cacheKey)) {</span>
+<span class="fc" id="L91">          return (JsonAdapter&lt;T&gt;) deferredAdapter;</span>
+        }
+      }
+    } else {
+<span class="fc" id="L95">      deferredAdapters = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L96">      reentrantCalls.set(deferredAdapters);</span>
+    }
+
+    // Prepare for re-entrant calls, then ask each factory to create a type adapter.
+<span class="fc" id="L100">    DeferredAdapter&lt;T&gt; deferredAdapter = new DeferredAdapter&lt;&gt;(cacheKey);</span>
+<span class="fc" id="L101">    deferredAdapters.add(deferredAdapter);</span>
+    try {
+<span class="fc bfc" id="L103" title="All 2 branches covered.">      for (int i = 0, size = factories.size(); i &lt; size; i++) {</span>
+<span class="fc" id="L104">        JsonAdapter&lt;T&gt; result = (JsonAdapter&lt;T&gt;) factories.get(i).create(type, annotations, this);</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">        if (result != null) {</span>
+<span class="fc" id="L106">          deferredAdapter.ready(result);</span>
+<span class="fc" id="L107">          synchronized (adapterCache) {</span>
+<span class="fc" id="L108">            adapterCache.put(cacheKey, result);</span>
+<span class="fc" id="L109">          }</span>
+<span class="fc" id="L110">          return result;</span>
+        }
+      }
+    } finally {
+<span class="fc" id="L114">      deferredAdapters.remove(deferredAdapters.size() - 1);</span>
+<span class="fc bfc" id="L115" title="All 2 branches covered.">      if (deferredAdapters.isEmpty()) {</span>
+<span class="fc" id="L116">        reentrantCalls.remove();</span>
+      }
+    }
+
+<span class="fc" id="L120">    throw new IllegalArgumentException(&quot;No JsonAdapter for &quot; + type + &quot; annotated &quot; + annotations);</span>
+  }
+
+  @CheckReturnValue
+  @SuppressWarnings(&quot;unchecked&quot;) // Factories are required to return only matching JsonAdapters.
+  public &lt;T&gt; JsonAdapter&lt;T&gt; nextAdapter(JsonAdapter.Factory skipPast, Type type,
+      Set&lt;? extends Annotation&gt; annotations) {
+<span class="fc bfc" id="L127" title="All 2 branches covered.">    if (annotations == null) throw new NullPointerException(&quot;annotations == null&quot;);</span>
+
+<span class="fc" id="L129">    type = Types.canonicalize(type);</span>
+
+<span class="fc" id="L131">    int skipPastIndex = factories.indexOf(skipPast);</span>
+<span class="pc bpc" id="L132" title="1 of 2 branches missed.">    if (skipPastIndex == -1) {</span>
+<span class="nc" id="L133">      throw new IllegalArgumentException(&quot;Unable to skip past unknown factory &quot; + skipPast);</span>
+    }
+<span class="fc bfc" id="L135" title="All 2 branches covered.">    for (int i = skipPastIndex + 1, size = factories.size(); i &lt; size; i++) {</span>
+<span class="fc" id="L136">      JsonAdapter&lt;T&gt; result = (JsonAdapter&lt;T&gt;) factories.get(i).create(type, annotations, this);</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">      if (result != null) return result;</span>
+    }
+<span class="fc" id="L139">    throw new IllegalArgumentException(&quot;No next JsonAdapter for &quot;</span>
+        + type + &quot; annotated &quot; + annotations);
+  }
+
+  /** Returns a new builder containing all custom factories used by the current instance. */
+  @CheckReturnValue public Moshi.Builder newBuilder() {
+<span class="fc" id="L145">    int fullSize = factories.size();</span>
+<span class="fc" id="L146">    int tailSize = BUILT_IN_FACTORIES.size();</span>
+<span class="fc" id="L147">    List&lt;JsonAdapter.Factory&gt; customFactories = factories.subList(0, fullSize - tailSize);</span>
+<span class="fc" id="L148">    return new Builder().addAll(customFactories);</span>
+  }
+
+  /** Returns an opaque object that's equal if the type and annotations are equal. */
+  private Object cacheKey(Type type, Set&lt;? extends Annotation&gt; annotations) {
+<span class="fc bfc" id="L153" title="All 2 branches covered.">    if (annotations.isEmpty()) return type;</span>
+<span class="fc" id="L154">    return Arrays.asList(type, annotations);</span>
+  }
+
+<span class="fc" id="L157">  public static final class Builder {</span>
+<span class="fc" id="L158">    final List&lt;JsonAdapter.Factory&gt; factories = new ArrayList&lt;&gt;();</span>
+
+    public &lt;T&gt; Builder add(final Type type, final JsonAdapter&lt;T&gt; jsonAdapter) {
+<span class="fc bfc" id="L161" title="All 2 branches covered.">      if (type == null) throw new IllegalArgumentException(&quot;type == null&quot;);</span>
+<span class="fc bfc" id="L162" title="All 2 branches covered.">      if (jsonAdapter == null) throw new IllegalArgumentException(&quot;jsonAdapter == null&quot;);</span>
+
+<span class="fc" id="L164">      return add(new JsonAdapter.Factory() {</span>
+        @Override public @Nullable JsonAdapter&lt;?&gt; create(
+            Type targetType, Set&lt;? extends Annotation&gt; annotations, Moshi moshi) {
+<span class="pc bpc" id="L167" title="1 of 4 branches missed.">          return annotations.isEmpty() &amp;&amp; Util.typesMatch(type, targetType) ? jsonAdapter : null;</span>
+        }
+      });
+    }
+
+    public &lt;T&gt; Builder add(final Type type, final Class&lt;? extends Annotation&gt; annotation,
+        final JsonAdapter&lt;T&gt; jsonAdapter) {
+<span class="fc bfc" id="L174" title="All 2 branches covered.">      if (type == null) throw new IllegalArgumentException(&quot;type == null&quot;);</span>
+<span class="fc bfc" id="L175" title="All 2 branches covered.">      if (annotation == null) throw new IllegalArgumentException(&quot;annotation == null&quot;);</span>
+<span class="fc bfc" id="L176" title="All 2 branches covered.">      if (jsonAdapter == null) throw new IllegalArgumentException(&quot;jsonAdapter == null&quot;);</span>
+<span class="fc bfc" id="L177" title="All 2 branches covered.">      if (!annotation.isAnnotationPresent(JsonQualifier.class)) {</span>
+<span class="fc" id="L178">        throw new IllegalArgumentException(annotation + &quot; does not have @JsonQualifier&quot;);</span>
+      }
+<span class="fc bfc" id="L180" title="All 2 branches covered.">      if (annotation.getDeclaredMethods().length &gt; 0) {</span>
+<span class="fc" id="L181">        throw new IllegalArgumentException(&quot;Use JsonAdapter.Factory for annotations with elements&quot;);</span>
+      }
+
+<span class="fc" id="L184">      return add(new JsonAdapter.Factory() {</span>
+        @Override public @Nullable JsonAdapter&lt;?&gt; create(
+            Type targetType, Set&lt;? extends Annotation&gt; annotations, Moshi moshi) {
+<span class="fc bfc" id="L187" title="All 2 branches covered.">          if (Util.typesMatch(type, targetType)</span>
+<span class="fc bfc" id="L188" title="All 2 branches covered.">              &amp;&amp; annotations.size() == 1</span>
+<span class="pc bpc" id="L189" title="1 of 2 branches missed.">              &amp;&amp; Util.isAnnotationPresent(annotations, annotation)) {</span>
+<span class="fc" id="L190">            return jsonAdapter;</span>
+          }
+<span class="fc" id="L192">          return null;</span>
+        }
+      });
+    }
+
+    public Builder add(JsonAdapter.Factory factory) {
+<span class="fc bfc" id="L198" title="All 2 branches covered.">      if (factory == null) throw new IllegalArgumentException(&quot;factory == null&quot;);</span>
+<span class="fc" id="L199">      factories.add(factory);</span>
+<span class="fc" id="L200">      return this;</span>
+    }
+
+    public Builder add(Object adapter) {
+<span class="fc bfc" id="L204" title="All 2 branches covered.">      if (adapter == null) throw new IllegalArgumentException(&quot;adapter == null&quot;);</span>
+<span class="fc" id="L205">      return add(AdapterMethodsFactory.get(adapter));</span>
+    }
+
+    Builder addAll(List&lt;JsonAdapter.Factory&gt; factories) {
+<span class="fc" id="L209">      this.factories.addAll(factories);</span>
+<span class="fc" id="L210">      return this;</span>
+    }
+
+    @CheckReturnValue public Moshi build() {
+<span class="fc" id="L214">      return new Moshi(this);</span>
+    }
+  }
+
+  /**
+   * Sometimes a type adapter factory depends on its own product; either directly or indirectly.
+   * To make this work, we offer this type adapter stub while the final adapter is being computed.
+   * When it is ready, we wire this to delegate to that finished adapter.
+   *
+   * &lt;p&gt;Typically this is necessary in self-referential object models, such as an {@code Employee}
+   * class that has a {@code List&lt;Employee&gt;} field for an organization's management hierarchy.
+   */
+  private static class DeferredAdapter&lt;T&gt; extends JsonAdapter&lt;T&gt; {
+    @Nullable Object cacheKey;
+    private @Nullable JsonAdapter&lt;T&gt; delegate;
+
+<span class="fc" id="L230">    DeferredAdapter(Object cacheKey) {</span>
+<span class="fc" id="L231">      this.cacheKey = cacheKey;</span>
+<span class="fc" id="L232">    }</span>
+
+    void ready(JsonAdapter&lt;T&gt; delegate) {
+<span class="fc" id="L235">      this.delegate = delegate;</span>
+<span class="fc" id="L236">      this.cacheKey = null;</span>
+<span class="fc" id="L237">    }</span>
+
+    @Override public T fromJson(JsonReader reader) throws IOException {
+<span class="pc bpc" id="L240" title="1 of 2 branches missed.">      if (delegate == null) throw new IllegalStateException(&quot;Type adapter isn't ready&quot;);</span>
+<span class="fc" id="L241">      return delegate.fromJson(reader);</span>
+    }
+
+    @Override public void toJson(JsonWriter writer, T value) throws IOException {
+<span class="pc bpc" id="L245" title="1 of 2 branches missed.">      if (delegate == null) throw new IllegalStateException(&quot;Type adapter isn't ready&quot;);</span>
+<span class="fc" id="L246">      delegate.toJson(writer, value);</span>
+<span class="fc" id="L247">    }</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

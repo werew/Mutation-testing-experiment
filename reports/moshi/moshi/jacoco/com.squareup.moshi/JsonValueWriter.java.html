@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JsonValueWriter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Moshi</a> &gt; <a href="index.source.html" class="el_package">com.squareup.moshi</a> &gt; <span class="el_source">JsonValueWriter.java</span></div><h1>JsonValueWriter.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2017 Square, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.squareup.moshi;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import javax.annotation.Nullable;
+
+import static com.squareup.moshi.JsonScope.EMPTY_ARRAY;
+import static com.squareup.moshi.JsonScope.EMPTY_DOCUMENT;
+import static com.squareup.moshi.JsonScope.EMPTY_OBJECT;
+import static com.squareup.moshi.JsonScope.NONEMPTY_DOCUMENT;
+import static java.lang.Double.NEGATIVE_INFINITY;
+import static java.lang.Double.POSITIVE_INFINITY;
+
+/** Writes JSON by building a Java object comprising maps, lists, and JSON primitives. */
+final class JsonValueWriter extends JsonWriter {
+<span class="fc" id="L34">  Object[] stack = new Object[32];</span>
+  private @Nullable String deferredName;
+
+<span class="fc" id="L37">  JsonValueWriter() {</span>
+<span class="fc" id="L38">    pushScope(EMPTY_DOCUMENT);</span>
+<span class="fc" id="L39">  }</span>
+
+  public Object root() {
+<span class="fc" id="L42">    int size = stackSize;</span>
+<span class="pc bpc" id="L43" title="2 of 6 branches missed.">    if (size &gt; 1 || size == 1 &amp;&amp; scopes[size - 1] != NONEMPTY_DOCUMENT) {</span>
+<span class="nc" id="L44">      throw new IllegalStateException(&quot;Incomplete document&quot;);</span>
+    }
+<span class="fc" id="L46">    return stack[0];</span>
+  }
+
+  @Override public JsonWriter beginArray() throws IOException {
+<span class="fc" id="L50">    checkStack();</span>
+<span class="fc" id="L51">    List&lt;Object&gt; list = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L52">    add(list);</span>
+<span class="fc" id="L53">    stack[stackSize] = list;</span>
+<span class="fc" id="L54">    pathIndices[stackSize] = 0;</span>
+<span class="fc" id="L55">    pushScope(EMPTY_ARRAY);</span>
+<span class="fc" id="L56">    return this;</span>
+  }
+
+  @Override public JsonWriter endArray() throws IOException {
+<span class="fc bfc" id="L60" title="All 2 branches covered.">    if (peekScope() != EMPTY_ARRAY) {</span>
+<span class="fc" id="L61">      throw new IllegalStateException(&quot;Nesting problem.&quot;);</span>
+    }
+<span class="fc" id="L63">    stackSize--;</span>
+<span class="fc" id="L64">    stack[stackSize] = null;</span>
+<span class="fc" id="L65">    pathIndices[stackSize - 1]++;</span>
+<span class="fc" id="L66">    return this;</span>
+  }
+
+  @Override public JsonWriter beginObject() throws IOException {
+<span class="fc" id="L70">    checkStack();</span>
+<span class="fc" id="L71">    Map&lt;String, Object&gt; map = new LinkedHashTreeMap&lt;&gt;();</span>
+<span class="fc" id="L72">    add(map);</span>
+<span class="fc" id="L73">    stack[stackSize] = map;</span>
+<span class="fc" id="L74">    pushScope(EMPTY_OBJECT);</span>
+<span class="fc" id="L75">    return this;</span>
+  }
+
+  @Override public JsonWriter endObject() throws IOException {
+<span class="fc bfc" id="L79" title="All 4 branches covered.">    if (peekScope() != EMPTY_OBJECT || deferredName != null) {</span>
+<span class="fc" id="L80">      throw new IllegalStateException(&quot;Nesting problem.&quot;);</span>
+    }
+<span class="fc" id="L82">    promoteValueToName = false;</span>
+<span class="fc" id="L83">    stackSize--;</span>
+<span class="fc" id="L84">    stack[stackSize] = null;</span>
+<span class="fc" id="L85">    pathNames[stackSize] = null; // Free the last path name so that it can be garbage collected!</span>
+<span class="fc" id="L86">    pathIndices[stackSize - 1]++;</span>
+<span class="fc" id="L87">    return this;</span>
+  }
+
+  @Override public JsonWriter name(String name) throws IOException {
+<span class="fc bfc" id="L91" title="All 2 branches covered.">    if (name == null) {</span>
+<span class="fc" id="L92">      throw new NullPointerException(&quot;name == null&quot;);</span>
+    }
+<span class="fc bfc" id="L94" title="All 2 branches covered.">    if (stackSize == 0) {</span>
+<span class="fc" id="L95">      throw new IllegalStateException(&quot;JsonWriter is closed.&quot;);</span>
+    }
+<span class="fc bfc" id="L97" title="All 4 branches covered.">    if (peekScope() != EMPTY_OBJECT || deferredName != null) {</span>
+<span class="fc" id="L98">      throw new IllegalStateException(&quot;Nesting problem.&quot;);</span>
+    }
+<span class="fc" id="L100">    deferredName = name;</span>
+<span class="fc" id="L101">    pathNames[stackSize - 1] = name;</span>
+<span class="fc" id="L102">    promoteValueToName = false;</span>
+<span class="fc" id="L103">    return this;</span>
+  }
+
+  @Override public JsonWriter value(@Nullable String value) throws IOException {
+<span class="fc bfc" id="L107" title="All 2 branches covered.">    if (promoteValueToName) {</span>
+<span class="fc" id="L108">      return name(value);</span>
+    }
+<span class="fc" id="L110">    add(value);</span>
+<span class="fc" id="L111">    pathIndices[stackSize - 1]++;</span>
+<span class="fc" id="L112">    return this;</span>
+  }
+
+  @Override public JsonWriter nullValue() throws IOException {
+<span class="fc" id="L116">    add(null);</span>
+<span class="fc" id="L117">    pathIndices[stackSize - 1]++;</span>
+<span class="fc" id="L118">    return this;</span>
+  }
+
+  @Override public JsonWriter value(boolean value) throws IOException {
+<span class="fc" id="L122">    add(value);</span>
+<span class="fc" id="L123">    pathIndices[stackSize - 1]++;</span>
+<span class="fc" id="L124">    return this;</span>
+  }
+
+  @Override public JsonWriter value(@Nullable Boolean value) throws IOException {
+<span class="fc" id="L128">    add(value);</span>
+<span class="fc" id="L129">    pathIndices[stackSize - 1]++;</span>
+<span class="fc" id="L130">    return this;</span>
+  }
+
+  @Override public JsonWriter value(double value) throws IOException {
+<span class="fc bfc" id="L134" title="All 2 branches covered.">    if (!lenient</span>
+<span class="fc bfc" id="L135" title="All 6 branches covered.">        &amp;&amp; (Double.isNaN(value) || value == NEGATIVE_INFINITY || value == POSITIVE_INFINITY)) {</span>
+<span class="fc" id="L136">      throw new IllegalArgumentException(&quot;Numeric values must be finite, but was &quot; + value);</span>
+    }
+<span class="fc bfc" id="L138" title="All 2 branches covered.">    if (promoteValueToName) {</span>
+<span class="fc" id="L139">      return name(Double.toString(value));</span>
+    }
+<span class="fc" id="L141">    add(value);</span>
+<span class="fc" id="L142">    pathIndices[stackSize - 1]++;</span>
+<span class="fc" id="L143">    return this;</span>
+  }
+
+  @Override public JsonWriter value(long value) throws IOException {
+<span class="fc bfc" id="L147" title="All 2 branches covered.">    if (promoteValueToName) {</span>
+<span class="fc" id="L148">      return name(Long.toString(value));</span>
+    }
+<span class="fc" id="L150">    add(value);</span>
+<span class="fc" id="L151">    pathIndices[stackSize - 1]++;</span>
+<span class="fc" id="L152">    return this;</span>
+  }
+
+  @Override public JsonWriter value(@Nullable Number value) throws IOException {
+    // If it's trivially converted to a long, do that.
+<span class="fc bfc" id="L157" title="All 8 branches covered.">    if (value instanceof Byte</span>
+        || value instanceof Short
+        || value instanceof Integer
+        || value instanceof Long) {
+<span class="fc" id="L161">      return value(value.longValue());</span>
+    }
+
+    // If it's trivially converted to a double, do that.
+<span class="fc bfc" id="L165" title="All 4 branches covered.">    if (value instanceof Float || value instanceof Double) {</span>
+<span class="fc" id="L166">      return value(value.doubleValue());</span>
+    }
+
+<span class="fc bfc" id="L169" title="All 2 branches covered.">    if (value == null) {</span>
+<span class="fc" id="L170">      return nullValue();</span>
+    }
+
+    // Everything else gets converted to a BigDecimal.
+<span class="fc bfc" id="L174" title="All 2 branches covered.">    BigDecimal bigDecimalValue = value instanceof BigDecimal</span>
+<span class="fc" id="L175">        ? ((BigDecimal) value)</span>
+<span class="fc" id="L176">        : new BigDecimal(value.toString());</span>
+<span class="pc bpc" id="L177" title="1 of 2 branches missed.">    if (promoteValueToName) {</span>
+<span class="nc" id="L178">      return name(bigDecimalValue.toString());</span>
+    }
+<span class="fc" id="L180">    add(bigDecimalValue);</span>
+<span class="fc" id="L181">    pathIndices[stackSize - 1]++;</span>
+<span class="fc" id="L182">    return this;</span>
+  }
+
+  @Override public void close() throws IOException {
+<span class="fc" id="L186">    int size = stackSize;</span>
+<span class="pc bpc" id="L187" title="2 of 6 branches missed.">    if (size &gt; 1 || size == 1 &amp;&amp; scopes[size - 1] != NONEMPTY_DOCUMENT) {</span>
+<span class="nc" id="L188">      throw new IOException(&quot;Incomplete document&quot;);</span>
+    }
+<span class="fc" id="L190">    stackSize = 0;</span>
+<span class="fc" id="L191">  }</span>
+
+  @Override public void flush() throws IOException {
+<span class="pc bpc" id="L194" title="1 of 2 branches missed.">    if (stackSize == 0) {</span>
+<span class="fc" id="L195">      throw new IllegalStateException(&quot;JsonWriter is closed.&quot;);</span>
+    }
+<span class="nc" id="L197">  }</span>
+
+  private JsonValueWriter add(@Nullable Object newTop) {
+<span class="fc" id="L200">    int scope = peekScope();</span>
+
+<span class="fc bfc" id="L202" title="All 2 branches covered.">    if (stackSize == 1) {</span>
+<span class="fc bfc" id="L203" title="All 2 branches covered.">      if (scope != EMPTY_DOCUMENT) {</span>
+<span class="fc" id="L204">        throw new IllegalStateException(&quot;JSON must have only one top-level value.&quot;);</span>
+      }
+<span class="fc" id="L206">      scopes[stackSize - 1] = NONEMPTY_DOCUMENT;</span>
+<span class="fc" id="L207">      stack[stackSize - 1] = newTop;</span>
+
+<span class="fc bfc" id="L209" title="All 4 branches covered.">    } else if (scope == EMPTY_OBJECT &amp;&amp; deferredName != null) {</span>
+<span class="fc bfc" id="L210" title="All 4 branches covered.">      if (newTop != null || serializeNulls) {</span>
+        @SuppressWarnings(&quot;unchecked&quot;) // Our maps always have string keys and object values.
+<span class="fc" id="L212">        Map&lt;String, Object&gt; map = (Map&lt;String, Object&gt;) stack[stackSize - 1];</span>
+<span class="fc" id="L213">        Object replaced = map.put(deferredName, newTop);</span>
+<span class="fc bfc" id="L214" title="All 2 branches covered.">        if (replaced != null) {</span>
+<span class="fc" id="L215">          throw new IllegalArgumentException(&quot;Map key '&quot; + deferredName</span>
+<span class="fc" id="L216">              + &quot;' has multiple values at path &quot; + getPath() + &quot;: &quot; + replaced + &quot; and &quot; + newTop);</span>
+        }
+      }
+<span class="fc" id="L219">      deferredName = null;</span>
+
+<span class="fc bfc" id="L221" title="All 2 branches covered.">    } else if (scope == EMPTY_ARRAY) {</span>
+      @SuppressWarnings(&quot;unchecked&quot;) // Our lists always have object values.
+<span class="fc" id="L223">      List&lt;Object&gt; list = (List&lt;Object&gt;) stack[stackSize - 1];</span>
+<span class="fc" id="L224">      list.add(newTop);</span>
+
+<span class="fc" id="L226">    } else {</span>
+<span class="fc" id="L227">      throw new IllegalStateException(&quot;Nesting problem.&quot;);</span>
+    }
+
+<span class="fc" id="L230">    return this;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

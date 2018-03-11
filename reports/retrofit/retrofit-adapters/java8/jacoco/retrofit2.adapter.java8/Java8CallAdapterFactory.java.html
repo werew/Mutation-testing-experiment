@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Java8CallAdapterFactory.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Adapter: Java 8</a> &gt; <a href="index.source.html" class="el_package">retrofit2.adapter.java8</a> &gt; <span class="el_source">Java8CallAdapterFactory.java</span></div><h1>Java8CallAdapterFactory.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2016 Square, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package retrofit2.adapter.java8;
+
+import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.concurrent.CompletableFuture;
+import retrofit2.Call;
+import retrofit2.CallAdapter;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+
+/**
+ * A {@linkplain CallAdapter.Factory call adapter} which creates Java 8 futures.
+ * &lt;p&gt;
+ * Adding this class to {@link Retrofit} allows you to return {@link CompletableFuture} from
+ * service methods.
+ * &lt;pre&gt;&lt;code&gt;
+ * interface MyService {
+ *   &amp;#64;GET(&quot;user/me&quot;)
+ *   CompletableFuture&amp;lt;User&amp;gt; getUser()
+ * }
+ * &lt;/code&gt;&lt;/pre&gt;
+ * There are two configurations supported for the {@code CompletableFuture} type parameter:
+ * &lt;ul&gt;
+ * &lt;li&gt;Direct body (e.g., {@code CompletableFuture&lt;User&gt;}) returns the deserialized body for 2XX
+ * responses, sets {@link retrofit2.HttpException HttpException} errors for non-2XX responses, and
+ * sets {@link IOException} for network errors.&lt;/li&gt;
+ * &lt;li&gt;Response wrapped body (e.g., {@code CompletableFuture&lt;Response&lt;User&gt;&gt;}) returns a
+ * {@link Response} object for all HTTP responses and sets {@link IOException} for network
+ * errors&lt;/li&gt;
+ * &lt;/ul&gt;
+ */
+public final class Java8CallAdapterFactory extends CallAdapter.Factory {
+  public static Java8CallAdapterFactory create() {
+<span class="fc" id="L52">    return new Java8CallAdapterFactory();</span>
+  }
+
+  private Java8CallAdapterFactory() {
+  }
+
+  @Override
+  public CallAdapter&lt;?, ?&gt; get(Type returnType, Annotation[] annotations, Retrofit retrofit) {
+<span class="fc bfc" id="L60" title="All 2 branches covered.">    if (getRawType(returnType) != CompletableFuture.class) {</span>
+<span class="fc" id="L61">      return null;</span>
+    }
+<span class="fc bfc" id="L63" title="All 2 branches covered.">    if (!(returnType instanceof ParameterizedType)) {</span>
+<span class="fc" id="L64">      throw new IllegalStateException(&quot;CompletableFuture return type must be parameterized&quot;</span>
+          + &quot; as CompletableFuture&lt;Foo&gt; or CompletableFuture&lt;? extends Foo&gt;&quot;);
+    }
+<span class="fc" id="L67">    Type innerType = getParameterUpperBound(0, (ParameterizedType) returnType);</span>
+
+<span class="fc bfc" id="L69" title="All 2 branches covered.">    if (getRawType(innerType) != Response.class) {</span>
+      // Generic type is not Response&lt;T&gt;. Use it for body-only adapter.
+<span class="fc" id="L71">      return new BodyCallAdapter&lt;&gt;(innerType);</span>
+    }
+
+    // Generic type is Response&lt;T&gt;. Extract T and create the Response version of the adapter.
+<span class="fc bfc" id="L75" title="All 2 branches covered.">    if (!(innerType instanceof ParameterizedType)) {</span>
+<span class="fc" id="L76">      throw new IllegalStateException(&quot;Response must be parameterized&quot;</span>
+          + &quot; as Response&lt;Foo&gt; or Response&lt;? extends Foo&gt;&quot;);
+    }
+<span class="fc" id="L79">    Type responseType = getParameterUpperBound(0, (ParameterizedType) innerType);</span>
+<span class="fc" id="L80">    return new ResponseCallAdapter&lt;&gt;(responseType);</span>
+  }
+
+  private static final class BodyCallAdapter&lt;R&gt; implements CallAdapter&lt;R, CompletableFuture&lt;R&gt;&gt; {
+    private final Type responseType;
+
+<span class="fc" id="L86">    BodyCallAdapter(Type responseType) {</span>
+<span class="fc" id="L87">      this.responseType = responseType;</span>
+<span class="fc" id="L88">    }</span>
+
+    @Override public Type responseType() {
+<span class="fc" id="L91">      return responseType;</span>
+    }
+
+    @Override public CompletableFuture&lt;R&gt; adapt(final Call&lt;R&gt; call) {
+<span class="fc" id="L95">      final CompletableFuture&lt;R&gt; future = new CompletableFuture&lt;R&gt;() {</span>
+        @Override public boolean cancel(boolean mayInterruptIfRunning) {
+<span class="nc bnc" id="L97" title="All 2 branches missed.">          if (mayInterruptIfRunning) {</span>
+<span class="nc" id="L98">            call.cancel();</span>
+          }
+<span class="nc" id="L100">          return super.cancel(mayInterruptIfRunning);</span>
+        }
+      };
+
+<span class="fc" id="L104">      call.enqueue(new Callback&lt;R&gt;() {</span>
+        @Override public void onResponse(Call&lt;R&gt; call, Response&lt;R&gt; response) {
+<span class="fc bfc" id="L106" title="All 2 branches covered.">          if (response.isSuccessful()) {</span>
+<span class="fc" id="L107">            future.complete(response.body());</span>
+          } else {
+<span class="fc" id="L109">            future.completeExceptionally(new HttpException(response));</span>
+          }
+<span class="fc" id="L111">        }</span>
+
+        @Override public void onFailure(Call&lt;R&gt; call, Throwable t) {
+<span class="fc" id="L114">          future.completeExceptionally(t);</span>
+<span class="fc" id="L115">        }</span>
+      });
+
+<span class="fc" id="L118">      return future;</span>
+    }
+  }
+
+  private static final class ResponseCallAdapter&lt;R&gt;
+      implements CallAdapter&lt;R, CompletableFuture&lt;Response&lt;R&gt;&gt;&gt; {
+    private final Type responseType;
+
+<span class="fc" id="L126">    ResponseCallAdapter(Type responseType) {</span>
+<span class="fc" id="L127">      this.responseType = responseType;</span>
+<span class="fc" id="L128">    }</span>
+
+    @Override public Type responseType() {
+<span class="fc" id="L131">      return responseType;</span>
+    }
+
+    @Override public CompletableFuture&lt;Response&lt;R&gt;&gt; adapt(final Call&lt;R&gt; call) {
+<span class="fc" id="L135">      final CompletableFuture&lt;Response&lt;R&gt;&gt; future = new CompletableFuture&lt;Response&lt;R&gt;&gt;() {</span>
+        @Override public boolean cancel(boolean mayInterruptIfRunning) {
+<span class="nc bnc" id="L137" title="All 2 branches missed.">          if (mayInterruptIfRunning) {</span>
+<span class="nc" id="L138">            call.cancel();</span>
+          }
+<span class="nc" id="L140">          return super.cancel(mayInterruptIfRunning);</span>
+        }
+      };
+
+<span class="fc" id="L144">      call.enqueue(new Callback&lt;R&gt;() {</span>
+        @Override public void onResponse(Call&lt;R&gt; call, Response&lt;R&gt; response) {
+<span class="fc" id="L146">          future.complete(response);</span>
+<span class="fc" id="L147">        }</span>
+
+        @Override public void onFailure(Call&lt;R&gt; call, Throwable t) {
+<span class="fc" id="L150">          future.completeExceptionally(t);</span>
+<span class="fc" id="L151">        }</span>
+      });
+
+<span class="fc" id="L154">      return future;</span>
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

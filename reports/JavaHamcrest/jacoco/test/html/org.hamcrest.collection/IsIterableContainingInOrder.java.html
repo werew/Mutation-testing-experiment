@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>IsIterableContainingInOrder.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JavaHamcrest</a> &gt; <a href="index.source.html" class="el_package">org.hamcrest.collection</a> &gt; <span class="el_source">IsIterableContainingInOrder.java</span></div><h1>IsIterableContainingInOrder.java</h1><pre class="source lang-java linenums">package org.hamcrest.collection;
+
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeDiagnosingMatcher;
+import org.hamcrest.internal.NullSafety;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.util.Collections.singletonList;
+import static org.hamcrest.collection.ArrayMatching.asEqualMatchers;
+
+public class IsIterableContainingInOrder&lt;E&gt; extends TypeSafeDiagnosingMatcher&lt;Iterable&lt;? extends E&gt;&gt; {
+    private final List&lt;Matcher&lt;? super E&gt;&gt; matchers;
+
+<span class="fc" id="L17">    public IsIterableContainingInOrder(List&lt;Matcher&lt;? super E&gt;&gt; matchers) {</span>
+<span class="fc" id="L18">        this.matchers = matchers;</span>
+<span class="fc" id="L19">    }</span>
+
+    @Override
+    protected boolean matchesSafely(Iterable&lt;? extends E&gt; iterable, Description mismatchDescription) {
+<span class="fc" id="L23">        final MatchSeries&lt;E&gt; matchSeries = new MatchSeries&lt;&gt;(matchers, mismatchDescription);</span>
+<span class="fc bfc" id="L24" title="All 2 branches covered.">        for (E item : iterable) {</span>
+<span class="fc bfc" id="L25" title="All 2 branches covered.">            if (!matchSeries.matches(item)) {</span>
+<span class="fc" id="L26">                return false;</span>
+            }
+<span class="fc" id="L28">        }</span>
+
+<span class="fc" id="L30">        return matchSeries.isFinished();</span>
+    }
+
+    @Override
+    public void describeTo(Description description) {
+<span class="fc" id="L35">        description.appendText(&quot;iterable containing &quot;).appendList(&quot;[&quot;, &quot;, &quot;, &quot;]&quot;, matchers);</span>
+<span class="fc" id="L36">    }</span>
+
+    private static class MatchSeries&lt;F&gt; {
+        private final List&lt;Matcher&lt;? super F&gt;&gt; matchers;
+        private final Description mismatchDescription;
+<span class="fc" id="L41">        private int nextMatchIx = 0;</span>
+
+<span class="fc" id="L43">        public MatchSeries(List&lt;Matcher&lt;? super F&gt;&gt; matchers, Description mismatchDescription) {</span>
+<span class="fc" id="L44">            this.mismatchDescription = mismatchDescription;</span>
+<span class="pc bpc" id="L45" title="1 of 2 branches missed.">            if (matchers.isEmpty()) {</span>
+<span class="nc" id="L46">                throw new IllegalArgumentException(&quot;Should specify at least one expected element&quot;);</span>
+            }
+<span class="fc" id="L48">            this.matchers = matchers;</span>
+<span class="fc" id="L49">        }</span>
+
+        public boolean matches(F item) {
+<span class="fc bfc" id="L52" title="All 2 branches covered.">          if (matchers.size() &lt;= nextMatchIx) {</span>
+<span class="fc" id="L53">            mismatchDescription.appendText(&quot;not matched: &quot;).appendValue(item);</span>
+<span class="fc" id="L54">            return false;</span>
+          }
+
+<span class="fc" id="L57">          return isMatched(item);</span>
+        }
+
+        public boolean isFinished() {
+<span class="fc bfc" id="L61" title="All 2 branches covered.">            if (nextMatchIx &lt; matchers.size()) {</span>
+<span class="fc" id="L62">                mismatchDescription.appendText(&quot;no item was &quot;).appendDescriptionOf(matchers.get(nextMatchIx));</span>
+<span class="fc" id="L63">                return false;</span>
+            }
+<span class="fc" id="L65">            return true;</span>
+        }
+
+        private boolean isMatched(F item) {
+<span class="fc" id="L69">            final Matcher&lt;? super F&gt; matcher = matchers.get(nextMatchIx);</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">            if (!matcher.matches(item)) {</span>
+<span class="fc" id="L71">                describeMismatch(matcher, item);</span>
+<span class="fc" id="L72">                return false;</span>
+            }
+<span class="fc" id="L74">            nextMatchIx++;</span>
+<span class="fc" id="L75">            return true;</span>
+        }
+
+      private void describeMismatch(Matcher&lt;? super F&gt; matcher, F item) {
+<span class="fc" id="L79">            mismatchDescription.appendText(&quot;item &quot; + nextMatchIx + &quot;: &quot;);</span>
+<span class="fc" id="L80">            matcher.describeMismatch(item, mismatchDescription);</span>
+<span class="fc" id="L81">        }</span>
+    }
+
+    /**
+     * Creates a matcher for {@link Iterable}s that matches when a single pass over the
+     * examined {@link Iterable} yields a series of items, each logically equal to the
+     * corresponding item in the specified items.  For a positive match, the examined iterable
+     * must be of the same length as the number of specified items.
+     * For example:
+     * &lt;pre&gt;assertThat(Arrays.asList(&quot;foo&quot;, &quot;bar&quot;), contains(&quot;foo&quot;, &quot;bar&quot;))&lt;/pre&gt;
+     * 
+     * @param items
+     *     the items that must equal the items provided by an examined {@link Iterable}
+     */
+    @SafeVarargs
+    public static &lt;E&gt; Matcher&lt;Iterable&lt;? extends E&gt;&gt; contains(E... items) {
+<span class="fc" id="L97">        return contains(asEqualMatchers(items));</span>
+    }
+
+    /**
+     * Creates a matcher for {@link Iterable}s that matches when a single pass over the
+     * examined {@link Iterable} yields a single item that satisfies the specified matcher.
+     * For a positive match, the examined iterable must only yield one item.
+     * For example:
+     * &lt;pre&gt;assertThat(Arrays.asList(&quot;foo&quot;), contains(equalTo(&quot;foo&quot;)))&lt;/pre&gt;
+     * 
+     * @param itemMatcher
+     *     the matcher that must be satisfied by the single item provided by an
+     *     examined {@link Iterable}
+     */
+    @SuppressWarnings(&quot;unchecked&quot;)
+    public static &lt;E&gt; Matcher&lt;Iterable&lt;? extends E&gt;&gt; contains(final Matcher&lt;? super E&gt; itemMatcher) {
+<span class="fc" id="L113">        return contains(new ArrayList&lt;Matcher&lt;? super E&gt;&gt;(singletonList(itemMatcher)));</span>
+    }
+
+    /**
+     * Creates a matcher for {@link Iterable}s that matches when a single pass over the
+     * examined {@link Iterable} yields a series of items, each satisfying the corresponding
+     * matcher in the specified matchers.  For a positive match, the examined iterable
+     * must be of the same length as the number of specified matchers.
+     * For example:
+     * &lt;pre&gt;assertThat(Arrays.asList(&quot;foo&quot;, &quot;bar&quot;), contains(equalTo(&quot;foo&quot;), equalTo(&quot;bar&quot;)))&lt;/pre&gt;
+     * 
+     * @param itemMatchers
+     *     the matchers that must be satisfied by the items provided by an examined {@link Iterable}
+     */
+    @SafeVarargs
+    public static &lt;E&gt; Matcher&lt;Iterable&lt;? extends E&gt;&gt; contains(Matcher&lt;? super E&gt;... itemMatchers) {
+        // required for JDK 1.6
+        //noinspection RedundantTypeArguments
+<span class="fc" id="L131">        final List&lt;Matcher&lt;? super E&gt;&gt; nullSafeWithExplicitTypeMatchers = NullSafety.&lt;E&gt;nullSafe(itemMatchers);</span>
+<span class="fc" id="L132">    	return contains(nullSafeWithExplicitTypeMatchers);</span>
+    }
+
+    /**
+     * Creates a matcher for {@link Iterable}s that matches when a single pass over the
+     * examined {@link Iterable} yields a series of items, each satisfying the corresponding
+     * matcher in the specified list of matchers.  For a positive match, the examined iterable
+     * must be of the same length as the specified list of matchers.
+     * For example:
+     * &lt;pre&gt;assertThat(Arrays.asList(&quot;foo&quot;, &quot;bar&quot;), contains(Arrays.asList(equalTo(&quot;foo&quot;), equalTo(&quot;bar&quot;))))&lt;/pre&gt;
+     * 
+     * @param itemMatchers
+     *     a list of matchers, each of which must be satisfied by the corresponding item provided by
+     *     an examined {@link Iterable}
+     */
+    public static &lt;E&gt; Matcher&lt;Iterable&lt;? extends E&gt;&gt; contains(List&lt;Matcher&lt;? super E&gt;&gt; itemMatchers) {
+<span class="fc" id="L148">        return new IsIterableContainingInOrder&lt;&gt;(itemMatchers);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
